@@ -29,7 +29,7 @@ const ReservationModal = ({ open, handleClose, car, isAuthenticated }) => {
         date_retour: null,
         motif: '',
         pieces_jointes: [],
-        type_de_voyage: '',
+        type_voyage: '',
     });
 
     const handleDetailChange = (event) => {
@@ -98,7 +98,7 @@ const ReservationModal = ({ open, handleClose, car, isAuthenticated }) => {
         });
 
         // Submit reservation data via Inertia
-        await router.post('/reservations', formData, {
+        await router.post('/client/reservations', formData, {
             onSuccess: () => {
                 handleClose(); // Close the modal on successful submission
             },
@@ -143,15 +143,15 @@ const ReservationModal = ({ open, handleClose, car, isAuthenticated }) => {
                 </InputLabel>
                 <Select
                     labelId="type-de-voyage-label"
-                    name="type_de_voyage"
-                    value={reservationDetails.type_de_voyage}
+                    name="type_voyage"
+                    value={reservationDetails.type_voyage}
                     onChange={handleDetailChange}
                     fullWidth
                     sx={{ mt: 1 }}
                 >
-                    <MenuItem value="affaires">Affaires</MenuItem>
-                    <MenuItem value="loisirs">Loisirs</MenuItem>
-                    <MenuItem value="autre">Autre</MenuItem>
+                    <MenuItem value="circuit">Circuit</MenuItem>
+                    <MenuItem value="boucle">Boucle</MenuItem>
+                    <MenuItem value="transfert">Transfert</MenuItem>
                 </Select>
 
                 <div className="mt-4 grid grid-cols-2 gap-4">

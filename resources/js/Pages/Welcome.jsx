@@ -1,5 +1,6 @@
 // Other imports remain the same
 import PrimaryButton from '@/Components/PrimaryButton';
+import ReservationModal from '@/Components/ReservationModal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, router } from '@inertiajs/react';
@@ -23,7 +24,7 @@ import {
     Linkedin,
     Twitter,
 } from 'lucide-react';
-import React from 'react';
+import React, { useState } from 'react';
 import { ReactTyped } from 'react-typed';
 import banner from '../../assets/images/bgbanner.jpg';
 export default function Welcome({
@@ -33,7 +34,21 @@ export default function Welcome({
     latestVehicles,
     categories,
 }) {
-    // console.log(auth.user.type );
+    console.log(latestVehicles);
+
+    const [modalOpen, setModalOpen] = useState(false);
+    const [selectedCar, setSelectedCar] = useState(null);
+    const handleOpenModal = (car) => {
+        setSelectedCar(car);
+        setModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalOpen(false);
+        setSelectedCar(null);
+    };
+
+    const handleCancelReservation = async (car) => {};
     return (
         <GuestLayout auth={auth}>
             <Head title="Ayna lbr - Unlock Your Travel Experience" />
@@ -368,18 +383,36 @@ export default function Welcome({
                                         <div className="mt-4 flex w-full items-center justify-between space-x-4">
                                             {auth?.user?.type !== 'admin' && (
                                                 <PrimaryButton
-                                                    onClick={() =>
-                                                        handleOpenModal(car)
-                                                    }
+                                                    onClick={() => {
+                                                        if (
+                                                            car.reservationStatus ===
+                                                            'en attente'
+                                                        ) {
+                                                            // Logique pour annuler la réservation
+                                                            handleCancelReservation(
+                                                                car,
+                                                            );
+                                                        } else {
+                                                            handleOpenModal(
+                                                                car,
+                                                            );
+                                                        }
+                                                    }}
                                                     disabled={
-                                                        car.isReservedByUser
+                                                        car.isReservedByUser &&
+                                                        car.reservationStatus !==
+                                                            'en attente'
                                                     }
                                                 >
                                                     {car.isReservedByUser
-                                                        ? 'Déjà réservé'
+                                                        ? car.reservationStatus ===
+                                                          'confirmée'
+                                                            ? 'Déjà réservé'
+                                                            : 'Annuler la réservation'
                                                         : 'Réserver'}
                                                 </PrimaryButton>
                                             )}
+
                                             <SecondaryButton onClick={() => {}}>
                                                 Voir plus
                                             </SecondaryButton>
@@ -455,6 +488,15 @@ export default function Welcome({
                         </div>
                     </div>
                 </section>
+
+                {selectedCar && (
+                    <ReservationModal
+                        open={modalOpen}
+                        handleClose={handleCloseModal}
+                        car={selectedCar}
+                        isAuthenticated={auth.user ? true : false}
+                    />
+                )}
 
                 <footer className="bg-gray-800 py-8 text-white">
                     <Box

@@ -174,14 +174,14 @@ export default function ClientLayout({ auth, header, children }) {
                                 <Fullscreen className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                             </button>
                             {/* Search Bar */}
-                            <div className="relative hidden md:block">
+                            {/* <div className="relative hidden md:block">
                                 <input
                                     type="text"
                                     placeholder="Rechercher..."
                                     className="rounded-md border border-gray-300 bg-gray-100 px-3 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-indigo-600"
                                 />
                                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500 dark:text-gray-400" />
-                            </div>
+                            </div> */}
 
                             {/* Buttons */}
                             <div className="flex min-h-full items-center space-x-2">

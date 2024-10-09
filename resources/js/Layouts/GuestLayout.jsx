@@ -295,7 +295,11 @@ export default function Guest({ children, auth }) {
                                     </div>
                                     <Divider />
                                     <Dropdown.Link
-                                        href={route('client.dashboard')}
+                                        href={
+                                            auth.user.type == 'user'
+                                                ? route('client.dashboard')
+                                                : route('admin.dashboard')
+                                        }
                                     >
                                         Dashboard
                                     </Dropdown.Link>

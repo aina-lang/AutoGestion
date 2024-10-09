@@ -15,7 +15,7 @@ class Vehicule extends Model
         'immatriculation',
         'categorie_id',
         'prix_journalier',
-        'disponible',
+        // 'disponible',
         'kilometrage',
         'date_ajout',
         'description',

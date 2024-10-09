@@ -12,8 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
 import { frFR } from '@/constants/local';
-
-import ClientLayout from '@/Layouts/ClientLayout';
+import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import { MoreHorizSharp, PictureAsPdf, TableView } from '@mui/icons-material';
 import {
@@ -39,77 +38,51 @@ import {
     GridIcon,
     SearchIcon,
 } from 'lucide-react';
-
 import React, { useState } from 'react';
 
-function Index({ reservations }) {
+const Index = ({ reservations }) => {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRow, setSelectedRow] = useState(null);
     const [gridView, setGridView] = useState(false);
     const [currentPage, setCurrentPage] = useState(reservations.current_page);
     const [itemsPerPage, setItemsPerPage] = useState(4);
-    const { delete: deleteRequest } = useForm();
-
-    console.log(reservations);
-
-    const filteredVehicules = reservations.data.filter((reservation) => {
-        const searchableText =
-            `${reservation.reference} ${reservation.label} ${reservation.assignedTo}`.toLowerCase();
-        return searchableText.includes(searchQuery.toLowerCase());
-    });
+    const { delete: deleteRequest ,post} = useForm();
     const [selectedRows, setSelectedRows] = useState([]);
     const [contextMenu, setContextMenu] = useState(null);
-    const paginatedVehicules = filteredVehicules.slice(
+    const [currentFocusRow, setCurrentFocusRow] = useState(null);
+
+    const filteredReservations = reservations.data.filter((reservation) =>
+        `${reservation.reference} ${reservation.label} ${reservation.assignedTo}`
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()),
+    );
+
+    const paginatedReservations = filteredReservations.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage,
     );
 
-    const goToPage = (url) => {
-        router.visit(url);
-    };
-
-    // Fonction pour MUI Pagination qui met à jour la page courante
-    const handleMuiPagination = (event, value) => {
-        setCurrentPage(value);
-        goToPage(`${reservations.path}?page=${value}`);
-    };
-    const handleEdit = (row, event) => {
-        // event.current.stopPropagation();
-        console.log('Edit', row);
-        // Logique pour modifier l'élément
-        router.get(`reservations/${row.id}/edit/`);
-    };
-
-    const [currentFocusRow, setCureentFocusRow] = useState(null);
+    const handleEdit = (row) => router.get(`reservations/${row.id}/edit/`);
 
     const handleDelete = (row) => {
-        setCureentFocusRow(row);
+        setCurrentFocusRow(row);
         setDialogOpen(true);
-        // console.log("Delete", row);
     };
 
     const handleConfirmDelete = () => {
-        console.log(currentFocusRow.id);
         deleteRequest(`/admin/reservations/${currentFocusRow.id}`, {
-            onSuccess: () => {
-                console.log('yes');
-            },
-            onError: (errors) => {
-                console.error(errors);
-            },
+            onSuccess: () => console.log('deleted'),
+            onError: (errors) => console.error(errors),
         });
         setDialogOpen(false);
     };
 
-    const handleExportPDF = (row) => {
-        console.log('Export PDF', row);
+    const handleExportPDF = (row) =>
         window.open(route('reservation.pdf', row.id), '_blank');
-    };
 
-    // Handle right-click on the row
     const handleRowRightClick = (event, row) => {
-        event.preventDefault(); // Prevent the default context menu
+        event.preventDefault();
         setSelectedRow(row);
         setContextMenu({
             mouseX: event.clientX + 2,
@@ -117,208 +90,143 @@ function Index({ reservations }) {
         });
     };
 
-    const handleCloseContextMenu = () => {
-        setContextMenu(null);
-    };
-
-    const [anchorEl, setAnchorEl] = useState(null);
-
-    const SelectionStatus = ({ selectedRows }) => {
-        const count = selectedRows.length;
-        const label =
-            count === 1 ? 'Ligne sélectionnée' : 'Lignes sélectionnées';
-
-        return (
-            <Typography className="text-gray-500">
-                {count} {label}
-            </Typography>
-        );
-    };
-
     const toggleGridView = () => {
-        if (gridView === false) {
-            setItemsPerPage(8);
-        } else {
-            setItemsPerPage(5);
-        }
+        setItemsPerPage(gridView ? 5 : 8);
         setGridView(!gridView);
     };
 
-    const arrayfields = {
-        id: { checked: true },
-        motif: { checked: true },
-        client: { checked: true },
-        'vehicule.marque': { checked: true },
-        'user.nom': { checked: true },
-        date_depart: { checked: true },
-        date_retour: { checked: true },
-        status: { checked: true },
-        // description: { checked: true },
-        // disponibilite: { checked: true },
+    const handleApprove = (row) => {
+        post(`/admin/reservations/${row.id}/approve`, {
+            onSuccess: () => {
+                console.log('Réservation approuvée');
+                // Mettre à jour l'état local ou recharger les données
+            },
+            onError: (errors) => console.error(errors),
+        });
     };
 
-    // Fonction pour générer les colonnes du DataGrid
-    const generateColumns = (fields) => {
-        return Object.keys(fields)
-            .map((key) => {
-                const field = fields[key];
-                console.log(fields['id']);
-                switch (key) {
-                    case 'motif':
-                        return {
-                            field: 'motif',
-                            headerName: 'Motif',
-                            width: 150,
-                            renderCell: (params) => (
-                                <Link
-                                    href={
-                                        '/admin/reservations/' + params.row.id
-                                    }
-                                    className="flex h-full items-center text-sm"
-                                >
-                                    {params.value || 'N/A'}
-                                </Link>
-                            ),
-                        };
-                    case 'vehicule.marque':
-                        return {
-                            field: 'vehicule',
-                            headerName: 'Modèle',
-                            width: 150,
-                            renderCell: (params) => (
-                                <p className="flex h-full items-center text-sm">
-                                    {params.value.marque || 'N/A'}
-                                </p>
-                            ),
-                        };
-                    case 'user.nom':
-                        return {
-                            field: 'user',
-                            headerName: 'Client',
-                            width: 180,
-                            renderCell: (params) => (
-                                <p className="flex h-full items-center text-sm">
-                                    {params.value.nom || 'N/A'}
-                                </p>
-                            ),
-                        };
-                    case 'date_depart':
-                        return {
-                            field: 'date_depart',
-                            headerName: 'Date depart',
-                            width: 150,
-                            renderCell: (params) => (
-                                <p className="flex h-full items-center text-sm">
-                                    {params.value || 'N/A'}
-                                </p>
-                            ),
-                        };
-                    case 'date_retour':
-                        return {
-                            field: 'date_retour',
-                            headerName: 'Date retour',
-                            width: 150,
-                            renderCell: (params) => (
-                                <p className="flex h-full items-center text-sm">
-                                    {params.value ? `${params.value} ` : 'N/A'}
-                                </p>
-                            ),
-                        };
-                    case 'status':
-                        return {
-                            field: 'status',
-                            headerName: 'Status',
-                            width: 150,
-                            renderCell: (params) => (
-                                <div className="flex h-full items-center">
-                                    <span
-                                        className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
-                                            params.value
-                                                ? 'bg-green-100 text-green-800'
-                                                : 'bg-red-100 text-red-800'
-                                        }`}
-                                    >
-                                        {params.value}
-                                    </span>
-                                </div>
-                            ),
-                        };
-                    case 'description':
-                        return {
-                            field: 'description',
-                            headerName: 'Description',
-                            width: 200,
-                            renderCell: (params) => (
-                                <p className="flex h-full items-center truncate text-sm">
-                                    {params.value || 'N/A'}
-                                </p>
-                            ),
-                        };
-                    case 'disponibilite':
-                        return {
-                            field: 'disponible',
-                            headerName: 'Disponibilité',
-                            width: 200,
-                            renderCell: (params) => {
-                                const isAvailable = params.value; // Assuming params.value is a boolean
-
-                                return (
-                                    <div className="flex h-full items-center">
-                                        <span
-                                            className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${
-                                                isAvailable
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-red-100 text-red-800'
-                                            }`}
-                                        >
-                                            {isAvailable ? 'Oui' : 'Non'}
-                                        </span>
-                                    </div>
-                                );
-                            },
-                        };
-                    default:
-                        return null;
-                }
-            })
-            .filter((column) => column !== null);
+    const handleBulkApprove = () => {
+        selectedRows.forEach((row) => handleApprove(row));
     };
 
-    const columns = generateColumns(arrayfields);
+    const columns = [
+        {
+            field: 'actions',
+            headerName: 'Actions',
+            width: 150,
+            sortable: false,
+            renderCell: (params) => (
+                <div className="flex h-full w-full space-x-2 text-sm">
+                    <IconButton
+                        aria-label="edit"
+                        onClick={() => handleEdit(params.row)}
+                    >
+                        <EditIcon size={18} />
+                    </IconButton>
+                    <IconButton
+                        aria-label="delete"
+                        color="error"
+                        onClick={() => handleDelete(params.row)}
+                    >
+                        <DeleteIcon size={20} />
+                    </IconButton>
+                    <IconButton
+                        aria-label="pdf"
+                        color="info"
+                        onClick={() => handleExportPDF(params.row)}
+                    >
+                        <PictureAsPdf sx={{ width: 20 }} />
+                    </IconButton>
+                    <IconButton
+                        aria-label="approve"
+                        color="success"
+                        onClick={() => handleApprove(params.row)}
+                    >
+                        <CheckIcon size={20} />
+                    </IconButton>
+                </div>
+            ),
+        },
+        {
+            field: 'motif',
+            headerName: 'Motif',
+            width: 150,
+            renderCell: (params) => (
+                <Link
+                    href={`/admin/reservations/${params.row.id}`}
+                    className="flex h-full items-center text-sm"
+                >
+                    {params.value || 'N/A'}
+                </Link>
+            ),
+        },
+        {
+            field: 'vehicule',
+            headerName: 'Modèle',
+            width: 150,
+            renderCell: (params) => (
+                <p className="flex h-full items-center text-sm">
+                    {params.value.marque || 'N/A'}
+                </p>
+            ),
+        },
+        {
+            field: 'user',
+            headerName: 'Client',
+            width: 180,
+            renderCell: (params) => (
+                <p className="flex h-full items-center text-sm">
+                    {params.value.nom || 'N/A'}
+                </p>
+            ),
+        },
+        {
+            field: 'date_depart',
+            headerName: 'Date depart',
+            width: 150,
+            renderCell: (params) => (
+                <p className="flex h-full items-center text-sm">
+                    {params.value || 'N/A'}
+                </p>
+            ),
+        },
+        {
+            field: 'date_retour',
+            headerName: 'Date retour',
+            width: 150,
+            renderCell: (params) => (
+                <p className="flex h-full items-center text-sm">
+                    {params.value || 'N/A'}
+                </p>
+            ),
+        },
+        {
+            field: 'status',
+            headerName: 'Status',
+            width: 150,
+            renderCell: (params) => (
+                <div className="flex h-full items-center">
+                    <span
+                        className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${params.value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+                    >
+                        {params.value}
+                    </span>
+                </div>
+            ),
+        },
+    ];
 
-    columns.unshift({
-        field: 'actions',
-        headerName: 'Actions',
-        width: 150,
-        sortable: false,
-        renderCell: (params) => (
-            <div className="flex h-full w-full space-x-2 text-sm">
-                <IconButton
-                    aria-label="edit"
-                    onClick={() => handleEdit(params.row)}
-                >
-                    <EditIcon size={18} />
-                </IconButton>
-                <IconButton
-                    aria-label="delete"
-                    color="error"
-                    onClick={() => handleDelete(params.row)}
-                >
-                    <DeleteIcon size={20} />
-                </IconButton>
-                <IconButton
-                    aria-label="pdf"
-                    color="info"
-                    onClick={() => handleExportPDF(params.row)}
-                >
-                    <PictureAsPdf sx={{ width: 20 }} />
-                </IconButton>
-            </div>
-        ),
-    });
+    const SelectionStatus = ({ selectedRows }) => (
+        <Typography className="text-gray-500">
+            {selectedRows.length}{' '}
+            {selectedRows.length === 1
+                ? 'Ligne sélectionnée'
+                : 'Lignes sélectionnées'}
+        </Typography>
+    );
 
     return (
-        <ClientLayout
+        <AdminLayout
             header={
                 <MyHeader
                     title="Véhicules"
@@ -328,7 +236,6 @@ function Index({ reservations }) {
                     ]}
                     right={
                         <div className="flex space-x-4 py-5">
-                            {/* Un button grid view et table view */}
                             <button onClick={toggleGridView}>
                                 {gridView ? (
                                     <GridIcon
@@ -370,7 +277,7 @@ function Index({ reservations }) {
             <div className="mx-auto space-y-5 p-6 pt-0">
                 {gridView ? (
                     <Grid container spacing={2}>
-                        {paginatedVehicules.map((Vehicule, index) => (
+                        {paginatedReservations.map((reservation, index) => (
                             <Grid
                                 item
                                 xs={12}
@@ -385,10 +292,10 @@ function Index({ reservations }) {
                                         <div className="flex items-center space-x-2">
                                             <div>
                                                 <h4 className="text-lg font-semibold">
-                                                    {Vehicule.title}
+                                                    {reservation.title}
                                                 </h4>
                                                 <p className="text-sm text-gray-500">
-                                                    {Vehicule.ref}
+                                                    {reservation.ref}
                                                 </p>
                                             </div>
                                         </div>
@@ -396,33 +303,22 @@ function Index({ reservations }) {
                                             <MoreHorizSharp className="text-gray-500" />
                                         </PrimaryButton>
                                     </div>
-
                                     <p className="mb-4 text-sm text-gray-700 dark:text-gray-400">
-                                        {Vehicule.description}
+                                        {reservation.description}
                                     </p>
-
                                     <div className="mb-4 flex items-center">
                                         <span className="mr-2 rounded bg-yellow-200 px-2.5 py-0.5 text-xs font-medium text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300">
                                             On Progress
                                         </span>
                                         <span className="ml-auto text-sm text-red-500">
                                             Due date:{' '}
-                                            {Vehicule.datee
-                                                ? Vehicule.datee
-                                                : 'N/A'}
+                                            {reservation.datee || 'N/A'}
                                         </span>
                                     </div>
-
                                     <div className="mt-4 flex space-x-2">
-                                        {/* {Vehicule?.categories.map((tag, idx) => ( */}
-                                        <span
-                                            // key={idx}
-                                            className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300"
-                                        >
-                                            {/* {tag} */}
+                                        <span className="rounded bg-gray-100 px-2 py-1 text-xs font-medium text-gray-700 dark:bg-gray-700 dark:text-gray-300">
                                             dev web
                                         </span>
-                                        {/* ))} */}
                                     </div>
                                 </div>
                             </Grid>
@@ -439,7 +335,6 @@ function Index({ reservations }) {
                                 toolbar: () => (
                                     <GridToolbarContainer
                                         sx={{ marginBottom: 2 }}
-                                        // className="text-indigo-500"
                                     >
                                         <GridToolbarColumnsButton />
                                         <GridToolbarDensitySelector
@@ -450,15 +345,12 @@ function Index({ reservations }) {
                                             }}
                                         />
                                         <Box sx={{ flexGrow: 1 }} />
-
                                         <GridToolbarExport
                                             slotProps={{
                                                 tooltip: {
                                                     title: 'Export data',
                                                 },
-                                                button: {
-                                                    variant: 'outlined',
-                                                },
+                                                button: { variant: 'outlined' },
                                             }}
                                         />
                                     </GridToolbarContainer>
@@ -466,14 +358,12 @@ function Index({ reservations }) {
                             }}
                             initialState={{
                                 columns: {
-                                    columnVisibilityModel: {
-                                        id: false,
-                                    },
+                                    columnVisibilityModel: { id: false },
                                 },
                             }}
                             hideFooterPagination
                             hideFooter
-                            rows={paginatedVehicules}
+                            rows={paginatedReservations}
                             columns={columns}
                             pageSize={10}
                             rowsPerPageOptions={[10]}
@@ -483,22 +373,20 @@ function Index({ reservations }) {
                                 const selectedRows = reservations.data.filter(
                                     (row) => selectedIDs.has(row.id),
                                 );
-                                console.log(selectedIDs);
                                 setSelectedRows(selectedRows);
                             }}
                             rowSelection
                             rowSelectionModel={selectedRows.map(
                                 (row) => row.id,
-                            )} // Reflects the selected rows by ID
+                            )}
                             getRowId={(row) => row.id}
                             onRowContextMenu={(params, event) =>
                                 handleRowRightClick(event, params.row)
                             }
                         />
-
                         <Menu
                             open={contextMenu !== null}
-                            onClose={handleCloseContextMenu}
+                            onClose={() => setContextMenu(null)}
                             anchorReference="anchorPosition"
                             anchorPosition={
                                 contextMenu !== null
@@ -508,7 +396,7 @@ function Index({ reservations }) {
                                       }
                                     : undefined
                             }
-                            onClick={handleCloseContextMenu}
+                            onClick={() => setContextMenu(null)}
                         >
                             <MenuItem
                                 onClick={() =>
@@ -528,9 +416,12 @@ function Index({ reservations }) {
                             >
                                 Delete
                             </MenuItem>
+                            <MenuItem
+                                onClick={() => handleApprove(selectedRow)}
+                            >
+                                Approve
+                            </MenuItem>
                         </Menu>
-                        {/* Action Buttons */}
-                        {/* {selectedRows.length > 0 && ( */}
                         <Box
                             sx={{
                                 mt: 2,
@@ -538,10 +429,9 @@ function Index({ reservations }) {
                                 backgroundColor: '#f5f5f5',
                                 borderRadius: '8px',
                                 height: selectedRows.length > 0 ? 'auto' : 0,
-                                // Slight scaling for smooth effect
                                 overflow: 'hidden',
                                 transition:
-                                    'opacity 0.3s ease, transform 0.3s ease, height 0.3s ease', // Smooth transition for all effects
+                                    'opacity 0.3s ease, transform 0.3s ease, height 0.3s ease',
                             }}
                             className="flex items-center justify-between"
                         >
@@ -549,45 +439,36 @@ function Index({ reservations }) {
                                 <DropdownMenuTrigger className="rounded border border-indigo-500 bg-white px-4 py-2 text-indigo-500">
                                     Actions en masse
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent
-                                    // style={{ boxShadow: "none" }}
-                                    className="w-48 border-none bg-white shadow-lg"
-                                >
+                                <DropdownMenuContent className="w-48 border-none bg-white shadow-lg">
                                     <DropdownMenuLabel className="font-bold text-gray-900">
                                         Actions en masse
                                     </DropdownMenuLabel>
                                     <DropdownMenuSeparator />
                                     <DropdownMenuItem
-                                        onClick={() => {
-                                            handleEdit(selectedRows);
-                                        }}
+                                        onClick={() => handleEdit(selectedRows)}
                                         className="flex items-center bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                     >
                                         <EditIcon className="mr-2 text-blue-500" />
                                         Modifier
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                        onClick={() => {
-                                            handleDelete(selectedRows);
-                                        }}
+                                        onClick={() =>
+                                            handleDelete(selectedRows)
+                                        }
                                         className="flex items-center bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                     >
                                         <DeleteIcon className="mr-2 text-red-500" />
                                         Supprimer
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                        onClick={() => {
-                                            /* Add your handler here */
-                                        }}
+                                        onClick={handleBulkApprove}
                                         className="flex items-center bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                     >
                                         <CheckIcon className="mr-2 text-green-500" />
-                                        Valider
+                                        Approuver
                                     </DropdownMenuItem>
                                     <DropdownMenuItem
-                                        onClick={() => {
-                                            /* Add your handler here */
-                                        }}
+                                        onClick={() => {}}
                                         className="flex items-center bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                                     >
                                         <PictureAsPdf className="mr-2 text-gray-500" />
@@ -600,37 +481,24 @@ function Index({ reservations }) {
                     </Box>
                 )}
                 <Pagination
-                    count={reservations.last_page} // Nombre total de pages
-                    page={currentPage} // Page actuelle
-                    onChange={handleMuiPagination} // Gérer le changement de page
-                   
-                    lang="fr" // Langue
-                    // sx={{
-                    //     // Styles personnalisés avec sx
-                    //     '& .MuiPaginationItem-root': {
-                    //         color: '#fff', // Couleur du texte des éléments de pagination
-                    //         backgroundColor: '#1e3a8a', // Couleur de fond des boutons
-                    //         '&:hover': {
-                    //             backgroundColor: '#3b82f6', // Couleur de fond au survol
-                    //         },
-                    //         '&.Mui-selected': {
-                    //             backgroundColor: '#2563eb', // Couleur de fond de la page sélectionnée
-                    //             color: '#fff', // Couleur du texte de la page sélectionnée
-                    //         },
-                    //     },
-                    // }}
+                    count={reservations.last_page}
+                    page={currentPage}
+                    onChange={(_, value) => {
+                        setCurrentPage(value);
+                        router.visit(`${reservations.path}?page=${value}`);
+                    }}
+                    lang="fr"
                 />
             </div>
-
             <ConfirmModal
                 open={dialogOpen}
                 onClose={() => setDialogOpen(false)}
-                onConfirm={() => handleConfirmDelete()}
+                onConfirm={handleConfirmDelete}
                 title="Confirmer la suppresion"
                 content="Êtes-vous sûr de vouloir supprimer ce véhicule ?"
             />
-        </ClientLayout>
+        </AdminLayout>
     );
-}
+};
 
 export default Index;

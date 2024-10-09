@@ -275,12 +275,17 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                                                         handleOpenModal(car)
                                                     }
                                                     disabled={
-                                                        car.isReservedByUser
+                                                        car.isReservedByUser ||
+                                                        car.reservationStatus ===
+                                                            'confirmée'
                                                     }
                                                 >
-                                                    {car.isReservedByUser
-                                                        ? 'Déjà réservé'
-                                                        : 'Réserver'}
+                                                    {car.reservationStatus ===
+                                                    'confirmée'
+                                                        ? 'Réservé'
+                                                        : car.isReservedByUser
+                                                          ? 'Annuler'
+                                                          : 'Réserver'}
                                                 </PrimaryButton>
                                             )}
                                             <SecondaryButton onClick={() => {}}>

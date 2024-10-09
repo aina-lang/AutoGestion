@@ -1,4 +1,5 @@
 import ConfirmModal from '@/Components/ConfirmModal';
+import { CustomToolbar } from '@/Components/CustomToolBar';
 import MyHeader from '@/Components/Header';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { StyledDataGrid } from '@/Components/StyledDataGrid';
@@ -25,13 +26,7 @@ import {
     Pagination,
     Typography,
 } from '@mui/material';
-import {
-    GridAddIcon,
-    GridToolbarColumnsButton,
-    GridToolbarContainer,
-    GridToolbarDensitySelector,
-    GridToolbarExport,
-} from '@mui/x-data-grid';
+import { GridAddIcon } from '@mui/x-data-grid';
 import {
     CheckIcon,
     DeleteIcon,
@@ -274,19 +269,23 @@ function Index({ vehicules }) {
         sortable: false,
         renderCell: (params) => (
             <div className="flex h-full w-full space-x-2 text-sm">
-                <IconButton
-                    aria-label="edit"
-                    onClick={() => handleEdit(params.row)}
-                >
-                    <EditIcon size={18} />
-                </IconButton>
-                <IconButton
-                    aria-label="delete"
-                    color="error"
-                    onClick={() => handleDelete(params.row)}
-                >
-                    <DeleteIcon size={20} />
-                </IconButton>
+                {params.row.status != 'confirmée' && (
+                    <>
+                        <IconButton
+                            aria-label="edit"
+                            onClick={() => handleEdit(params.row)}
+                        >
+                            <EditIcon size={18} />
+                        </IconButton>
+                        <IconButton
+                            aria-label="delete"
+                            color="error"
+                            onClick={() => handleDelete(params.row)}
+                        >
+                            <DeleteIcon size={20} />
+                        </IconButton>
+                    </>
+                )}
                 <IconButton
                     aria-label="pdf"
                     color="info"
@@ -410,40 +409,14 @@ function Index({ vehicules }) {
                         ))}
                     </Grid>
                 ) : (
-                    <Box
-                        sx={{ minHeight: 300, width: '100%' }}
-                        className="overflow-hidden rounded-md shadow-lg bg-white p-5"
+                    <div
+                        style={{ minHeight: 300, width: '100%' }}
+                        className="overflow-hidden rounded-md bg-white p-5 shadow-lg"
                     >
                         <StyledDataGrid
                             localeText={frFR}
                             slots={{
-                                toolbar: () => (
-                                    <GridToolbarContainer
-                                        sx={{ marginBottom: 2 }}
-                                        // className="text-indigo-500"
-                                    >
-                                        <GridToolbarColumnsButton />
-                                        <GridToolbarDensitySelector
-                                            slotProps={{
-                                                tooltip: {
-                                                    title: 'Change density',
-                                                },
-                                            }}
-                                        />
-                                        <Box sx={{ flexGrow: 1 }} />
-
-                                        <GridToolbarExport
-                                            slotProps={{
-                                                tooltip: {
-                                                    title: 'Export data',
-                                                },
-                                                button: {
-                                                    variant: 'outlined',
-                                                },
-                                            }}
-                                        />
-                                    </GridToolbarContainer>
-                                ),
+                                toolbar: () => <CustomToolbar />,
                             }}
                             initialState={{
                                 columns: {
@@ -578,7 +551,7 @@ function Index({ vehicules }) {
                             </DropdownMenu>
                             <SelectionStatus selectedRows={selectedRows} />
                         </Box>
-                    </Box>
+                    </div>
                 )}
                 <Pagination
                     count={Math.ceil(filteredVehicules.length / itemsPerPage)}

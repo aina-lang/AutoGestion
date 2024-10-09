@@ -1,4 +1,5 @@
 import ConfirmModal from '@/Components/ConfirmModal';
+import { CustomToolbar } from '@/Components/CustomToolBar';
 import MyHeader from '@/Components/Header';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { StyledDataGrid } from '@/Components/StyledDataGrid';
@@ -25,13 +26,7 @@ import {
     Pagination,
     Typography,
 } from '@mui/material';
-import {
-    GridAddIcon,
-    GridToolbarColumnsButton,
-    GridToolbarContainer,
-    GridToolbarDensitySelector,
-    GridToolbarExport,
-} from '@mui/x-data-grid';
+import { GridAddIcon } from '@mui/x-data-grid';
 import {
     CheckIcon,
     DeleteIcon,
@@ -47,10 +42,10 @@ function Index({ vehicules }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedRow, setSelectedRow] = useState(null);
     const [gridView, setGridView] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [currentPage, setCurrentPage] = useState(vehicules.current_page);
+    const [itemsPerPage, setItemsPerPage] = useState(4);
     const { delete: deleteRequest } = useForm();
-    const filteredVehicules = vehicules.filter((vehicule) => {
+    const filteredVehicules = vehicules.data.filter((vehicule) => {
         const searchableText =
             `${vehicule.reference} ${vehicule.label} ${vehicule.assignedTo}`.toLowerCase();
         return searchableText.includes(searchQuery.toLowerCase());
@@ -79,7 +74,7 @@ function Index({ vehicules }) {
 
     const handleConfirmDelete = () => {
         console.log(currentFocusRow.id);
-        deleteRequest(`/vehicules/delete/${currentFocusRow.id}`, {
+        deleteRequest(`/admin/vehicules/${currentFocusRow.id}`, {
             onSuccess: () => {
                 console.log('yes');
             },
@@ -410,40 +405,14 @@ function Index({ vehicules }) {
                         ))}
                     </Grid>
                 ) : (
-                    <Box
-                        sx={{ minHeight: 300, width: '100%' }}
-                        className="overflow-hidden rounded-md shadow-lg bg-white p-5"
+                    <div
+                        style={{ minHeight: 300, width: '100%' }}
+                        className="overflow-hidden rounded-md bg-white shadow-md"
                     >
                         <StyledDataGrid
                             localeText={frFR}
                             slots={{
-                                toolbar: () => (
-                                    <GridToolbarContainer
-                                        sx={{ marginBottom: 2 }}
-                                        // className="text-indigo-500"
-                                    >
-                                        <GridToolbarColumnsButton />
-                                        <GridToolbarDensitySelector
-                                            slotProps={{
-                                                tooltip: {
-                                                    title: 'Change density',
-                                                },
-                                            }}
-                                        />
-                                        <Box sx={{ flexGrow: 1 }} />
-
-                                        <GridToolbarExport
-                                            slotProps={{
-                                                tooltip: {
-                                                    title: 'Export data',
-                                                },
-                                                button: {
-                                                    variant: 'outlined',
-                                                },
-                                            }}
-                                        />
-                                    </GridToolbarContainer>
-                                ),
+                                toolbar: () => <CustomToolbar />,
                             }}
                             initialState={{
                                 columns: {
@@ -461,8 +430,8 @@ function Index({ vehicules }) {
                             checkboxSelection
                             onRowSelectionModelChange={(ids) => {
                                 const selectedIDs = new Set(ids);
-                                const selectedRows = vehicules.filter((row) =>
-                                    selectedIDs.has(row.id),
+                                const selectedRows = vehicules.data.filter(
+                                    (row) => selectedIDs.has(row.id),
                                 );
                                 console.log(selectedIDs);
                                 setSelectedRows(selectedRows);
@@ -578,17 +547,17 @@ function Index({ vehicules }) {
                             </DropdownMenu>
                             <SelectionStatus selectedRows={selectedRows} />
                         </Box>
-                    </Box>
+                    </div>
                 )}
                 <Pagination
-                    count={Math.ceil(filteredVehicules.length / itemsPerPage)}
+                    count={vehicules.last_page}
                     page={currentPage}
-                    onChange={(event, value) => setCurrentPage(value)}
-                    color="primary"
-                    className="dark:text-gray-300"
+                    onChange={(_, value) => {
+                        setCurrentPage(value);
+                        router.visit(`${vehicules.path}?page=${value}`);
+                    }}
                     lang="fr"
-                    // title="nombre des pages"
-                />{' '}
+                />
             </div>
 
             <ConfirmModal

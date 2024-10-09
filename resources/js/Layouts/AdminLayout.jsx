@@ -24,7 +24,7 @@ import PrimaryButton from '../Components/PrimaryButton';
 import SecondaryButton from '../Components/SecondaryButton';
 // import { Toast } from "@radix-ui/react-toast";
 
-export default function AdminLayout({ user, header, children }) {
+export default function AdminLayout({ auth, header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
     const { flash } = usePage().props;
@@ -237,26 +237,26 @@ export default function AdminLayout({ user, header, children }) {
                                 <Fullscreen className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                             </button>
                             {/* Search Bar */}
-                            <div className="relative hidden md:block">
+                            {/* <div className="relative hidden md:block">
                                 <input
                                     type="text"
                                     placeholder="Rechercher..."
                                     className="rounded-md border border-gray-300 bg-gray-100 px-3 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-indigo-600"
                                 />
                                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500 dark:text-gray-400" />
-                            </div>
+                            </div> */}
 
                             {/* Buttons */}
                             <div className="flex min-h-full items-center space-x-2">
                                 <SecondaryButton className="border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                                     <GridAddIcon className="mr-2" />
-                                    Tâche
+                                   Client
                                 </SecondaryButton>
                                 <PrimaryButton
                                     onClick={() => router.get('/projects/add')}
                                 >
                                     <GridAddIcon className="mr-2" />
-                                    Projet
+                                   Véhicule
                                 </PrimaryButton>
                             </div>
 
@@ -266,7 +266,7 @@ export default function AdminLayout({ user, header, children }) {
                                     <Dropdown.Trigger>
                                         <button className="flex items-center focus:outline-none">
                                             <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300">
-                                                {/* {getInitials(user.login)} */}
+                                                {/* {getInitials(auth?.user.nom)} */}
                                             </span>
                                         </button>
                                     </Dropdown.Trigger>
@@ -274,7 +274,7 @@ export default function AdminLayout({ user, header, children }) {
                                         <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
                                             Connecté en tant que:
                                             <div className="font-bold">
-                                                {/* {user.login} */}
+                                                {/* {auth.login} */}
                                             </div>
                                         </div>
                                         <Divider />
@@ -314,10 +314,10 @@ export default function AdminLayout({ user, header, children }) {
                         <div className="border-t border-gray-200 pb-1 pt-4 dark:border-gray-700">
                             <div className="px-4">
                                 <div className="text-base font-medium text-gray-800 dark:text-gray-300">
-                                    {/* {user.login} */}
+                                    {/* {auth.login} */}
                                 </div>
                                 <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    {/* {user.email} */}
+                                    {/* {auth.email} */}
                                 </div>
                             </div>
                             <div className="mt-3 space-y-1">

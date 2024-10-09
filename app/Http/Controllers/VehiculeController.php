@@ -20,7 +20,7 @@ class VehiculeController extends Controller
         // Start the query with the relation to 'categorie'
         $query = Vehicule::with('categorie');
         // var_dump($query);
-        exit;
+        // exit;
         // Check if there are search parameters
         if ($request->filled('marque') || $request->filled('categorie') || ($request->filled('date_depart') && $request->filled('date_retour'))) {
 
@@ -59,51 +59,13 @@ class VehiculeController extends Controller
         }
 
         // If no search parameters are provided, return all vehicles
-        $vehicules = Vehicule::with('categorie')->get(); // Retrieve all vehicles
+        $vehicules = Vehicule::with('categorie')->paginate(5); // Retrieve all vehicles
 
         return inertia('admin/vehicules/index', [
             'vehicules' => $vehicules,
         ]); // Return to the view with all vehicle data
     }
 
-
-    // public function index(Request $request)
-    // {
-    //     // Fetch query parameters for filtering if needed
-    //     $marque = $request->input('search.marque', '');
-    //     $date_depart = $request->input('search.date_depart', '');
-    //     $date_retour = $request->input('search.date_retour', '');
-    //     $categorie = $request->input('search.categorie', '');
-
-    //     // var_dump($request->all());exit;
-    //     // Build the query
-    //     $query = Vehicule::query();
-
-    //     // Apply filters based on input
-    //     if ($marque) {
-    //         $query->where('marque', 'like', '%' . $marque . '%');
-    //     }
-    //     if ($date_depart) {
-    //         $query->where('available_from', '<=', $date_depart); // Replace with your actual field for availability
-    //     }
-    //     if ($date_retour) {
-    //         $query->where('available_to', '>=', $date_retour); // Replace with your actual field for availability
-    //     }
-    //     if ($categorie) {
-    //         $query->where('categorie', $categorie);
-    //     }
-
-    //     // Paginate the results, 20 items per page
-    //     $latestVehicles = $query->paginate(20);
-
-    //     // Load the categorie relationship after pagination
-    //     $latestVehicles->with('categorie');
-    //     // Return view with vehicles and any other required data
-    //     return inertia('AllCars', [
-    //         'latestVehicles' => $latestVehicles,
-    //        // Fetch categories if needed
-    //     ]);
-    // }
 
     /**
      * Show the form for creating a new resource.
@@ -132,7 +94,7 @@ class VehiculeController extends Controller
             'prix_journalier' => 'required|numeric',
             'kilometrage' => 'required|numeric',
             'description' => 'required|string|max:500',
-            // 'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:30720', // Validation des images (optionnel)
+            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:30720', // Validation des images (optionnel)
         ]);
 
         if ($validator->fails()) {
@@ -157,7 +119,7 @@ class VehiculeController extends Controller
                 'immatriculation' => $request->immatriculation,
                 'categorie_id' => $request->categorie,
                 'prix_journalier' => $request->prix_journalier,
-                'disponible' => 1,
+                // 'disponible' => 1,   
                 'kilometrage' => $request->kilometrage,
                 'description' => $request->description,
                 'images' => json_encode($imagePaths), // Stocker les chemins d'image au format JSON, même si vide
@@ -216,7 +178,7 @@ class VehiculeController extends Controller
             'immatriculation' => 'required|string|max:50|unique:vehicules,immatriculation,' . $vehicule->id,
             'categorie' => 'required|exists:categories,id',
             'prix_journalier' => 'required|numeric',
-            'disponible' => 'required|boolean',
+            // 'disponible' => 'required|boolean',
             'kilometrage' => 'required|numeric',
             'description' => 'required|string|max:500',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:30720', // Validation des images (optionnel)
@@ -252,7 +214,7 @@ class VehiculeController extends Controller
                 'immatriculation' => $request->immatriculation,
                 'categorie_id' => $request->categorie,
                 'prix_journalier' => $request->prix_journalier,
-                'disponible' => $request->disponible,
+                // 'disponible' => $request->disponible,
                 'kilometrage' => $request->kilometrage,
                 'description' => $request->description,
                 'images' => json_encode($imagePaths), // Mettre à jour les chemins d'image au format JSON

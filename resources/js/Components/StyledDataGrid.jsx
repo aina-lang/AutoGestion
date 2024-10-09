@@ -36,7 +36,7 @@ export const StyledDataGrid = styled(DataGrid)(({ theme }) => {
         },
         '& .MuiDataGrid-columnHeader': {
             paddingHorizontal: 18,
-            backgroundColor: palette['gray'][500],
+            backgroundColor: currentPalette[500],
             color: 'white',
         },
         '& .MuiDataGrid-columnHeader, .MuiDataGrid-cell': {
