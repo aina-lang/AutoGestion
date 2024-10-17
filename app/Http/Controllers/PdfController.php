@@ -3,32 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Vehicule;
-use Illuminate\Http\Request;
-use Dompdf\Dompdf;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Dompdf\Options;
 
 class PdfController extends Controller
 {
     public function generate(Vehicule $vehicule)
     {
-        // Configurer Dompdf
-        $options = new Options();
-        $options->set('defaultFont', 'DejaVu Sans');
-        $dompdf = new Dompdf($options);
 
         // Charger la vue pour le PDF
-        $html = view('pdf.vehicule', compact('vehicule'))->render();
+        $pdf = Pdf::loadView('pdf.vehicule', compact('vehicule'));
 
-        // Charger le HTML dans Dompdf
-        $dompdf->loadHtml($html);
 
-        // (Optional) Configurer le format de la page
-        $dompdf->setPaper('A4', 'portrait');
-
-        // Rendre le PDF
-        $dompdf->render();
-
-        // Télécharger le PDF
-        return $dompdf->stream($vehicule->modele . '.pdf');
+        return $pdf->download($vehicule->modele . '.pdf');
     }
 }

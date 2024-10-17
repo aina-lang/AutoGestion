@@ -9,27 +9,32 @@ export default function PrimaryButton({
     children,
     ...props
 }) {
-    const { paletteName } = useThemeContext(); // Obtenez le nom de la palette
+    const { paletteName } = useThemeContext(); // Get palette name
 
-    // Accédez à la palette actuelle
+    // Access the current palette
     const currentPalette = palette[paletteName];
 
     return (
         <Button
             {...props}
-            variant="contained" // Utilisez le variant MUI approprié
+            variant="contained" // Use appropriate MUI variant
             sx={{
-                backgroundColor: currentPalette[500], // Couleur principale de la palette
-                color: '#fff', // Couleur du texte
-                border: 'none', // Aucun bord pour un style MUI
+                backgroundColor: currentPalette[500], // Main color from palette
+                color: '#fff', // Text color
+                border: 'none', // No border for MUI style
+                fontSize: '0.7rem', // Smaller font size (14px)
+                padding: '8px 16px', // Adjust padding for smaller size
+                // borderRadius: '8px', // Rounded corners for modern look
+                // textTransform: 'none', // Prevent text from being uppercase
+                minWidth: '120px', // Set minimum button width
                 '&:hover': {
-                    backgroundColor: currentPalette[700], // Couleur au survol
+                    backgroundColor: currentPalette[700], // Hover color
                 },
                 '&:disabled': {
-                    opacity: 0.5, // Gérer l'opacité si désactivé
+                    opacity: 0.5, // Handle opacity when disabled
                 },
                 transition: 'background-color 0.2s ease-in-out',
-                boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)', // Ombre
+                boxShadow: `0 5px 10px rgba(0,0,0,0.1)`, // Subtle shadow using current palette
             }}
             disabled={disabled}
             className={className}

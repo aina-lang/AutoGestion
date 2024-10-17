@@ -9,7 +9,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable implements MustVerifyEmail
+class User extends Authenticatable
+
+// implements MustVerifyEmail
 {
     use HasFactory, Notifiable;
 
@@ -25,7 +27,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'type',
         'pieces_jointes',
-        'status', // Ajout du champ pour le statut
+        'phones',
+        'status',
     ];
 
     /**
@@ -54,5 +57,39 @@ class User extends Authenticatable implements MustVerifyEmail
     protected function type(): Attribute
     {
         return new Attribute(get: fn($value) => ["user", "admin"][$value]);
+    }
+
+
+    protected $casts = [
+        'phones' => 'array', // Cast the phones attribute as an array
+    ];
+
+    /**
+     * Getter pour les numéros de téléphone
+     */
+    public function getPhonesAttribute($value)
+    {
+        return $value ?: []; // Retourne un tableau vide si aucune valeur n'est définie
+    }
+
+    /**
+     * Ajouter un numéro de téléphone
+     */
+    public function addPhone($phone)
+    {
+        $phones = $this->phones; // Récupérer le tableau actuel
+        $phones[] = $phone; // Ajouter le nouveau numéro
+        $this->phones = $phones; // Mettre à jour le tableau
+        $this->save(); // Enregistrer les modifications
+    }
+
+    /**
+     * Supprimer un numéro de téléphone
+     */
+    public function removePhone($phone)
+    {
+        $phones = $this->phones; // Récupérer le tableau actuel
+        $this->phones = array_filter($phones, fn($p) => $p !== $phone); // Filtrer le tableau pour enlever le numéro
+        $this->save(); // Enregistrer les modifications
     }
 }

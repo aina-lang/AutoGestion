@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('password');
             $table->enum('status', ['active', 'banned', 'blocked', 'inactive'])->default('active');
             $table->json('pieces_jointes')->nullable();
+            $table->json('phones')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

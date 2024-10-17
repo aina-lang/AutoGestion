@@ -34,22 +34,24 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
+
     public function store(Request $request): RedirectResponse
     {
-
         try {
-
             $request->validate([
                 'nom' => 'required|string|max:255',
                 'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                'phones' => 'nullable|array', // Validation pour le tableau de numéros de téléphone
+                'phones.*' => 'string|max:15', // Validation pour chaque numéro de téléphone
             ]);
 
+            // Créez l'utilisateur avec le tableau de numéros de téléphone
             $user = User::create([
                 'nom' => $request->nom,
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
-
+                'phones' => json_encode($request->phones), // Encodez les numéros en JSON
             ]);
 
             event(new Registered($user));
@@ -62,6 +64,7 @@ class RegisteredUserController extends Controller
             return redirect()->back()->withInput();
         }
     }
+
 
 
     public function storeAdmin(Request $request): RedirectResponse
@@ -80,7 +83,7 @@ class RegisteredUserController extends Controller
                 'email' => $request->email,
                 'type' => 1,
                 'password' => Hash::make($request->password),
-                
+
             ]);
 
             event(new Registered($user));

@@ -43,7 +43,7 @@ class AuthenticatedSessionController extends Controller
             }
 
             Session::flash('success', 'Authentification avec succès !');
-            return redirect()->intended(route('client.dashboard', absolute: false));
+            return redirect()->intended(route('home', absolute: false));
         } catch (\Exception $e) {
             Session::flash('error', 'Une erreur s\'est produite lors de l\'authentification de votre compte. <br>' . htmlspecialchars($e->getMessage()));
             return redirect()->back()->withInput();

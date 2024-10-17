@@ -50,8 +50,6 @@ class VehiculeController extends Controller
 
             // Retrieve the filtered vehicles with their categories
             $vehicles = $query->get();
-
-
             // Return the filtered results
             return inertia('welcome/allCars', [
                 'latestVehicles' => $vehicles,
@@ -59,8 +57,10 @@ class VehiculeController extends Controller
         }
 
         // If no search parameters are provided, return all vehicles
-        $vehicules = Vehicule::with('categorie')->paginate(5); // Retrieve all vehicles
+        $vehicules = Vehicule::with('categorie')->paginate(5);
 
+
+        // dd($vehicules);
         return inertia('admin/vehicules/index', [
             'vehicules' => $vehicules,
         ]); // Return to the view with all vehicle data
@@ -91,7 +91,7 @@ class VehiculeController extends Controller
             'modele' => 'required|string|max:255',
             'immatriculation' => 'required|string|max:50|unique:vehicules',
             'categorie' => 'required|exists:categories,id',
-            'prix_journalier' => 'required|numeric',
+            // 'prix_journalier' => 'required|numeric',
             'kilometrage' => 'required|numeric',
             'description' => 'required|string|max:500',
             'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:30720', // Validation des images (optionnel)
@@ -118,7 +118,7 @@ class VehiculeController extends Controller
                 'modele' => $request->modele,
                 'immatriculation' => $request->immatriculation,
                 'categorie_id' => $request->categorie,
-                'prix_journalier' => $request->prix_journalier,
+                // 'prix_journalier' => $request->prix_journalier,
                 // 'disponible' => 1,   
                 'kilometrage' => $request->kilometrage,
                 'description' => $request->description,
@@ -126,7 +126,7 @@ class VehiculeController extends Controller
             ]);
 
             session()->flash('success', 'Véhicule ajouté avec succès.');
-            return redirect()->route('vehicules.index');
+            return redirect()->back();
         } catch (\Exception $e) {
             session()->flash('error', 'Erreur lors de l\'ajout du véhicule : ' . $e->getMessage());
             return redirect()->back()->withInput();
@@ -171,13 +171,14 @@ class VehiculeController extends Controller
     {
         $vehicule = Vehicule::findOrFail($id);
 
+        dd($request->all());
         // Validation des données
         $validator = Validator::make($request->all(), [
             'marque' => 'required|string|max:255',
             'modele' => 'required|string|max:255',
             'immatriculation' => 'required|string|max:50|unique:vehicules,immatriculation,' . $vehicule->id,
             'categorie' => 'required|exists:categories,id',
-            'prix_journalier' => 'required|numeric',
+            // 'prix_journalier' => 'required|numeric',
             // 'disponible' => 'required|boolean',
             'kilometrage' => 'required|numeric',
             'description' => 'required|string|max:500',
@@ -213,7 +214,7 @@ class VehiculeController extends Controller
                 'modele' => $request->modele,
                 'immatriculation' => $request->immatriculation,
                 'categorie_id' => $request->categorie,
-                'prix_journalier' => $request->prix_journalier,
+                // 'prix_journalier' => $request->prix_journalier,
                 // 'disponible' => $request->disponible,
                 'kilometrage' => $request->kilometrage,
                 'description' => $request->description,
@@ -276,5 +277,63 @@ class VehiculeController extends Controller
         // exit;
         // Start the query with eager loading of categories
 
+    }
+
+
+
+    public function addImage(Request $request, $id)
+    {
+        // Validation de l'image
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:30720',
+        ]);
+
+        try {
+            // Récupérer le véhicule
+            $vehicule = Vehicule::findOrFail($id);
+
+            // Déplacement de l'image vers le dossier de stockage
+            $path = $request->file('image')->store('vehicules', 'public');
+
+            // Ajouter l'image au tableau d'images
+            $images = json_decode($vehicule->images, true) ?: []; // Récupérer les images existantes
+            $images[] = $path; // Ajouter la nouvelle image
+            $vehicule->images = json_encode($images); // Mettre à jour le champ images
+            $vehicule->save(); // Enregistrer les modifications
+
+            session()->flash('success', 'Image ajoutée avec succès.');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Erreur lors de l\'ajout de l\'image : ' . $e->getMessage());
+            return redirect()->back();
+        }
+    }
+
+    public function removeImage(Request $request, $id)
+    {
+        // Validation de l'image à supprimer
+        $request->validate([
+            'image' => 'required|string',
+        ]);
+
+        try {
+            // Récupérer le véhicule
+            $vehicule = Vehicule::findOrFail($id);
+
+            // Filtrer les images pour supprimer celle spécifiée
+            $images = json_decode($vehicule->images, true);
+            $imageToRemove = $request->image;
+            $images = array_filter($images, fn($img) => $img !== $imageToRemove); // Retirer l'image
+
+            // Mettre à jour le champ images
+            $vehicule->images = json_encode($images);
+            $vehicule->save(); // Enregistrer les modifications
+
+            session()->flash('success', 'Image supprimée avec succès.');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            session()->flash('error', 'Erreur lors de la suppression de l\'image : ' . $e->getMessage());
+            return redirect()->back();
+        }
     }
 }

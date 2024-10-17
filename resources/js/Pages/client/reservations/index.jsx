@@ -1,7 +1,7 @@
 import ConfirmModal from '@/Components/ConfirmModal';
 import MyHeader from '@/Components/Header';
 import PrimaryButton from '@/Components/PrimaryButton';
-import { StyledDataGrid } from '@/Components/StyledDataGrid';
+import  StyledDataGrid  from '@/Components/StyledDataGrid';
 import {
     DropdownMenu,
     DropdownMenuContent,

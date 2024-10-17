@@ -21,14 +21,14 @@ export default function Sidebar({ children }) {
 
     return (
         <aside
-            className={`h-screen bg-white dark:bg-gray-800 shadow-lg ${expanded ? 'w-56' : ''}`}
+            className={`h-screen bg-white dark:bg-gray-800 shadow-lg rounded-tr-[30px] ${expanded ? 'w-60' : ''}`}
         >
             {/* sm:w-64 md:w-72 lg:W-80 xl:w-96 */}
 
             <nav
-                className={`flex h-full flex-col border-r shadow-sm bg-[${currentPalette[500]}]`}
+                className={`flex h-full flex-col  bg-[${currentPalette[500]}]`}
             >
-                <div className="mb-5 flex items-center justify-between p-4 pb-2">
+                <div className="mb-5 flex items-center justify-between p-4 pb-2 space-x-2">
                     {expanded && <ApplicationLogo />}
                     <button
                         onClick={() => setExpanded((curr) => !curr)}
@@ -92,11 +92,12 @@ export function SidebarItem({ icon, text, active, alert, children, link }) {
                 onClick={handleNavigation} // Use handleNavigation for onclick event
                 style={{
                     backgroundColor: isActive
-                        ? currentPalette[100]
+                        ? currentPalette[50]
                         : 'transparent',
                     color: isActive
                         ? currentPalette[600]
-                        : palette['gray'][700],
+                        : palette['gray'][600],
+                        
                 }}
             >
                 <div className="flex w-full items-center">
@@ -142,7 +143,7 @@ export function SidebarItem({ icon, text, active, alert, children, link }) {
 
             {/* Expanded submenu when sidebar is expanded */}
             {children && isSubMenuOpen && expanded && (
-                <ul className="pl-6 pt-2">{children}</ul>
+                <ul className="pl-6 ">{children}</ul>
             )}
         </>
     );

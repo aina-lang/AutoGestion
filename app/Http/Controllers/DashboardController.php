@@ -20,6 +20,7 @@ class DashboardController extends Controller
         $totalReservations = Reservation::count();
         $totalUsers = User::where('type', '!=', 'admin')->count();
         
+        // var_dump($totalReservations);exit;
         // Calculate the total revenue from confirmed reservations
         $totalRevenue = Reservation::where('status', 'confirmed')->get()->sum(function ($reservation) {
             $startDate = \Carbon\Carbon::parse($reservation->date_depart);

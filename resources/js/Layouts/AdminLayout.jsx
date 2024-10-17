@@ -3,10 +3,18 @@ import { useEffect, useState } from 'react';
 import Dropdown from '@/Components/Dropdown';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 
+import ConfirmModal from '@/Components/ConfirmModal';
 import Sidebar, { SidebarItem } from '@/Components/MySidebar';
 import Settings from '@/Components/Settings';
-import { router, usePage } from '@inertiajs/react';
-import { Add, CarRental, Category, List } from '@mui/icons-material';
+import { router, useForm, usePage } from '@inertiajs/react';
+import {
+    AccountCircle,
+    Add,
+    CarRental,
+    Category,
+    List,
+    Logout,
+} from '@mui/icons-material';
 import { Alert, Divider, Snackbar } from '@mui/material';
 import { GridAddIcon } from '@mui/x-data-grid';
 import {
@@ -15,7 +23,6 @@ import {
     LayoutDashboard,
     LifeBuoy,
     Moon,
-    SearchIcon,
     Settings2,
     Sun,
     Users2,
@@ -31,9 +38,12 @@ export default function AdminLayout({ auth, header, children }) {
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [severity, setSeverity] = useState('success');
+    const [confirmModal, setConfirmModal] = useState(false);
+    const { post } = useForm();
+    // console.log(auth);
 
     useEffect(() => {
-        console.log(flash);
+        // console.log(flash);
         if (flash) {
             if (flash.success) {
                 setMessage(flash.success);
@@ -75,6 +85,11 @@ export default function AdminLayout({ auth, header, children }) {
         });
     };
 
+    const handleLogout = () => {
+        post(route('logout'));
+        setConfirmModal(!confirmModal);
+    };
+
     const toggleFullScreen = () => {
         if (!isFullScreen) {
             if (document.documentElement.requestFullscreen) {
@@ -109,7 +124,7 @@ export default function AdminLayout({ auth, header, children }) {
     }
 
     return (
-        <div className="flex h-screen bg-gray-100 transition-colors duration-300 dark:bg-gray-900">
+        <div className="flex h-screen bg-gray-50 transition-colors duration-300 dark:bg-gray-900">
             <Sidebar>
                 <SidebarItem
                     icon={<LayoutDashboard size={20} />}
@@ -148,24 +163,7 @@ export default function AdminLayout({ auth, header, children }) {
                         link="/admin/categories/create"
                     />
                 </SidebarItem>
-                <SidebarItem
-                    icon={<CarRental size={20} />}
-                    text="Réservations"
-                    active={false}
-                >
-                    <SidebarItem
-                        icon={<List size={20} />}
-                        text="Toutes"
-                        active={false}
-                        link="/admin/reservations"
-                    />
-                    <SidebarItem
-                        icon={<Add size={20} />}
-                        text="En attentes"
-                        active={false}
-                        link="/admin/reservations/pending"
-                    />
-                </SidebarItem>
+
                 <SidebarItem
                     icon={<Users2 size={20} />}
                     text="Clients"
@@ -179,11 +177,17 @@ export default function AdminLayout({ auth, header, children }) {
                     />
                     <SidebarItem
                         icon={<Add size={20} />}
-                        text="En attentes"
+                        text="ajout"
                         active={false}
-                        link="/admin/clients/pending"
+                        link="/admin/clients/create"
                     />
                 </SidebarItem>
+                <SidebarItem
+                    icon={<CarRental size={20} />}
+                    text="Réservations"
+                    active={false}
+                    link="/admin/reservations"
+                />
                 <hr className="my-3" />
                 <SidebarItem
                     icon={<Settings2 size={20} />}
@@ -199,7 +203,12 @@ export default function AdminLayout({ auth, header, children }) {
 
             <div className="flex-grow overflow-y-hidden">
                 {/* Navbar */}
-                <nav className="m-1 rounded-md bg-white px-4 py-1 shadow-md dark:bg-gray-800 sm:px-6 lg:px-8">
+                <nav
+                    className="m-3 rounded-lg bg-white px-4 py-1 dark:bg-gray-800 sm:px-6 lg:px-8"
+                    style={{
+                        boxShadow: `0 5px 10px rgba(0,0,0,0.1)`, // Subtle shadow using current palette
+                    }}
+                >
                     <div className="flex h-16 items-center justify-between">
                         {/* Left Side (Optional Breadcrumbs or Back Button) */}
                         <div className="flex items-center">
@@ -225,10 +234,9 @@ export default function AdminLayout({ auth, header, children }) {
                                 {isDarkMode ? (
                                     <Sun className="h-5 w-5 text-yellow-500" />
                                 ) : (
-                                    <Moon className="h-5 w-5 text-gray-800" />
+                                    <Moon className="h-5 w-5 text-gray-500" />
                                 )}
                             </button>
-
                             {/* Fullscreen Toggle */}
                             <button
                                 onClick={toggleFullScreen}
@@ -245,18 +253,17 @@ export default function AdminLayout({ auth, header, children }) {
                                 />
                                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500 dark:text-gray-400" />
                             </div> */}
-
                             {/* Buttons */}
                             <div className="flex min-h-full items-center space-x-2">
                                 <SecondaryButton className="border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                                     <GridAddIcon className="mr-2" />
-                                   Client
+                                    Client
                                 </SecondaryButton>
                                 <PrimaryButton
                                     onClick={() => router.get('/projects/add')}
                                 >
                                     <GridAddIcon className="mr-2" />
-                                   Véhicule
+                                    Véhicule
                                 </PrimaryButton>
                             </div>
 
@@ -270,7 +277,10 @@ export default function AdminLayout({ auth, header, children }) {
                                             </span>
                                         </button>
                                     </Dropdown.Trigger>
-                                    <Dropdown.Content align="right">
+                                    <Dropdown.Content
+                                        align="right"
+                                        className="w-48 rounded-lg bg-white shadow-lg dark:bg-gray-700"
+                                    >
                                         <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
                                             Connecté en tant que:
                                             <div className="font-bold">
@@ -280,15 +290,28 @@ export default function AdminLayout({ auth, header, children }) {
                                         <Divider />
                                         <Dropdown.Link
                                             href={route('profile.edit')}
+                                            className="flex items-center rounded-lg px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-600"
                                         >
+                                            <AccountCircle className="mr-2" />{' '}
+                                            {/* User icon */}
                                             Profil
                                         </Dropdown.Link>
                                         <Dropdown.Link
-                                            href={route('logout')}
-                                            method="post"
+                                            href="#"
+                                            onClick={(e) => e.preventDefault()}
                                             as="button"
+                                            className="flex items-center rounded-lg px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-600"
                                         >
-                                            Déconnexion
+                                            <button
+                                                onClick={(e) =>
+                                                    setConfirmModal(true)
+                                                }
+                                                className="flex min-h-full w-full items-center text-start"
+                                            >
+                                                <Logout className="mr-2" />{' '}
+                                                {/* Logout icon */}
+                                                Déconnexion
+                                            </button>
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
@@ -325,9 +348,7 @@ export default function AdminLayout({ auth, header, children }) {
                                     Profil
                                 </ResponsiveNavLink>
                                 <ResponsiveNavLink
-                                    method="post"
-                                    href={route('logout')}
-                                    as="button"
+                                    onClick={() => setConfirmModal(true)}
                                 >
                                     Déconnexion
                                 </ResponsiveNavLink>
@@ -354,6 +375,13 @@ export default function AdminLayout({ auth, header, children }) {
                             />
                         </Alert>
                     </Snackbar>
+                    <ConfirmModal
+                        open={confirmModal}
+                        onClose={() => setConfirmModal(!confirmModal)}
+                        onConfirm={handleLogout}
+                        title="Confirmer la deconxxion"
+                        content="Êtes-vous sûr de vouloir vous deconnecter ?"
+                    />
                     {header}
                     {children}
                     <Settings />

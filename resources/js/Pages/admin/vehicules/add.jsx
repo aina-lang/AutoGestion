@@ -19,26 +19,23 @@ function AddVehicule({ categories, errors }) {
         modele: '',
         immatriculation: '',
         categorie: '',
-        prix_journalier: '',
         kilometrage: '',
         description: '',
-        images: [], // On initialise un tableau pour les images
+        images: [],
     });
 
     const [imagePreviews, setImagePreviews] = useState([]);
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
-        setData('images', files); // Mettre à jour les données avec les fichiers sélectionnés
-
-        // Générer des aperçus des images sélectionnées
+        setData('images', files);
         const previews = files.map((file) => URL.createObjectURL(file));
         setImagePreviews(previews);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/admin/vehicules/'); // Ajoutez la route pour l'envoi du formulaire
+        post('/admin/vehicules/');
     };
 
     const handleRemoveImage = (index) => {
@@ -48,14 +45,13 @@ function AddVehicule({ categories, errors }) {
     };
 
     useEffect(() => {
-        // Si des erreurs sont présentes, les afficher dans le formulaire
         if (errors) {
             Object.keys(errors).forEach((field) => {
-                console.log({ type: 'manual', message: errors[field]});
                 setError(field, { type: 'manual', message: errors[field][0] });
             });
         }
     }, [errors, setError]);
+
     return (
         <AdminLayout
             header={
@@ -81,9 +77,11 @@ function AddVehicule({ categories, errors }) {
         >
             <Head title="Ajouter un Véhicule" />
             <div className="mx-auto space-y-5 p-6 pt-0">
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4 rounded-md bg-white p-5 shadow-lg">
-                        {' '}
+                <form
+                    onSubmit={handleSubmit}
+                    className="grid grid-cols-2 gap-4"
+                >
+                    <div className="mb-4 h-full rounded-md bg-white p-5 shadow-lg">
                         <div className="mb-4 grid grid-cols-2 gap-4">
                             <TextField
                                 label="Marque"
@@ -126,10 +124,9 @@ function AddVehicule({ categories, errors }) {
                                 <InputLabel>Catégorie</InputLabel>
                                 <Select
                                     value={data.categorie}
-                                    onChange={(e) => {
-                                        console.log(e.target.value);
-                                        setData('categorie', e.target.value);
-                                    }}
+                                    onChange={(e) =>
+                                        setData('categorie', e.target.value)
+                                    }
                                     label="Catégorie"
                                 >
                                     {categories.map((category) => (
@@ -147,18 +144,6 @@ function AddVehicule({ categories, errors }) {
                                     </p>
                                 )}
                             </FormControl>
-                            <TextField
-                                label="Prix Journalier"
-                                type="number"
-                                value={data.prix_journalier}
-                                onChange={(e) =>
-                                    setData('prix_journalier', e.target.value)
-                                }
-                                error={!!errors.prix_journalier}
-                                helperText={errors.prix_journalier}
-                                fullWidth
-                                variant="outlined"
-                            />
                             <TextField
                                 label="Kilométrage"
                                 type="number"
@@ -186,9 +171,8 @@ function AddVehicule({ categories, errors }) {
                             variant="outlined"
                         />
                     </div>
-                    <div className="rounded-md bg-white p-5 shadow-lg">
-                        {/* Section pour la sélection des images */}
-                        <div className="mt-4">
+                    <div className="flex h-full flex-col rounded-md bg-white p-5 shadow-lg">
+                        <div className="mt-4 flex-grow">
                             <label className="block text-sm font-medium text-gray-700">
                                 Images du Véhicule
                             </label>
@@ -241,20 +225,18 @@ function AddVehicule({ categories, errors }) {
                                 </div>
                             </div>
                             <InputLabel>{errors.images}</InputLabel>
-                            {/* Affichage des aperçus d'images en grille */}
                             {imagePreviews.length > 0 && (
                                 <div className="mt-4 grid grid-cols-6 gap-4">
                                     {imagePreviews.map((src, index) => (
                                         <div
                                             key={index}
-                                            className="relative h-32 w-32 overflow-hidden rounded-lg bg-gray-100"
+                                            className="relative h-28 w-28 overflow-hidden rounded-lg bg-gray-100"
                                         >
                                             <img
                                                 src={src}
                                                 alt={`Aperçu ${index}`}
                                                 className="h-full w-full object-cover"
                                             />
-                                            {/* Bouton de suppression */}
                                             <button
                                                 onClick={() =>
                                                     handleRemoveImage(index)
@@ -269,16 +251,11 @@ function AddVehicule({ categories, errors }) {
                                 </div>
                             )}
                         </div>
-                    </div>
 
-                    <div className="mt-6">
                         <PrimaryButton
                             type="submit"
-                            variant="contained"
-                            color="primary"
                             disabled={processing}
-                            fullWidth
-                            className="bg-indigo-600 text-white hover:bg-indigo-700"
+                            className=""
                         >
                             Ajouter le Véhicule
                         </PrimaryButton>

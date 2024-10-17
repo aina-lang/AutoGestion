@@ -203,7 +203,7 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                             {latestVehicles.map((car, index) => (
                                 <Grid item xs={12} sm={6} md={4} key={index}>
                                     <motion.div
-                                        className="flex h-full flex-col rounded-lg border bg-white p-4 shadow-lg"
+                                        className="flex h-full flex-col rounded-lg border border-gray-300 bg-white p-4 shadow-md transition-shadow duration-200 hover:shadow-lg"
                                         initial={{ opacity: 0, x: -50 }}
                                         whileInView={{ opacity: 1, x: 0 }}
                                         viewport={{ once: false, amount: 0.5 }}
@@ -211,7 +211,7 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                                             duration: 0.2 * index,
                                         }}
                                     >
-                                        <div className="relative mb-2">
+                                        <div className="relative mb-4">
                                             {/* Display image */}
                                             <div className="relative h-48 overflow-hidden rounded-md">
                                                 <img
@@ -220,15 +220,21 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                                                         car.images[0]
                                                     }
                                                     alt={car.modele}
-                                                    className="mb-4 h-48 w-full rounded-lg object-cover"
+                                                    className="h-48 w-full rounded-lg object-cover"
                                                 />
                                                 {/* Centered marque & modele */}
-                                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-lg font-semibold text-white">
-                                                    {car.marque} {car.modele}
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 p-2 text-lg font-semibold text-white">
+                                                    {car.marque}
                                                 </div>
                                             </div>
-                                            {/* Disponibilité Badge */}
+
                                             <span
+                                                className={`absolute right-2 top-2 rounded-full bg-yellow-200 px-3 py-1 text-sm font-medium text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300`}
+                                            >
+                                                {car.kilometrage} km/h
+                                            </span>
+                                            {/* Disponibilité Badge */}
+                                            {/* <span
                                                 className={`absolute right-2 top-2 rounded-full px-3 py-1 text-sm font-medium ${
                                                     car.disponible
                                                         ? 'bg-green-600 text-white'
@@ -236,59 +242,84 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                                                 }`}
                                             >
                                                 {car.disponible
-                                                    ? 'Disponible'
+                                                    ? 'Disponible de suite'
                                                     : 'Non disponible'}
-                                            </span>
+                                            </span> */}
                                         </div>
 
                                         <Typography
-                                            variant="body2"
-                                            className="my-2 text-gray-600"
+                                            variant=""
+                                            className="mb-2 flex-grow font-bold text-gray-700"
                                         >
-                                            Prix journalier:{' '}
-                                            <strong>
-                                                {car.prix_journalier} Ar
-                                            </strong>
+                                            {car.modele}
                                         </Typography>
 
                                         <Typography
                                             variant="body2"
-                                            className="mb-2 text-gray-600"
-                                        >
-                                            Kilométrage:{' '}
-                                            <strong>
-                                                {car.kilometrage} km
-                                            </strong>
-                                        </Typography>
-
-                                        <Typography
-                                            variant="body2"
-                                            className="flex-grow text-gray-600"
+                                            className="mb-2 flex-grow text-gray-700"
                                         >
                                             {car.description}
                                         </Typography>
 
+                                        {/* Unavailable Dates */}
+                                        {/* {car.unavailableDates.length > 0 && (
+                                            <div className="my-2 rounded border border-red-300 bg-red-100 p-2">
+                                                <span className="font-semibold text-red-600">
+                                                    Non disponible du :
+                                                </span>
+                                                <ul className="list-disc pl-5">
+                                                    {car.unavailableDates.map(
+                                                        (dateRange, idx) => (
+                                                            <li key={idx}>
+                                                                {
+                                                                    dateRange.start
+                                                                }{' '}
+                                                                à{' '}
+                                                                {dateRange.end}
+                                                            </li>
+                                                        ),
+                                                    )}
+                                                </ul>
+                                            </div>
+                                        )} */}
+
                                         <div className="mt-4 flex w-full items-center justify-between space-x-4">
                                             {auth?.user?.type !== 'admin' && (
                                                 <PrimaryButton
-                                                    onClick={() =>
-                                                        handleOpenModal(car)
-                                                    }
+                                                    onClick={() => {
+                                                        if (
+                                                            car.reservationStatus ===
+                                                            'en attente'
+                                                        ) {
+                                                            handleCancelReservation(
+                                                                car,
+                                                            );
+                                                        } else {
+                                                            handleOpenModal(
+                                                                car,
+                                                            );
+                                                        }
+                                                    }}
                                                     disabled={
-                                                        car.isReservedByUser ||
-                                                        car.reservationStatus ===
-                                                            'confirmée'
+                                                        car.isReservedByUser &&
+                                                        car.reservationStatus !==
+                                                            'en attente'
                                                     }
+                                                    className="flex-1"
                                                 >
-                                                    {car.reservationStatus ===
-                                                    'confirmée'
-                                                        ? 'Réservé'
-                                                        : car.isReservedByUser
-                                                          ? 'Annuler'
-                                                          : 'Réserver'}
+                                                    {car.isReservedByUser
+                                                        ? car.reservationStatus ===
+                                                          'confirmée'
+                                                            ? 'Déjà réservé'
+                                                            : 'Annuler la réservation'
+                                                        : 'Réserver'}
                                                 </PrimaryButton>
                                             )}
-                                            <SecondaryButton onClick={() => {}}>
+
+                                            <SecondaryButton
+                                                onClick={() => {}}
+                                                className="flex-1"
+                                            >
                                                 Voir plus
                                             </SecondaryButton>
                                         </div>

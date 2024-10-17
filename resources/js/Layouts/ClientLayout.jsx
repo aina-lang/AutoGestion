@@ -13,7 +13,6 @@ import {
     Fullscreen,
     LayoutDashboard,
     Moon,
-    SearchIcon,
     Settings2,
     SignatureIcon,
     Sun,
@@ -31,7 +30,7 @@ export default function ClientLayout({ auth, header, children }) {
     const [severity, setSeverity] = useState('success');
 
     useEffect(() => {
-        console.log(flash);
+        // console.log(flash);
         if (flash) {
             if (flash.success) {
                 setMessage(flash.success);
@@ -107,7 +106,7 @@ export default function ClientLayout({ auth, header, children }) {
     }
 
     return (
-        <div className="flex h-screen bg-gray-100 transition-colors duration-300 dark:bg-gray-900">
+        <div className="flex h-screen bg-gray-50  transition-colors duration-300 dark:bg-gray-900">
             <Sidebar>
                 <SidebarItem
                     icon={<LayoutDashboard size={20} />}
@@ -136,7 +135,13 @@ export default function ClientLayout({ auth, header, children }) {
 
             <div className="flex-grow overflow-y-hidden">
                 {/* Navbar */}
-                <nav className="m-1 rounded-md bg-white px-4 py-1 shadow-md dark:bg-gray-800 sm:px-6 lg:px-8">
+                <nav
+                    className="m-3 rounded-lg bg-white px-4 py-1 dark:bg-gray-800 sm:px-6 lg:px-8"
+                    style={{
+                        boxShadow: `0 5px 10px rgba(0,0,0,0.1)`, // Subtle shadow using current palette
+                    }}
+                >
+                    {' '}
                     <div className="flex h-16 items-center justify-between">
                         {/* Left Side (Optional Breadcrumbs or Back Button) */}
                         <div className="flex items-center">
@@ -162,7 +167,7 @@ export default function ClientLayout({ auth, header, children }) {
                                 {isDarkMode ? (
                                     <Sun className="h-5 w-5 text-yellow-500" />
                                 ) : (
-                                    <Moon className="h-5 w-5 text-gray-800" />
+                                    <Moon className="h-5 w-5 text-gray-500" />
                                 )}
                             </button>
 
@@ -171,7 +176,7 @@ export default function ClientLayout({ auth, header, children }) {
                                 onClick={toggleFullScreen}
                                 className="rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-600"
                             >
-                                <Fullscreen className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                                <Fullscreen className="h-5 w-5 text-gray-500 dark:text-gray-400" />
                             </button>
                             {/* Search Bar */}
                             {/* <div className="relative hidden md:block">
@@ -186,7 +191,7 @@ export default function ClientLayout({ auth, header, children }) {
                             {/* Buttons */}
                             <div className="flex min-h-full items-center space-x-2">
                                 <SecondaryButton className="border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                                    <GridAddIcon className="mr-2" />
+                                    <GridAddIcon className="mr-2 text-gray-500" />
                                     Tâche
                                 </SecondaryButton>
                                 <PrimaryButton
@@ -232,7 +237,6 @@ export default function ClientLayout({ auth, header, children }) {
                             </div>
                         </div>
                     </div>
-
                     {/* Mobile Navigation Dropdown */}
                     <div
                         className={

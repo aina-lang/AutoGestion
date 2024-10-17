@@ -19,9 +19,6 @@ return new class extends Migration
             $table->string('modele');
             $table->string('immatriculation')->unique();
             $table->foreignId('categorie_id')->constrained()->onDelete('cascade');
-            $table->decimal('prix_journalier', 10, 2);
-            // $table->boolean('disponible');
-            // $table->string('etat');
             $table->unsignedInteger('kilometrage');
             $table->timestamp('date_ajout')->useCurrent();
             $table->text('description')->nullable(); // Description du véhicule

@@ -4,14 +4,7 @@ import ReservationModal from '@/Components/ReservationModal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, router } from '@inertiajs/react';
-import {
-    Box,
-    Grid,
-    MenuItem,
-    Paper,
-    TextField,
-    Typography,
-} from '@mui/material';
+import { Box, Grid, MenuItem, TextField, Typography } from '@mui/material';
 import {
     SpaceEvenlyVerticallyIcon,
     TransformIcon,
@@ -51,17 +44,17 @@ export default function Welcome({
     const handleCancelReservation = async (car) => {};
     return (
         <GuestLayout auth={auth}>
-            <Head title="Ayna lbr - Unlock Your Travel Experience" />
+            <Head title="Vezo Tours - Unlock Your Travel Experience" />
             <div className="overflow-x-hidden bg-gray-100 text-gray-800">
                 {/* Hero Section with ReactTyped */}
                 <main
                     id="home"
-                    className="relative flex min-h-screen items-center bg-cover bg-center p-10"
+                    className="relative flex min-h-screen items-center bg-cover bg-center md:p-10"
                     style={{ backgroundImage: `url(${banner})` }}
                 >
                     <div className="absolute inset-0 bg-black opacity-50" />
                     <div className="z-10 text-center">
-                        <h1 className="mb-4 text-5xl font-bold text-white">
+                        <h1 className="mb-4 text-xl font-bold text-white md:text-5xl">
                             <ReactTyped
                                 strings={[
                                     'TROUVEZ FACILEMENT UNE VOITURE',
@@ -74,7 +67,7 @@ export default function Welcome({
                                 showCursor={true}
                             />
                         </h1>
-                        <p className="mx-auto mb-6 w-1/2 text-gray-300">
+                        <p className="mx-auto mb-6 p-5 text-gray-300 md:w-1/2 md:p-0">
                             Notre plateforme vous permet de réserver rapidement
                             et simplement une voiture pour vos déplacements à
                             travers tout Madagascar. Que ce soit pour un voyage
@@ -101,69 +94,77 @@ export default function Welcome({
                             </PrimaryButton>
                         </motion.div>
                     </div>
-                    {/* <motion.div
-                        initial={{ opacity: 0, x: 50 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        viewport={{ once: false, amount: 0.5 }}
-                        transition={{
-                            duration: 0.8,
-                            delay: 0.5,
-                        }}
-                        className="z-30 w-1/2 p-5"
-                    >
-                        <img
-                            src={banner} // Replace with your actual image URL
-                            alt="A propos de nous"
-                            className="h-auto w-full rounded-lg shadow-md" // Add styling as needed
-                        />
-                    </motion.div> */}
-                    <section className="absolute -bottom-12 left-0 right-0 mx-auto w-full max-w-4xl">
-                        <Paper
-                            elevation={3}
-                            className="bg-blue-900 px-6 py-5 text-white"
-                        >
+
+                    <section className="absolute -bottom-12 left-0 right-0 mx-auto hidden w-full justify-center md:flex">
+                        <div className="flex items-center justify-center rounded-md bg-white px-6 py-5 pr-0 shadow-xl">
                             <form>
-                                <Grid
-                                    container
-                                    spacing={4}
-                                    justifyContent="space-between items-center"
-                                    className="pr-5"
-                                >
-                                    <Grid item xs={12} md={3}>
-                                        <TextField
-                                            fullWidth
-                                            label="Date de départ"
-                                            type="date"
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                            className="text-gray-800"
-                                        />
-                                    </Grid>
-                                    <Grid item xs={12} md={3}>
-                                        <TextField
-                                            fullWidth
-                                            label="Date de retour"
-                                            type="date"
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                            className="text-gray-800"
-                                        />
-                                    </Grid>
+                                <Grid className="grid grid-cols-4 justify-center gap-4">
+                                    <div className="flex">
+                                        {' '}
+                                        <Grid item xs={12} md={3}>
+                                            <TextField
+                                                fullWidth
+                                                label="Date de départ"
+                                                type="date"
+                                                variant="standard"
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                }}
+                                                InputProps={{
+                                                    disableUnderline: true,
+                                                    style: {
+                                                        outline: 'none',
+                                                    },
+                                                }}
+                                                className="text-gray-800" // Additional class for text color
+                                            />
+                                        </Grid>
+                                        <div className="mx-5 hidden border-l border-gray-300 md:block" />{' '}
+                                    </div>
+                                    <div className="flex">
+                                        {/* Separator */}
+                                        <Grid item xs={12} md={3}>
+                                            <TextField
+                                                fullWidth
+                                                label="Date de retour"
+                                                type="date"
+                                                variant="standard"
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                }}
+                                                InputProps={{
+                                                    disableUnderline: true,
+                                                    style: {
+                                                        outline: 'none',
+                                                    },
+                                                }}
+                                                className="text-gray-800"
+                                            />
+                                        </Grid>
+                                        <div className="mx-5 hidden border-l border-gray-300 md:block" />{' '}
+                                    </div>{' '}
+                                    {/* Separator */}
                                     <Grid item xs={12} md={4}>
                                         <TextField
                                             fullWidth
                                             label="Catégorie de voiture"
                                             select
+                                            variant="standard"
                                             InputLabelProps={{
                                                 shrink: true,
+                                            }}
+                                            InputProps={{
+                                                disableUnderline: true,
+                                                style: {
+                                                    outline: 'none',
+                                                },
                                             }}
                                             className="text-gray-800"
                                         >
                                             {categories.map((option, index) => (
                                                 <MenuItem
                                                     key={index}
+                                                    selected={index == 0}
                                                     value={option.value}
                                                 >
                                                     {option.nom}
@@ -171,19 +172,20 @@ export default function Welcome({
                                             ))}
                                         </TextField>
                                     </Grid>
+                                    {/* Separator */}
                                     <Grid
                                         item
                                         xs={12}
                                         md={2}
-                                        className="mr-5 items-center"
+                                        className="flex items-center justify-center"
                                     >
-                                        <PrimaryButton className="mr-5 mt-4 h-full md:mt-0">
+                                        <PrimaryButton className="mt-4 h-full md:mt-0">
                                             Rechercher
                                         </PrimaryButton>
                                     </Grid>
                                 </Grid>
                             </form>
-                        </Paper>
+                        </div>
                     </section>
                 </main>
                 {/* Section des Services */}
@@ -191,11 +193,11 @@ export default function Welcome({
                     id="service"
                     className="flex min-h-screen items-center bg-white px-10"
                 >
-                    <div className="">
+                    <div className="p-6">
                         <h2 className="mb-8 mt-24 text-center text-3xl font-bold">
                             NOS MEILLEURS SERVICES POUR VOUS
                         </h2>
-                        <div className="grid grid-cols-3 items-center justify-center gap-10">
+                        <div className="grid items-center justify-center gap-10 md:grid-cols-3">
                             {[
                                 {
                                     name: 'RÉSERVATION EN LIGNE',
@@ -260,17 +262,18 @@ export default function Welcome({
                         </h2>
                     </div>
                     <div className="flex w-full">
-                        <div className="w-1/2 p-5">
+                        <div className="p-5 text-center md:w-1/2 md:text-left">
                             <p className="mb-4 text-gray-700">
-                                Ayna lbr est votre partenaire de confiance pour
-                                la location de voitures, offrant un service de
-                                qualité supérieure et des véhicules fiables pour
-                                rendre votre expérience de voyage inoubliable.
+                                Vezo Tours est votre partenaire de confiance
+                                pour la location de voitures, offrant un service
+                                de qualité supérieure et des véhicules fiables
+                                pour rendre votre expérience de voyage
+                                inoubliable.
                             </p>
                             <p className="text-gray-700">
                                 Notre mission est de rendre vos déplacements
                                 faciles et accessibles, tout en garantissant
-                                votre confort et votre sécurité. Ayna lbr est
+                                votre confort et votre sécurité. Vezo Toursest
                                 votre partenaire de confiance pour la location
                                 de voitures, offrant un service de qualité
                                 supérieure et des véhicules fiables pour rendre
@@ -279,7 +282,7 @@ export default function Welcome({
                                 location de voitures, offrant un service de
                                 qualité supérieure et des véhicules fiables pour
                                 rendre votre expérience de voyage inoubliable.
-                                Ayna lbr est votre partenaire de confiance pour
+                                Vezo Toursest votre partenaire de confiance pour
                                 la location de voitures, offrant un service de
                                 qualité supérieure et des véhicules fiables pour
                                 rendre votre expérience de voyage inoubliable.
@@ -292,7 +295,7 @@ export default function Welcome({
                                 duration: 0.8,
                                 delay: 0.5,
                             }}
-                            className="w-1/2 p-5"
+                            className="hidden w-1/2 p-5 md:flex"
                         >
                             <img
                                 src={banner} // Replace with your actual image URL
@@ -304,16 +307,19 @@ export default function Welcome({
                 </section>
 
                 {/* Available Cars Section */}
-                <section className="min-h-screen px-12" id="cars">
+                <section
+                    className="min-h-screen bg-gray-50 px-12 py-10"
+                    id="cars"
+                >
                     <div>
-                        <h2 className="my-14 text-center text-3xl font-bold">
+                        <h2 className="my-14 text-center text-4xl font-bold text-gray-800">
                             VOITURES DISPONIBLES
                         </h2>
                         <Grid container spacing={3}>
                             {latestVehicles.map((car, index) => (
-                                <Grid item xs={12} sm={6} md={3} key={index}>
+                                <Grid item xs={12} sm={6} md={4} key={index}>
                                     <motion.div
-                                        className="flex h-full flex-col rounded-lg border bg-white p-4 shadow-lg"
+                                        className="flex h-full flex-col rounded-lg border border-gray-300 bg-white p-4 shadow-md transition-shadow duration-200 hover:shadow-lg"
                                         initial={{ opacity: 0, x: -50 }}
                                         whileInView={{ opacity: 1, x: 0 }}
                                         viewport={{ once: false, amount: 0.5 }}
@@ -321,7 +327,7 @@ export default function Welcome({
                                             duration: 0.2 * index,
                                         }}
                                     >
-                                        <div className="relative mb-2">
+                                        <div className="relative mb-4">
                                             {/* Display image */}
                                             <div className="relative h-48 overflow-hidden rounded-md">
                                                 <img
@@ -330,17 +336,21 @@ export default function Welcome({
                                                         car.images[0]
                                                     }
                                                     alt={car.modele}
-                                                    className="mb-4 h-48 w-full rounded-lg object-cover"
+                                                    className="h-48 w-full rounded-lg object-cover"
                                                 />
-
                                                 {/* Centered marque & modele */}
-                                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 text-lg font-semibold text-white">
-                                                    {car.marque} {car.modele}
+                                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 p-2 text-lg font-semibold text-white">
+                                                    {car.marque}
                                                 </div>
                                             </div>
 
-                                            {/* Disponibilité Badge */}
                                             <span
+                                                className={`absolute right-2 top-2 rounded-full bg-yellow-200 px-3 py-1 text-sm font-medium text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300`}
+                                            >
+                                                {car.kilometrage} km/h
+                                            </span>
+                                            {/* Disponibilité Badge */}
+                                            {/* <span
                                                 className={`absolute right-2 top-2 rounded-full px-3 py-1 text-sm font-medium ${
                                                     car.disponible
                                                         ? 'bg-green-600 text-white'
@@ -348,37 +358,46 @@ export default function Welcome({
                                                 }`}
                                             >
                                                 {car.disponible
-                                                    ? 'Disponible'
+                                                    ? 'Disponible de suite'
                                                     : 'Non disponible'}
-                                            </span>
+                                            </span> */}
                                         </div>
 
                                         <Typography
-                                            variant="body2"
-                                            className="my-2 text-gray-600"
+                                            variant=""
+                                            className="mb-2 flex-grow font-bold text-gray-700"
                                         >
-                                            Prix journalier:{' '}
-                                            <strong>
-                                                {car.prix_journalier} Ar
-                                            </strong>
+                                            {car.modele}
                                         </Typography>
 
                                         <Typography
                                             variant="body2"
-                                            className="mb-2 text-gray-600"
-                                        >
-                                            Kilométrage:{' '}
-                                            <strong>
-                                                {car.kilometrage} km
-                                            </strong>
-                                        </Typography>
-
-                                        <Typography
-                                            variant="body2"
-                                            className="flex-grow text-gray-600"
+                                            className="mb-2 flex-grow text-gray-700"
                                         >
                                             {car.description}
                                         </Typography>
+
+                                        {/* Unavailable Dates */}
+                                        {/* {car.unavailableDates.length > 0 && (
+                                            <div className="my-2 rounded border border-red-300 bg-red-100 p-2">
+                                                <span className="font-semibold text-red-600">
+                                                    Non disponible du :
+                                                </span>
+                                                <ul className="list-disc pl-5">
+                                                    {car.unavailableDates.map(
+                                                        (dateRange, idx) => (
+                                                            <li key={idx}>
+                                                                {
+                                                                    dateRange.start
+                                                                }{' '}
+                                                                à{' '}
+                                                                {dateRange.end}
+                                                            </li>
+                                                        ),
+                                                    )}
+                                                </ul>
+                                            </div>
+                                        )} */}
 
                                         <div className="mt-4 flex w-full items-center justify-between space-x-4">
                                             {auth?.user?.type !== 'admin' && (
@@ -388,7 +407,6 @@ export default function Welcome({
                                                             car.reservationStatus ===
                                                             'en attente'
                                                         ) {
-                                                            // Logique pour annuler la réservation
                                                             handleCancelReservation(
                                                                 car,
                                                             );
@@ -403,6 +421,7 @@ export default function Welcome({
                                                         car.reservationStatus !==
                                                             'en attente'
                                                     }
+                                                    className="flex-1"
                                                 >
                                                     {car.isReservedByUser
                                                         ? car.reservationStatus ===
@@ -413,7 +432,10 @@ export default function Welcome({
                                                 </PrimaryButton>
                                             )}
 
-                                            <SecondaryButton onClick={() => {}}>
+                                            <SecondaryButton
+                                                onClick={() => {router.visit(route("cars.show",car.id))}}
+                                                className="flex-1"
+                                            >
                                                 Voir plus
                                             </SecondaryButton>
                                         </div>
@@ -436,7 +458,7 @@ export default function Welcome({
                 {/* Contact Section */}
                 <section
                     id="contact"
-                    className="my-10 flex min-h-screen items-center justify-center bg-gray-50 px-10 dark:bg-gray-800"
+                    className="mt-10 flex min-h-screen items-center justify-center bg-gray-50 px-10 dark:bg-gray-800"
                 >
                     <div className="w-full">
                         <h2 className="mb-8 text-center text-3xl font-bold text-gray-900 dark:text-white">

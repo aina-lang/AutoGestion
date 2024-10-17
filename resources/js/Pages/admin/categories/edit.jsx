@@ -7,22 +7,16 @@ import { TextField } from '@mui/material';
 import { GridAddIcon } from '@mui/x-data-grid';
 import React from 'react';
 
-function AddCategorie({ categories }) {
-    const { data, setData, post, processing, errors } = useForm({
-        nom: '',
+function AddCategorie({ categorie }) {
+    const { data, setData, post, processing, errors, put } = useForm({
+        nom: categorie.nom,
 
-        description: '',
+        description: categorie.description,
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        post('/admin/categories/'); // Ajoutez la route pour l'envoi du formulaire
-    };
-
-    const handleRemoveImage = (index) => {
-        setImagePreviews((prevImages) =>
-            prevImages.filter((_, i) => i !== index),
-        );
+        put(`/admin/categories/${categorie.id}`); // Ajoutez la route pour l'envoi du formulaire
     };
 
     return (
@@ -50,8 +44,8 @@ function AddCategorie({ categories }) {
         >
             <Head title="Ajouter un Véhicule" />
             <div className="mx-auto space-y-5 p-6 pt-0">
-                <form onSubmit={handleSubmit} className=''>
-                    <div className="mb-4 rounded-md bg-white p-5 shadow-lg grid gap-4">
+                <form onSubmit={handleSubmit} className="">
+                    <div className="mb-4 grid gap-4 rounded-md bg-white p-5 shadow-lg">
                         <TextField
                             label="Nom"
                             value={data.nom}

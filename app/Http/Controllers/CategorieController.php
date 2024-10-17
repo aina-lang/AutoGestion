@@ -14,7 +14,8 @@ class CategorieController extends Controller
      */
     public function index()
     {
-        $categories = Categorie::all(); // Récupère toutes les catégories
+        $categories = Categorie::paginate(5); // Récupère toutes les catégories
+        // dd($categories);
         return Inertia::render('admin/categories/index', [
             'categories' => $categories,
         ]); // Renvoyer à la vue avec les données
@@ -51,7 +52,7 @@ class CategorieController extends Controller
             ]);
 
             session()->flash('success', 'Catégorie ajoutée avec succès.'); // Message de succès
-            return redirect()->route('categories.index');
+            return redirect()->back();
         } catch (\Exception $e) {
             session()->flash('error', 'Erreur lors de l\'ajout de la catégorie : ' . $e->getMessage()); // Message d'erreur
             return redirect()->back()->withInput();

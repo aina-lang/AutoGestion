@@ -5,9 +5,9 @@ import {
     BreadcrumbList,
     BreadcrumbPage,
     BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { router } from "@inertiajs/react";
-import React from "react";
+} from '@/components/ui/breadcrumb';
+import { router } from '@inertiajs/react';
+import React from 'react';
 
 interface BreadcrumbItemType {
     label: string;
@@ -26,38 +26,34 @@ const MyHeader: React.FC<MyHeaderProps> = ({
     right,
 }) => {
     return (
-        <div className="py-10 overflow-y-hidden">
-            <div className="w-full mx-auto">
-                <div className="border-b overflow-hidden">
-                    <div className="p-6 text-gray-900">
-                        <div className="flex flex-row justify-between items-center">
+        <div className="overflow-y-hidden py-0  ">
+            <div className="mx-auto w-full">
+                <div className="overflow-hidden">
+                    <div className="p-6 text-gray-900 border-b ">
+                        <div className="flex flex-row items-center justify-between">
                             {/* Breadcrumb Component */}
                             <Breadcrumb>
-                                <BreadcrumbList>
+                                <BreadcrumbList className="flex items-center space-x-2">
                                     {breadcrumbItems.map((item, index) => (
                                         <React.Fragment key={index}>
                                             <BreadcrumbItem>
                                                 {item.href ? (
                                                     <BreadcrumbLink
-                                                        // href={item.href}
-                                                        className="cursor-pointer"
+                                                        className="cursor-pointer text-blue-600 hover:underline"
                                                         onClick={() => {
-                                                            router.get(
-                                                                item.href
-                                                            );
+                                                            router.get(item.href);
                                                         }}
                                                     >
                                                         {item.label}
                                                     </BreadcrumbLink>
                                                 ) : (
-                                                    <BreadcrumbPage>
+                                                    <BreadcrumbPage className="font-semibold">
                                                         {item.label}
                                                     </BreadcrumbPage>
                                                 )}
                                             </BreadcrumbItem>
-                                            {index <
-                                                breadcrumbItems.length - 1 && (
-                                                <BreadcrumbSeparator />
+                                            {index < breadcrumbItems.length - 1 && (
+                                                <BreadcrumbSeparator className="text-gray-400">/</BreadcrumbSeparator>
                                             )}
                                         </React.Fragment>
                                     ))}

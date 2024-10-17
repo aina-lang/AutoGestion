@@ -4,6 +4,7 @@ use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContratController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReservationController;
@@ -19,65 +20,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 
-Route::get('/', function () {
-    $currentDate = now(); // Récupérer la date actuelle
-
-    $latestVehicles = Vehicule::latest()->take(6)->get()->map(function ($vehicle) use ($currentDate) {
-        // Decode the JSON images
-        $vehicle->images = json_decode($vehicle->images);
-
-        // Vérifier la disponibilité du véhicule en fonction de la date actuelle
-        $reservationExists = Reservation::where('vehicule_id', $vehicle->id)
-            ->where(function ($query) use ($currentDate) {
-                $query->where('date_depart', '<=', $currentDate)
-                    ->where('date_retour', '>=', $currentDate);
-            })
-            ->exists();
-
-        // Vérifier si l'utilisateur est authentifié
-        $userId = Auth::id(); // Récupérer l'ID de l'utilisateur authentifié
-        $reservation = null;
-
-        if ($userId) {
-            // Si l'utilisateur est connecté, vérifier ses réservations
-            $reservation = Reservation::where('user_id', $userId)
-                ->where('vehicule_id', $vehicle->id)
-                ->first();
-
-            // Vérifier si le véhicule est réservé par l'utilisateur
-            $vehicle->isReservedByUser = $reservation ? true : false;
-        } else {
-            // Si l'utilisateur n'est pas connecté, récupérer toutes les réservations pour le véhicule
-            $reservation = Reservation::where('vehicule_id', $vehicle->id)->get();
-
-            // Vérifier si le véhicule est réservé par n'importe quel utilisateur
-            // $vehicle->isReservedByUser = $reservation->isNotEmpty();
-        }
-
-
-        // var_dump($reservation );exit;
-        // var_dump($reservation->where('status', 'confirmée')->isEmpty());exit;
-        // Si le véhicule a une réservation qui est confirmée, il n'est pas disponible
-        $vehicle->disponible = !$reservationExists && ($reservation && $reservation->where('status', 'confirmée'));
-
-        // var_dump(  $vehicle->disponible);exit;
-        // Récupérer le statut de la réservation, s'il y en a une
-        $vehicle->reservationStatus = $reservation ? $reservation->first()->status : null;
-
-        // var_dump( $vehicle->reservationStatus);exit;
-        return $vehicle;
-    });
-
-    $categories = Categorie::all();
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-        'latestVehicles' => $latestVehicles,
-        'categories' => $categories
-    ]);
-})->name("home");
+Route::get('/', [HomeController::class, "index"])->name("home");
 
 
 
@@ -146,6 +89,16 @@ Route::get('/allcars', function (Request $request) {
 })->name("cars.all");
 
 Route::get('/search-cars', [VehiculeController::class, 'search'])->name('cars.filter');
+Route::get('vehicules/{vehicule}show', [VehiculeController::class, "showall"])->name('cars.show');
+
+
+
+
+
+
+
+
+
 
 
 Route::middleware('auth', 'verified')->group(function () {
@@ -164,7 +117,7 @@ Route::middleware('auth', 'verified')->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         });
 
-        Route::prefix('client')->as("user.")->group(function () {
+        Route::prefix('client')->as("client.")->group(function () {
             Route::resource('reservations', ReservationController::class);
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         });
@@ -182,11 +135,7 @@ Route::middleware('auth', 'verified')->group(function () {
     });
 
     // Routes accessibles aux utilisateurs
-    Route::middleware('user-access:user')->group(function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('client/Dashboard');
-        })->name('client.dashboard');
-    });
+    Route::middleware('user-access:user')->group(function () {});
 });
 
 require __DIR__ . '/auth.php';

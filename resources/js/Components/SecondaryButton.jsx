@@ -10,31 +10,39 @@ export default function SecondaryButton({
     children,
     ...props
 }) {
-    const { paletteName } = useThemeContext(); // Obtenez le nom de la palette
+    const { paletteName } = useThemeContext(); // Get the palette name
 
-    // Accédez à la palette actuelle
+    // Access the current palette
     const currentPalette = palette[paletteName];
 
     return (
         <Button
             {...props}
             type={type}
-            variant="outlined" // Choisissez le variant que vous préférez
+            variant="outlined" // Use outlined variant for secondary button
             sx={{
-                border: `1px solid ${palette.gray[500]}`, // Utiliser une bordure
-                color: palette.gray[500], // Couleur du texte
-                backgroundColor: "transparent", // Fond transparent pour le style
-                // "&:hover": {
-                //     backgroundColor: currentPalette[50], // Couleur de fond au survol
-                //     boxShadow: `0 2px 4px ${currentPalette[600]}`, // Ombre au survol
-                // },
-                opacity: disabled ? 0.5 : 1, // Gérer l'opacité si désactivé
-                transition:
-                    "background-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
-                fontSize: "15px",
+                border: `1px solid ${palette.gray[200]}`, // Border color from palette
+                color: palette.gray[500], // Text color
+                backgroundColor: "transparent", // Transparent background
+                padding: "6px 14px", // Compact padding
+                // borderRadius: "6px", // Rounded corners for a clean look
+                fontSize: "0.875rem", // Smaller font size (14px)
+                minWidth: '100px', // Minimum button width
+                textTransform: 'none', // Avoid uppercase text
+                opacity: disabled ? 0.5 : 1, // Handle opacity when disabled
+                transition: "background-color 0.2s, box-shadow 0.2s", // Smooth transition
+                "&:hover": {
+                    backgroundColor:"rgba(0,0,0,0.1)", // Subtle background change on hover
+                    // boxShadow: `0 2px 4px ${currentPalette[600]}`, // Shadow on hover
+                },
+                // boxShadow: `0 2px 8px rgba(0,0,0,0.1)`, // Subtle shadow using current palette
+               
+                "&:focus": {
+                    outline: `2px solid ${currentPalette[300]}`, // Focus outline for accessibility
+                },
             }}
             disabled={disabled}
-            className={className}
+            className={` rounded-sm  ${className}`}
         >
             {children}
         </Button>

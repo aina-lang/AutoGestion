@@ -23,7 +23,8 @@ class Reservation extends Model
         'status',
         'type_voyage',
         'retard',
-        'pieces_jointes', // Ajout de l'attribut pour les pièces jointes
+        'pieces_jointes',
+        'destination',
     ];
     /**
      * Les relations du modèle.

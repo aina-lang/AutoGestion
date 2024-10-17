@@ -14,7 +14,7 @@ class Vehicule extends Model
         'modele',
         'immatriculation',
         'categorie_id',
-        'prix_journalier',
+        // 'prix_journalier',
         // 'disponible',
         'kilometrage',
         'date_ajout',
@@ -33,4 +33,6 @@ class Vehicule extends Model
     {
         return $this->hasMany(Reservation::class);
     }
+
+    
 }

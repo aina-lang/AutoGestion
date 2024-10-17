@@ -3,6 +3,7 @@ import MyHeader from '@/Components/Header';
 import PrimaryButton from '@/Components/PrimaryButton';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, router } from '@inertiajs/react';
+import { Divider } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 
 function ShowVehicule({ vehicule, errors }) {
@@ -16,9 +17,7 @@ function ShowVehicule({ vehicule, errors }) {
     useEffect(() => {
         if (vehicule.images) {
             const decodedImages = JSON.parse(vehicule.images);
-            const previews = decodedImages.map(
-                (image) => `/storage/${image}`,
-            );
+            const previews = decodedImages.map((image) => `/storage/${image}`);
             setImagePreviews(previews);
         }
     }, [vehicule.images]);
@@ -29,7 +28,9 @@ function ShowVehicule({ vehicule, errors }) {
     };
 
     const confirmImageRemoval = () => {
-        setImagePreviews((prevImages) => prevImages.filter((_, i) => i !== imageToDelete));
+        setImagePreviews((prevImages) =>
+            prevImages.filter((_, i) => i !== imageToDelete),
+        );
         setConfirmOpen(false); // Close confirmation modal
         // Here you can add an API call to actually remove the image from the backend
     };
@@ -69,8 +70,11 @@ function ShowVehicule({ vehicule, errors }) {
                         <div className="flex space-x-4 py-5">
                             <PrimaryButton
                                 onClick={() =>
-                                    router.get(`/admin/vehicules/${vehicule.id}/edit`)
+                                    router.get(
+                                        `/admin/vehicules/${vehicule.id}/edit`,
+                                    )
                                 }
+                                className="bg-blue-600 transition hover:bg-blue-700"
                             >
                                 Modifier le Véhicule
                             </PrimaryButton>
@@ -82,77 +86,105 @@ function ShowVehicule({ vehicule, errors }) {
             <Head title={`Véhicule ${vehicule.marque} ${vehicule.modele}`} />
 
             <div className="mx-auto space-y-5 p-6 pt-0">
-                <div className="bg-white rounded-lg shadow-md p-6">
-                    <h2 className="text-xl font-bold mb-4">Détails du véhicule</h2>
-                    <div className="grid grid-cols-2 gap-4">
-                        <div className="col-span-1">
-                            <p><strong>Marque:</strong> {vehicule.marque}</p>
-                            <p><strong>Modèle:</strong> {vehicule.modele}</p>
-                        </div>
-                        <div className="col-span-1">
-                            <p><strong>Immatriculation:</strong> {vehicule.immatriculation}</p>
-                            <p><strong>Kilométrage:</strong> {vehicule.kilometrage} km</p>
-                        </div>
-                        <div className="col-span-1">
-                            <p><strong>Prix Journalier:</strong> {vehicule.prix_journalier} €/jour</p>
-                        </div>
-                        <div className="col-span-1">
-                            <p><strong>Catégorie:</strong> {vehicule.categorie ? vehicule.categorie.nom : 'Non définie'}</p>
+                <div className="rounded-lg bg-white p-6 shadow-lg transition-transform duration-300 hover:shadow-xl">
+                    <div className="flex">
+                        {' '}
+                        <img
+                            src={`/storage/${JSON.parse(vehicule.images)[0]}`}
+                            alt={`Image `}
+                            className="w-2/3 rounded-md object-cover"
+                            // onClick={() => openImageModal(index)}
+                        />
+                        <div className="w-1/3 p-2 pl-4">
+                            {' '}
+                            <h2 className="mb-4 text-2xl font-bold">
+                                {vehicule.marque} / {vehicule.modele}
+                            </h2>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="col-span-2 flex justify-between">
+                                    <p>
+                                        <strong>Immatriculation:</strong>{' '}
+                                    </p>
+                                    <p>{vehicule.immatriculation}</p>
+                                </div>
+                                <div className="col-span-2 flex justify-between">
+                                    <p>
+                                        <strong>Kilométrage:</strong>{' '}
+                                    </p>
+                                    <p>{vehicule.kilometrage} km/h</p>
+                                </div>
+
+                                <div className="col-span-2 flex justify-between">
+                                    <p>
+                                        <strong>Catégorie:</strong>{' '}
+                                    </p>
+                                    <p>
+                                        {' '}
+                                        {vehicule.categorie
+                                            ? vehicule.categorie.nom
+                                            : 'Non définie'}
+                                    </p>
+                                </div>
+                            </div>
+                            <Divider sx={{ marginTop: 2 }} />
+                            <p className="mt-4">{vehicule.description}</p>
                         </div>
                     </div>
-                    <p className="mt-4"><strong>Description:</strong> {vehicule.description}</p>
                 </div>
 
-                {/* Display Images */}
-                <div className="my-4">
-                    <h3 className="text-lg font-medium mb-4">Images du véhicule</h3>
-                    <div className="grid grid-cols-3 gap-4">
-                        {imagePreviews.map((image, index) => (
-                            <div key={index} className="relative group">
-                                <img
-                                    src={image}
-                                    alt={`Image ${index}`}
-                                    className="w-full h-48 object-cover rounded-md shadow-md cursor-pointer"
-                                    onClick={() => openImageModal(index)}
-                                />
-                                {/* Remove button */}
-                                <button
-                                    onClick={() => handleRemoveImage(index)}
-                                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                    ✕
-                                </button>
-                            </div>
-                        ))}
+                {imagePreviews.length > 1 && (
+                    <div className="my-4">
+                        <h3 className="mb-4 text-lg font-medium">
+                            Images du véhicule
+                        </h3>
+                        <div className="grid grid-cols-3 gap-4">
+                            {imagePreviews.map((image, index) => (
+                                <div key={index} className="group relative">
+                                    <img
+                                        src={image}
+                                        alt={`Image ${index}`}
+                                        className="h-48 w-full cursor-pointer rounded-md object-cover shadow-lg transition-transform duration-300 hover:scale-105"
+                                        onClick={() => openImageModal(index)}
+                                    />
+                                    {/* Remove button */}
+                                    <button
+                                        onClick={() => handleRemoveImage(index)}
+                                        className="absolute right-2 top-2 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* Image Preview Modal */}
             {modalOpen && (
-                <div className="fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50">
-                    <div className="relative">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+                    <div className="relative rounded-lg bg-white p-4 w-2/3">
                         <button
                             onClick={closeModal}
-                            className="absolute top-4 right-4 text-white text-2xl"
+                            className="absolute right-6 top-6 text-2xl text-white"
                         >
                             ✕
                         </button>
                         <img
                             src={imagePreviews[currentImageIndex]}
                             alt={`Image ${currentImageIndex}`}
-                            className="max-w-full max-h-full"
+                            className="h-full w-full rounded"
                         />
                         {/* Navigation buttons */}
                         <button
                             onClick={showPrevImage}
-                            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full"
+                            className="absolute left-4 top-1/2 -translate-y-1/2 transform rounded-full bg-white p-2 shadow-md transition hover:bg-gray-200"
                         >
                             ◀
                         </button>
                         <button
                             onClick={showNextImage}
-                            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white p-2 rounded-full"
+                            className="absolute right-4 top-1/2 -translate-y-1/2 transform rounded-full bg-white p-2 shadow-md transition hover:bg-gray-200"
                         >
                             ▶
                         </button>

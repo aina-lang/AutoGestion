@@ -236,15 +236,21 @@ class ReservationController extends Controller
     {
         try {
             $reservation = Reservation::findOrFail($id);
-            $reservation->status = 'confirmée';
+
+            if ($reservation->status == 'confirmée') {
+                $reservation->status = 'en attente';
+            } else if ($reservation->status == 'en attente') {
+                $reservation->status = 'confirmée';
+            }
+
             $reservation->save();
 
-            session()->flash('success', 'Réservation confirmée avec succès.');
+            session()->flash('success', 'Réservation ' . $reservation->status . ' avec succès.');
         } catch (Exception $e) {
             session()->flash('error', 'Erreur lors de la confirmation de la réservation : ' . $e->getMessage());
         }
 
-        return redirect()->route('reservations.index');
+        return redirect()->back();
     }
 
     /**

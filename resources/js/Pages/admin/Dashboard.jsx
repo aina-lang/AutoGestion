@@ -52,26 +52,28 @@ export default function Dashboard({
                     <Card
                         title="Total de Voitures"
                         value={totalCars}
-                        icon={<CarIcon />}
-                        color="bg-blue-500"
+                        icon={<CarIcon className="text-blue-500" />}
+                        color="bg-blue-200"
                     />
                     <Card
                         title="Réservations"
                         value={totalReservations}
-                        icon={<CarRentalSharp />}
-                        color="bg-green-500"
+                        icon={<CarRentalSharp className="text-green-500" />}
+                        color="bg-green-200"
                     />
                     <Card
                         title="Users"
                         value={totalUsers}
-                        icon={<AdminPanelSettingsOutlined />}
-                        color="bg-orange-500"
+                        icon={
+                            <AdminPanelSettingsOutlined className="text-orange-500" />
+                        }
+                        color="bg-orange-200"
                     />
                     <Card
                         title="Revenus"
                         value={`$${totalRevenue}`}
-                        icon={<Money />}
-                        color="bg-purple-500"
+                        icon={<Money className="text-purple-500" />}
+                        color="bg-purple-200"
                     />
                 </div>
 
@@ -144,11 +146,15 @@ export default function Dashboard({
 
 const Card = ({ title, value, icon, color }) => (
     <div
-        className={`rounded-lg p-4 shadow-lg  dark:bg-gray-800 ${color} space-x-4`}
+        className={`space-x-4 rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800`}
     >
-        <div className="flex text-3xl text-white justify-between">
-            <div>{icon}</div>
-            <div className="text-white text-right flex-grow ">
+        <div className="flex justify-between text-3xl">
+            <div
+                className={`h-10 w-10 ${color} flex items-center justify-center rounded-full`}
+            >
+                {icon}
+            </div>
+            <div className="flex-grow text-right">
                 <h6 className="text-lg font-semibold">{title}</h6>
                 <p className="text-3xl font-bold">{value}</p>
             </div>

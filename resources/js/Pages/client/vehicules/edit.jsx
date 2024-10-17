@@ -18,7 +18,7 @@ function EditVehicule({ vehicule, categories, errors }) {
         modele: vehicule.modele || '',
         immatriculation: vehicule.immatriculation || '',
         categorie: vehicule.categorie || '',
-        prix_journalier: vehicule.prix_journalier || '',
+        // prix_journalier: vehicule.prix_journalier || '',
         kilometrage: vehicule.kilometrage || '',
         description: vehicule.description || '',
         images: [], // On initialise un tableau pour les nouvelles images
@@ -152,7 +152,7 @@ function EditVehicule({ vehicule, categories, errors }) {
                                     </p>
                                 )}
                             </FormControl>
-                            <TextField
+                            {/* <TextField
                                 label="Prix Journalier"
                                 type="number"
                                 value={data.prix_journalier}
@@ -163,7 +163,7 @@ function EditVehicule({ vehicule, categories, errors }) {
                                 helperText={errors.prix_journalier}
                                 fullWidth
                                 variant="outlined"
-                            />
+                            /> */}
                             <TextField
                                 label="Kilométrage"
                                 type="number"

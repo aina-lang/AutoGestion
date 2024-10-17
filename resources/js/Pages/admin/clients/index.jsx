@@ -1,7 +1,6 @@
 import MyHeader from '@/Components/Header';
 import PrimaryButton from '@/Components/PrimaryButton';
 import StyledDataGrid from '@/Components/StyledDataGrid';
-
 import { Input } from '@/components/ui/input';
 
 import AdminLayout from '@/Layouts/AdminLayout';
@@ -10,29 +9,54 @@ import { MoreHorizSharp, TableView } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import { GridAddIcon } from '@mui/x-data-grid';
 import { GridIcon, SearchIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-function Index({ categories }) {
+function Index({ clients }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [gridView, setGridView] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(5);
+    const [debouncedSearchQuery, setDebouncedSearchQuery] =
+        useState(searchQuery);
 
-    console.log(categories);
+    // Debounce the search input
+    useEffect(() => {
+        const handler = setTimeout(() => {
+            setDebouncedSearchQuery(searchQuery);
+        }, 300); // 300ms delay
+
+        return () => {
+            clearTimeout(handler);
+        };
+    }, [searchQuery]);
+
     // Toggle between grid and table view
     const toggleGridView = () => {
         setItemsPerPage(gridView ? 5 : 8);
         setGridView(!gridView);
     };
 
-    const filteredCategories = categories.data.filter((category) =>
-        category.nom.toLowerCase().includes(searchQuery.toLowerCase()),
+    const filteredClients = clients.data.filter((client) =>
+        client.nom.toLowerCase().includes(debouncedSearchQuery.toLowerCase()),
     );
 
-    const paginatedCategories = filteredCategories.slice(
+    const paginatedClients = filteredClients.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage,
     );
+    
+    const getStatusBadge = (status) => {
+        switch (status) {
+            case 'active':
+                return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+            case 'inactive':
+                return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+            case 'pending':
+                return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300';
+            default:
+                return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-300';
+        }
+    };
 
     return (
         <AdminLayout
@@ -66,13 +90,15 @@ function Index({ categories }) {
                                     onChange={(e) =>
                                         setSearchQuery(e.target.value)
                                     }
+                                    aria-label="Rechercher une catégorie"
                                 />
                                 <SearchIcon size={20} />
                             </div>
                             <PrimaryButton
                                 onClick={() =>
-                                    router.get('/admin/categories/create')
+                                    router.get('/admin/clients/create')
                                 }
+                                aria-label="Ajouter un nouveau véhicule"
                             >
                                 <GridAddIcon />
                                 Nouveau Véhicule
@@ -86,35 +112,67 @@ function Index({ categories }) {
             <div className="mx-auto space-y-5 p-6 pt-0">
                 {gridView ? (
                     <Grid container spacing={2}>
-                        {paginatedCategories.map((categorie, index) => (
+                        {paginatedClients.map((client, index) => (
                             <Grid item xs={12} sm={6} key={index}>
                                 <div className="flex flex-col rounded-lg bg-white p-4 shadow dark:bg-gray-800 dark:text-gray-300">
                                     <div className="mb-4 flex items-start justify-between">
                                         <h4 className="text-lg font-semibold">
-                                            {categorie.nom}
+                                            {client.nom}
                                         </h4>
                                         <button className="bg-transparent p-0 shadow-none">
                                             <MoreHorizSharp className="text-gray-500" />
                                         </button>
                                     </div>
                                     <p className="text-sm text-gray-700 dark:text-gray-400">
-                                        {categorie.description}
+                                        {client.description}
                                     </p>
+                                    {/* Display phone numbers */}
+                                    <div className="mt-2">
+                                        {client.phones &&
+                                        client.phones.length > 0 ? (
+                                            <p className="text-sm text-gray-500">
+                                                Téléphones:{' '}
+                                                {client.phones.join(', ')}
+                                            </p>
+                                        ) : (
+                                            <p className="text-sm text-gray-500">
+                                                Aucun téléphone disponible
+                                            </p>
+                                        )}
+                                    </div>
                                 </div>
                             </Grid>
                         ))}
                     </Grid>
                 ) : (
                     <StyledDataGrid
-                        data={categories}
+                        data={clients}
                         columns={[
-                            { accessorKey: 'nom', header: 'Libellé' },
+                            { accessorKey: 'nom', header: 'Nom Complet' },
+                            { accessorKey: 'email', header: 'Email' },
                             {
-                                accessorKey: 'description',
-                                header: 'Description',
+                                accessorKey: 'phones',
+                                header: 'Téléphones',
+                                // Format phone numbers for display if needed
+                                // cell: ({ row }) => (
+                                //     row.original.phones.length > 0 ? row.original.phones.join(', ') : 'Aucun téléphone'
+                                // ),
+                            },
+                            {
+                                accessorKey: 'status',
+                                header: 'Status',
+                                cell: ({ row }) => (
+                                    <span
+                                        className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${getStatusBadge(row.original.status)}`}
+                                    >
+                                        {row.original.status
+                                            .charAt(0)
+                                            .toUpperCase() +
+                                            row.original.status.slice(1)}
+                                    </span>
+                                ),
                             },
                         ]}
-                        // filterableColumns={['motif', 'label', 'assignedTo']}
                         actionUrl={route(route().current())}
                         pdfUrl={'vehicule.pdf'}
                     />
