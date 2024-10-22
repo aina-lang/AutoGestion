@@ -188,6 +188,12 @@ export default function AdminLayout({ auth, header, children }) {
                     active={false}
                     link="/admin/reservations"
                 />
+                <SidebarItem
+                    icon={<CarRental size={20} />}
+                    text="Archives"
+                    active={false}
+                    link="/admin/reservations/archived"
+                />
                 <hr className="my-3" />
                 <SidebarItem
                     icon={<Settings2 size={20} />}

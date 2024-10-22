@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react';
 import {
+    Badge,
     InputLabel,
     MenuItem,
     Modal,
@@ -26,7 +27,8 @@ const ReservationModal = ({ open, handleClose, car, isAuthenticated }) => {
         date_depart: null,
         date_retour: null,
         motif: '',
-        type_voyage: 'circuit',
+        pieces_jointes: [],
+        type_voyage: '',
     });
 
     const handleDetailChange = (event) => {
@@ -48,6 +50,23 @@ const ReservationModal = ({ open, handleClose, car, isAuthenticated }) => {
         setReservationDetails((prevDetails) => ({
             ...prevDetails,
             date_retour: newDate,
+        }));
+    };
+
+    const handleFileChange = (event) => {
+        const files = Array.from(event.target.files);
+        setReservationDetails((prevDetails) => ({
+            ...prevDetails,
+            pieces_jointes: [...prevDetails.pieces_jointes, ...files],
+        }));
+    };
+
+    const handleFileDelete = (fileToDelete) => {
+        setReservationDetails((prevDetails) => ({
+            ...prevDetails,
+            pieces_jointes: prevDetails.pieces_jointes.filter(
+                (file) => file !== fileToDelete,
+            ),
         }));
     };
 
@@ -111,8 +130,6 @@ const ReservationModal = ({ open, handleClose, car, isAuthenticated }) => {
                     name="motif"
                     value={reservationDetails.motif}
                     onChange={handleDetailChange}
-                    multiline
-                    rows={4}
                     sx={{ mt: 2 }}
                 />
 
@@ -169,12 +186,56 @@ const ReservationModal = ({ open, handleClose, car, isAuthenticated }) => {
                             )}
                         />
                     </LocalizationProvider>
+
+                    {/* File Upload Button */}
+                    {/* <div>
+                        <InputLabel htmlFor="file-upload" sx={{ mt: 2 }}>
+                            Joindre des fichiers
+                        </InputLabel>
+                        <input
+                            // accept="*/
+                    /*"
+                            id="file-upload"
+                            type="file"
+                            multiple
+                            onChange={handleFileChange}
+                            style={{ display: 'none' }}
+                        />
+                        <label htmlFor="file-upload">
+                            <Button
+                                variant="outlined"
+                                component="span"
+                                sx={{ mt: 2 }}
+                            >
+                                Choisir des fichiers
+                            </Button>
+                        </label>
+                    </div> */}
+                </div>
+
+                {/* List Attached Files */}
+                <div className="mt-4">
+                    {reservationDetails.pieces_jointes.length > 0 && (
+                        <Typography variant="body2">
+                            Fichiers joints:
+                        </Typography>
+                    )}
+                    {reservationDetails.pieces_jointes.map((file, index) => (
+                        <Badge
+                            key={index}
+                            badgeContent="x"
+                            color="error"
+                            onClick={() => handleFileDelete(file)}
+                        >
+                            <Typography variant="body2">{file.name}</Typography>
+                        </Badge>
+                    ))}
                 </div>
 
                 <div className="mt-4 flex justify-end space-x-4">
                     {!isAuthenticated && (
                         <PrimaryButton
-                            onClick={() => router.visit('/login')}
+                            onClick={() => router.visit('login')}
                             sx={{ mt: 2 }}
                         >
                             Se connecter

@@ -134,7 +134,7 @@ export default function Dashboard({
                                 ]}
                                 width={400}
                                 height={200}
-                                colors={['#FF6384', '#36A2EB', '#FFCE56']} // Couleurs personnalisées pour le graphique circulaire
+                                // colors={['#FF6384', '#36A2EB', '#FFCE56']} // Couleurs personnalisées pour le graphique circulaire
                             />
                         }
                     />

@@ -3,20 +3,14 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import ReservationModal from '@/Components/ReservationModal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, router } from '@inertiajs/react';
-import { Box, Grid, MenuItem, TextField, Typography } from '@mui/material';
+import { Head, router } from '@inertiajs/react';
+import { Grid, MenuItem, TextField, Typography } from '@mui/material';
 import {
     SpaceEvenlyVerticallyIcon,
     TransformIcon,
 } from '@radix-ui/react-icons';
 import { motion } from 'framer-motion';
-import {
-    AlignVerticalDistributeCenterIcon,
-    Facebook,
-    Instagram,
-    Linkedin,
-    Twitter,
-} from 'lucide-react';
+import { AlignVerticalDistributeCenterIcon } from 'lucide-react';
 import React, { useState } from 'react';
 import { ReactTyped } from 'react-typed';
 import banner from '../../assets/images/bgbanner.jpg';
@@ -254,7 +248,7 @@ export default function Welcome({
                 {/* About Section */}
                 <section
                     id="about"
-                    className="mb-10 min-h-screen bg-gray-50 p-10 dark:bg-gray-800"
+                    className="min-h-screen bg-gray-50 p-10 dark:bg-gray-800"
                 >
                     <div className="mt-24">
                         <h2 className="mb-8 text-center text-3xl font-bold">
@@ -312,8 +306,8 @@ export default function Welcome({
                     id="cars"
                 >
                     <div>
-                        <h2 className="my-14 text-center text-4xl font-bold text-gray-800">
-                            VOITURES DISPONIBLES
+                        <h2 className="my-14 mt-0 text-center text-3xl font-bold text-gray-800">
+                            VOITURES RECENTES
                         </h2>
                         <Grid container spacing={3}>
                             {latestVehicles.map((car, index) => (
@@ -433,7 +427,14 @@ export default function Welcome({
                                             )}
 
                                             <SecondaryButton
-                                                onClick={() => {router.visit(route("cars.show",car.id))}}
+                                                onClick={() => {
+                                                    router.visit(
+                                                        route(
+                                                            'cars.show',
+                                                            car.id,
+                                                        ),
+                                                    );
+                                                }}
                                                 className="flex-1"
                                             >
                                                 Voir plus
@@ -458,7 +459,7 @@ export default function Welcome({
                 {/* Contact Section */}
                 <section
                     id="contact"
-                    className="mt-10 flex min-h-screen items-center justify-center bg-gray-50 px-10 dark:bg-gray-800"
+                    className="flex min-h-screen items-center justify-center bg-gray-50 px-10 py-10 dark:bg-gray-800"
                 >
                     <div className="w-full">
                         <h2 className="mb-8 text-center text-3xl font-bold text-gray-900 dark:text-white">
@@ -520,110 +521,99 @@ export default function Welcome({
                     />
                 )}
 
-                <footer className="bg-gray-800 py-8 text-white">
-                    <Box
-                        sx={{
-                            maxWidth: 1200,
-                            mx: 'auto',
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            flexWrap: 'wrap',
-                        }}
-                    >
-                        {/* Left Section */}
-                        <Box
-                            sx={{
-                                flex: 1,
-                                minWidth: '300px',
-                                textAlign: 'left',
-                                mb: 2,
-                            }}
-                        >
-                            <Typography variant="body2" gutterBottom>
-                                <strong>Adresse:</strong> 123 Rue Exemple,
-                                Ville, Pays
-                            </Typography>
-                            <Typography variant="body2" gutterBottom>
-                                <strong>Téléphone:</strong> +123 456 7890
-                            </Typography>
-                            <Typography variant="body2" gutterBottom>
-                                <strong>Email:</strong>{' '}
-                                <Link
-                                    href="mailto:contact@ayna.com"
-                                    color="inherit"
-                                    underline="hover"
-                                >
-                                    contact@ayna.com
-                                </Link>
-                            </Typography>
-                            <Typography variant="body2" gutterBottom>
-                                <strong>Siège Social:</strong> 456 Rue
-                                Entreprise, Ville, Pays
-                            </Typography>
-                        </Box>
+                <footer className="text-surface flex flex-col items-center bg-zinc-50 text-center dark:bg-neutral-700 dark:text-white lg:text-left">
+                    <div className="container p-6">
+                        <div className="grid place-items-center md:grid-cols-2 lg:grid-cols-4">
+                            <div className="mb-6">
+                                <h5 className="mb-2.5 font-bold uppercase">
+                                    Links
+                                </h5>
 
-                        {/* Right Section */}
-                        <Box
-                            sx={{
-                                flex: 1,
-                                minWidth: '300px',
-                                textAlign: 'right',
-                                mb: 2,
-                            }}
-                        >
-                            <Typography variant="body2" gutterBottom>
-                                &copy; {new Date().getFullYear()} Ayna lbr. Tous
-                                droits réservés.
-                            </Typography>
-                            <Link
-                                href="/privacy-policy"
-                                color="inherit"
-                                underline="hover"
-                            >
-                                Politique de confidentialité
-                            </Link>
-                            <Box
-                                sx={{
-                                    display: 'flex',
-                                    justifyContent: 'flex-end',
-                                    mt: 2,
-                                }}
-                            >
-                                <Link
-                                    href="https://www.facebook.com"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    sx={{ color: 'inherit', mx: 1 }}
-                                >
-                                    <Facebook />
-                                </Link>
-                                <Link
-                                    href="https://www.twitter.com"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    sx={{ color: 'inherit', mx: 1 }}
-                                >
-                                    <Twitter />
-                                </Link>
-                                <Link
-                                    href="https://www.instagram.com"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    sx={{ color: 'inherit', mx: 1 }}
-                                >
-                                    <Instagram />
-                                </Link>
-                                <Link
-                                    href="https://www.linkedin.com"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    sx={{ color: 'inherit', mx: 1 }}
-                                >
-                                    <Linkedin />
-                                </Link>
-                            </Box>
-                        </Box>
-                    </Box>
+                                <ul className="mb-0 list-none">
+                                    <li>
+                                        <a href="#!">Link 1</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!">Link 2</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!">Link 3</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!">Link 4</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div className="mb-6">
+                                <h5 className="mb-2.5 font-bold uppercase">
+                                    Links
+                                </h5>
+
+                                <ul className="mb-0 list-none">
+                                    <li>
+                                        <a href="#!">Link 1</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!">Link 2</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!">Link 3</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!">Link 4</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div className="mb-6">
+                                <h5 className="mb-2.5 font-bold uppercase">
+                                    Links
+                                </h5>
+
+                                <ul className="mb-0 list-none">
+                                    <li>
+                                        <a href="#!">Link 1</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!">Link 2</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!">Link 3</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!">Link 4</a>
+                                    </li>
+                                </ul>
+                            </div>
+
+                            <div className="mb-6">
+                                <h5 className="mb-2.5 font-bold uppercase">
+                                    Links
+                                </h5>
+
+                                <ul className="mb-0 list-none">
+                                    <li>
+                                        <a href="#!">Link 1</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!">Link 2</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!">Link 3</a>
+                                    </li>
+                                    <li>
+                                        <a href="#!">Link 4</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="w-full bg-black/5 p-4 text-center">
+                        &copy; {new Date().getFullYear()} Ayna lbr. Tous droits
+                        réservés.
+                    </div>
                 </footer>
             </div>
         </GuestLayout>

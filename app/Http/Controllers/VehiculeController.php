@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categorie;
+use App\Models\Reservation;
 use App\Models\Vehicule; // Assurez-vous que le modèle Vehicule est importé
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -143,11 +144,34 @@ class VehiculeController extends Controller
         // Eager load the category with the vehicle
         $vehicule = Vehicule::with('categorie')->findOrFail($id);
 
+        $vehicule->unavailableDates = Reservation::where("id", $vehicule->id)->get()->map(function ($reservation) {
+            return [
+                'start' => $reservation->date_depart,
+                'end' => $reservation->date_retour,
+            ];
+        })->toArray();
+
         return Inertia::render('admin/vehicules/show', [
             'vehicule' => $vehicule,
         ]);
     }
 
+    public function showAll(string $id)
+    {
+        // Eager load the category with the vehicle
+        $vehicule = Vehicule::with('categorie')->findOrFail($id);
+
+        $vehicule->unavailableDates = Reservation::where("id", $vehicule->id)->get()->map(function ($reservation) {
+            return [
+                'start' => $reservation->date_depart,
+                'end' => $reservation->date_retour,
+            ];
+        })->toArray();
+
+        return Inertia::render('welcome/showCar', [
+            'vehicule' => $vehicule,
+        ]);
+    }
 
     /**
      * Show the form for editing the specified resource.

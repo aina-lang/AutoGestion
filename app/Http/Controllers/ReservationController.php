@@ -22,22 +22,46 @@ class ReservationController extends Controller
         try {
             // Vérifier le type d'utilisateur
             if (Auth::user()->type == 'user') {
-                // Récupérer uniquement les réservations de l'utilisateur actuel
+                // Récupérer uniquement les réservations de l'utilisateur actuel dont la date de retour n'est pas passée
                 $reservations = Reservation::with(['user', 'vehicule'])
                     ->where('user_id', Auth::id())
+                    ->where('date_retour', '>=', now()) // Ajout de la condition pour la date de retour
                     ->paginate(5);
+
                 return Inertia::render('client/reservations/index', [
                     'reservations' => $reservations,
                 ]);
             } else {
-                // Récupérer toutes les réservations pour les administrateurs
-                $reservations = Reservation::with(['user', 'vehicule'])->paginate(5);
+                // Récupérer toutes les réservations dont la date de retour n'est pas passée pour les administrateurs
+                $reservations = Reservation::with(['user', 'vehicule'])
+                    ->where('date_retour', '>=', now()) // Ajout de la condition pour la date de retour
+                    ->paginate(5);
+
                 return Inertia::render('admin/reservations/index', [
                     'reservations' => $reservations,
                 ]);
             }
         } catch (Exception $e) {
             session()->flash('error', 'Erreur lors de la récupération des réservations : ' . $e->getMessage());
+            return redirect()->back()->withInput();
+        }
+    }
+
+
+
+    public function archived()
+    {
+        try {
+            // Récupérer toutes les réservations dont la date de retour est passée
+            $archivedReservations = Reservation::with(['user', 'vehicule'])
+                ->where('date_retour', '<', now())
+                ->paginate(5);
+
+            return Inertia::render('admin/reservations/archived', [
+                'archivedReservations' => $archivedReservations,
+            ]);
+        } catch (Exception $e) {
+            session()->flash('error', 'Erreur lors de la récupération des réservations archivées : ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
     }
@@ -232,14 +256,38 @@ class ReservationController extends Controller
     /**
      * Approuver la ressource spécifiée.
      */
+    /**
+     * Approuver la ressource spécifiée.
+     */
     public function approve(string $id)
     {
         try {
             $reservation = Reservation::findOrFail($id);
 
+            // Vérifier les réservations confirmées existantes pour le même véhicule
+            $existingReservations = Reservation::where('vehicule_id', $reservation->vehicule_id)
+                ->where('status', 'confirmée')
+                ->where(function ($query) use ($reservation) {
+                    $query->whereBetween('date_depart', [$reservation->date_depart, $reservation->date_retour])
+                        ->orWhereBetween('date_retour', [$reservation->date_depart, $reservation->date_retour])
+                        ->orWhere(function ($query) use ($reservation) {
+                            $query->where('date_depart', '<=', $reservation->date_depart)
+                                ->where('date_retour', '>=', $reservation->date_retour);
+                        });
+                })
+                ->get();
+
+
+
+            // Si aucune réservation existante ne se chevauche, approuver la réservation
             if ($reservation->status == 'confirmée') {
                 $reservation->status = 'en attente';
             } else if ($reservation->status == 'en attente') {
+                if ($existingReservations->isNotEmpty()) {
+                    // Notifier que la réservation ne peut pas être approuvée à cause de conflits de dates
+                    session()->flash('error', 'Cette réservation ne peut pas être confirmée car elle se chevauche avec une autre réservation confirmée.');
+                    return redirect()->back();
+                }
                 $reservation->status = 'confirmée';
             }
 

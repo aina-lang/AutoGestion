@@ -11,18 +11,15 @@ export default function ForgotPassword({ status }) {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route('password.email'));
     };
 
     return (
         <GuestLayout>
-            <Head title="Forgot Password" />
+            <Head title="Mot de Passe Oublié" />
 
             <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                Forgot your password? No problem. Just let us know your email
-                address and we will email you a password reset link that will
-                allow you to choose a new one.
+                Vous avez oublié votre mot de passe ? Pas de problème. Indiquez-nous simplement votre adresse email et nous vous enverrons un lien de réinitialisation de mot de passe qui vous permettra de choisir un nouveau mot de passe.
             </div>
 
             {status && (
@@ -38,15 +35,15 @@ export default function ForgotPassword({ status }) {
                     name="email"
                     value={data.email}
                     className="mt-1 block w-full"
-                    isFocused={true}
+                    // isFocused={true}
                     onChange={(e) => setData('email', e.target.value)}
                 />
 
                 <InputError message={errors.email} className="mt-2" />
 
                 <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Email Password Reset Link
+                    <PrimaryButton className="ms-4" disabled={processing}    type="submit">
+                        Envoyer le Lien de Réinitialisation du Mot de Passe
                     </PrimaryButton>
                 </div>
             </form>

@@ -194,7 +194,7 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                 </section>
 
                 {/* Display filtered cars */}
-                <section className="mt-12 min-h-screen flex-grow overflow-auto px-12 pb-32">
+                <section className="mt-12 min-h-screen  w-full flex-grow overflow-auto px-12 pb-32">
                     <div>
                         <h3 className="my-14 text-3xl font-bold">
                             Derniers Véhicules Disponibles

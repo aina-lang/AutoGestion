@@ -158,7 +158,23 @@ function ShowVehicule({ vehicule, errors }) {
                         </div>
                     </div>
                 )}
+                {vehicule.unavailableDates && vehicule.unavailableDates.length > 0 && (
+                    <div className="my-4 p-4 bg-red-100 border border-red-300 rounded-md">
+                        <h4 className="text-red-600 font-semibold">
+                            Non disponible du :
+                        </h4>
+                        <ul className="list-disc pl-6 text-gray-700">
+                            {vehicule.unavailableDates.map((dateRange, idx) => (
+                                <li key={idx}>
+                                    {dateRange.start} à {dateRange.end}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
             </div>
+
+        
 
             {/* Image Preview Modal */}
             {modalOpen && (

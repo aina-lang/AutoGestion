@@ -165,12 +165,12 @@ export default function Guest({ children, auth }) {
                     {!auth?.user ? (
                         <>
                             <PrimaryButton
-                                onClick={() => router.visit('login')}
+                                onClick={() => router.visit('/login')}
                             >
                                 Se connecter
                             </PrimaryButton>
                             <SecondaryButton
-                                onClick={() => router.visit('register')}
+                                onClick={() => router.visit('/register')}
                             >
                                 S'inscrire
                             </SecondaryButton>
@@ -203,13 +203,16 @@ export default function Guest({ children, auth }) {
                                         </Dropdown.Link>
                                     )}
 
-                                    {auth.user.type == 'admin' && (
-                                        <Dropdown.Link
-                                            href={route('admin.dashboard')}
-                                        >
-                                            Dashboard
-                                        </Dropdown.Link>
-                                    )}
+                                    <Dropdown.Link
+                                        href={
+                                            auth.user.type == 'admin'
+                                                ? route('admin.dashboard')
+                                                : route('client.dashboard')
+                                        }
+                                    >
+                                        Dashboard
+                                    </Dropdown.Link>
+
                                     <Dropdown.Link href={route('profile.edit')}>
                                         Profil
                                     </Dropdown.Link>

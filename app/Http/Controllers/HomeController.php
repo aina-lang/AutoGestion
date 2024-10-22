@@ -84,4 +84,70 @@ class HomeController extends Controller
             'categories' => $categories
         ]);
     }
+
+
+    public  function  all(Request $request)
+    {
+        $userId = Auth::id(); // Récupérer l'ID de l'utilisateur authentifié
+
+        // Fetch query parameters for filtering
+        $marque = $request->input('search.marque', '');
+        $date_depart = $request->input('search.date_depart', '');
+        $date_retour = $request->input('search.date_retour', '');
+        $categorie = $request->input('search.categorie', '');
+
+        // Build the query
+        $query = Vehicule::with('categorie'); // Eager load categorie relationship
+
+        // Apply filters based on input
+        if ($marque) {
+            $query->where('marque', 'like', '%' . $marque . '%');
+        }
+        if ($date_depart) {
+            $query->where('  date_depart', '<=', $date_depart); // Replace with your actual field for availability
+        }
+        if ($date_retour) {
+            $query->where('date_retour', '>=', $date_retour); // Replace with your actual field for availability
+        }
+        if ($categorie) {
+            $query->where('categorie', $categorie);
+        }
+
+        // Paginate the results, 20 items per page
+        $latestVehicles = $query->paginate(20)->withQueryString()->map(function ($vehicle) use ($userId) {
+            // Decode the JSON images
+            $vehicle->images = json_decode($vehicle->images);
+
+            // Vérifier si le véhicule est réservé par l'utilisateur
+            // $vehicle->isReservedByUser = Reservation::where('user_id', $userId)
+            //     ->where('vehicule_id', $vehicle->id)
+            //     ->exists();
+            $reservation = Reservation::where('user_id', $userId)
+                ->where('vehicule_id', $vehicle->id)
+                ->first();
+
+            // Ajouter le statut de réservation
+            $vehicle->isReservedByUser = (bool)$reservation;
+            $vehicle->reservationStatus = $reservation ? $reservation->status : null;
+
+            return $vehicle;
+        });
+
+        $categories = Categorie::all();
+
+        return Inertia::render('welcome/allCars', [
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+            'laravelVersion' => Application::VERSION,
+            'phpVersion' => PHP_VERSION,
+            'latestVehicles' => $latestVehicles,
+            'categories' => $categories,
+            'search' => [
+                'marque' => $marque,
+                'date_depart' => $date_depart,
+                'date_retour' => $date_retour,
+                'categorie' => $categorie,
+            ], // Pass the search filters to the view
+        ]);
+    }
 }

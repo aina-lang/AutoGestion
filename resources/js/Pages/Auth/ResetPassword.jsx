@@ -23,7 +23,7 @@ export default function ResetPassword({ token, email }) {
 
     return (
         <GuestLayout>
-            <Head title="Reset Password" />
+            <Head title="Réinitialiser le Mot de Passe" />
 
             <form onSubmit={submit}>
                 <div>
@@ -43,7 +43,7 @@ export default function ResetPassword({ token, email }) {
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Password" />
+                    <InputLabel htmlFor="password" value="Mot de Passe" />
 
                     <TextInput
                         id="password"
@@ -52,7 +52,7 @@ export default function ResetPassword({ token, email }) {
                         value={data.password}
                         className="mt-1 block w-full"
                         autoComplete="new-password"
-                        isFocused={true}
+                        // isFocused={true}
                         onChange={(e) => setData('password', e.target.value)}
                     />
 
@@ -62,7 +62,7 @@ export default function ResetPassword({ token, email }) {
                 <div className="mt-4">
                     <InputLabel
                         htmlFor="password_confirmation"
-                        value="Confirm Password"
+                        value="Confirmer le Mot de Passe"
                     />
 
                     <TextInput
@@ -84,8 +84,8 @@ export default function ResetPassword({ token, email }) {
                 </div>
 
                 <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton className="ms-4" disabled={processing}>
-                        Reset Password
+                    <PrimaryButton className="ms-4" disabled={processing}    type="submit">
+                        Réinitialiser le Mot de Passe
                     </PrimaryButton>
                 </div>
             </form>
