@@ -5,18 +5,68 @@ import { Input } from '@/components/ui/input';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import { MoreHorizSharp, TableView } from '@mui/icons-material';
-import { Grid } from '@mui/material';
+import { Grid, MenuItem, TextField } from '@mui/material';
 import { GridAddIcon } from '@mui/x-data-grid';
+import debounce from 'lodash/debounce';
 import { SearchIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
-const index = ({ vehicules }) => {
+const index = ({ vehicules, categories }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [gridView, setGridView] = useState(false);
+    const [dateDepart, setDateDepart] = useState('');
+    const [dateRetour, setDateRetour] = useState('');
+    const [selectedCategory, setSelectedCategory] = useState('');
+    const [currentPage, setCurrentPage] = useState(vehicules.data.current_page);
+
+    const handlePageChange = (page) => {
+        if (page >= 1 && page <= data.last_page) {
+            // Update current page and fetch new data
+            setCurrentPage(page);
+            // Fetch data from the server, e.g., using Inertia.js
+            router.get(`${actionUrl}?page=${page}`);
+        }
+    };
+
+    useEffect(() => {
+        setCurrentPage(vehicules.data.current_page);
+    }, [vehicules.data]);
 
     const toggleGridView = () => {
         setGridView(!gridView);
     };
+
+    // Handle real-time filter change with debouncing
+    const handleFilter = useCallback(
+        debounce(() => {
+            router.get(
+                route(route().current()),
+                {
+                    search: searchQuery,
+                    date_depart: dateDepart,
+                    date_retour: dateRetour,
+                    categorie: selectedCategory,
+                },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                },
+            );
+        }, 500), // 500ms debounce delay
+        [searchQuery, dateDepart, dateRetour, selectedCategory],
+    );
+
+    // Clean up the debounce function on component unmount
+    useEffect(() => {
+        return () => {
+            handleFilter.cancel();
+        };
+    }, [handleFilter]);
+
+    // Call handleFilter on changes to search, category, or dates
+    useEffect(() => {
+        handleFilter();
+    }, [searchQuery, dateDepart, dateRetour, selectedCategory, handleFilter]);
 
     return (
         <AdminLayout
@@ -42,9 +92,9 @@ const index = ({ vehicules }) => {
                                     />
                                 )}
                             </button>
-                            <div className="flex items-center overflow-hidden rounded-md border bg-gray-50 pr-2 dark:bg-gray-800">
+                            <div className="flex items-center overflow-hidden rounded-md border bg-white pr-2 dark:bg-gray-800">
                                 <Input
-                                    className="border-none bg-gray-50 p-2 focus:border-none dark:bg-gray-800"
+                                    className="border-none p-2 focus:border-none dark:bg-gray-800"
                                     placeholder="Rechercher un véhicule..."
                                     value={searchQuery}
                                     onChange={(e) =>
@@ -144,11 +194,6 @@ const index = ({ vehicules }) => {
                             {
                                 accessorKey: 'modele',
                                 header: 'Modèle',
-                                // cell: (props) => (
-                                //     <Link href={route('vehicules.show', props.row.original.id)} className="text-blue-600 hover:underline">
-                                //         {props.getValue()}
-                                //     </Link>
-                                // ),
                             },
                             {
                                 accessorKey: 'immatriculation',
@@ -162,18 +207,109 @@ const index = ({ vehicules }) => {
                                 accessorKey: 'kilometrage',
                                 header: 'Kilométrage',
                                 cell: (props) => (
-                                    <span className="me-2 rounded bg-yellow-100 p-2 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                    <span className="rounded bg-yellow-100 p-2 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
                                         {props.getValue()} Km/h
                                     </span>
                                 ),
                             },
                         ]}
                         data={vehicules}
-                        filterableColumns={['motif', 'label', 'assignedTo']}
                         actionUrl={route(route().current())}
                         pdfUrl={'vehicule.pdf'}
+                        FilterComponent={() => (
+                            <div className="flex w-2/3 items-center justify-between space-x-4">
+                                {' '}
+                                <TextField
+                                    fullWidth
+                                    type="date"
+                                    variant="standard"
+                                    // label="Date de départ"
+                                    InputLabelProps={{ shrink: true }}
+                                    value={dateDepart}
+                                    onChange={(e) =>
+                                        setDateDepart(e.target.value)
+                                    }
+                                    className="text-gray-800"
+                                />
+                                <span>à</span>
+                                <TextField
+                                    fullWidth
+                                    type="date"
+                                    variant="standard"
+                                    // label="Date de retour"
+                                    InputLabelProps={{ shrink: true }}
+                                    value={dateRetour}
+                                    onChange={(e) =>
+                                        setDateRetour(e.target.value)
+                                    }
+                                    className="text-gray-800"
+                                />
+                                <TextField
+                                    fullWidth
+                                    select
+                                    variant="standard"
+                                    // label="Catégorie"
+                                    value={selectedCategory}
+                                    onChange={(e) =>
+                                        setSelectedCategory(e.target.value)
+                                    }
+                                    className="text-gray-800"
+                                >
+                                    <MenuItem value="">
+                                        Toutes les catégories
+                                    </MenuItem>
+                                    {categories.map((category) => (
+                                        <MenuItem
+                                            key={category.id}
+                                            value={category.id}
+                                        >
+                                            {category.nom}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </div>
+                        )}
                     />
                 )}
+
+                {/* <div>
+                 
+                    <span className="text-sm text-gray-500">
+                        {vehicules.data.from} à {vehicules.data.to} de{' '}
+                        {vehicules.data.total} line(s)
+                    </span>
+                    <div className="space-x-2">
+                        
+                        <button
+                            disabled={vehicules.data.current_page === 1}
+                            onClick={() =>
+                                handlePageChange(
+                                    vehicules.data.current_page - 1,
+                                )
+                            }
+                            className="rounded-md bg-gray-200 px-4 py-2 text-gray-600 disabled:opacity-50"
+                        >
+                            <ChevronLeft />
+                        </button>
+                        <button className="rounded-md bg-gray-200 px-4 py-2 text-gray-600 disabled:opacity-50">
+                            {vehicules.data.current_page}
+                        </button>
+                        <button
+                            disabled={
+                                vehicules.data.current_page ===
+                                vehicules.data.last_page
+                            }
+                            onClick={() =>
+                                handlePageChange(
+                                    vehicules.data.current_page + 1,
+                                )
+                            }
+                            className="rounded-md bg-gray-200 px-4 py-2 text-gray-600 disabled:opacity-50"
+                        >
+                            <ChevronRight />
+                        </button>
+                    </div>
+                </div> */}
             </div>
         </AdminLayout>
     );

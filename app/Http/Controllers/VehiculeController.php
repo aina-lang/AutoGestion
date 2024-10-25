@@ -6,6 +6,7 @@ use App\Models\Categorie;
 use App\Models\Reservation;
 use App\Models\Vehicule; // Assurez-vous que le modèle Vehicule est importé
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -16,14 +17,17 @@ class VehiculeController extends Controller
      * Display a listing of the resource.
      */
 
+
     public function index(Request $request)
     {
+        // Retrieve all categories for the dropdown filter
+        $categories = Categorie::all();
+
         // Start the query with the relation to 'categorie'
         $query = Vehicule::with('categorie');
-        // var_dump($query);
-        // exit;
+
         // Check if there are search parameters
-        if ($request->filled('marque') || $request->filled('categorie') || ($request->filled('date_depart') && $request->filled('date_retour'))) {
+        if ($request->filled('marque') || $request->filled('categorie') || $request->filled('date_depart') || $request->filled('date_retour')) {
 
             // Filter by marque
             if ($request->filled('marque')) {
@@ -36,36 +40,63 @@ class VehiculeController extends Controller
             }
 
             // Filter by date range for availability
-            if ($request->filled('date_depart') && $request->filled('date_retour')) {
+            if ($request->filled('date_depart') || $request->filled('date_retour')) {
                 $query->whereDoesntHave('reservations', function ($q) use ($request) {
                     $q->where(function ($query) use ($request) {
-                        $query->whereBetween('date_depart', [$request->date_depart, $request->date_retour])
-                            ->orWhereBetween('date_retour', [$request->date_depart, $request->date_retour])
-                            ->orWhere(function ($query) use ($request) {
-                                $query->where('date_depart', '<=', $request->date_depart)
-                                    ->where('date_retour', '>=', $request->date_retour);
-                            });
+                        // Filter for vehicles not available if both dates are provided
+                        if ($request->filled('date_depart') && $request->filled('date_retour')) {
+                            $query->whereBetween('date_depart', [$request->date_depart, $request->date_retour])
+                                ->orWhereBetween('date_retour', [$request->date_depart, $request->date_retour])
+                                ->orWhere(function ($query) use ($request) {
+                                    $query->where('date_depart', '<=', $request->date_depart)
+                                        ->where('date_retour', '>=', $request->date_retour);
+                                });
+                        }
+
+                        // Filter for vehicles not available if only `date_depart` is provided
+                        if ($request->filled('date_depart') && !$request->filled('date_retour')) {
+                            $query->where('date_depart', '<=', $request->date_depart)
+                                ->where('date_retour', '>=', $request->date_depart);
+                        }
+
+                        // Filter for vehicles not available if only `date_retour` is provided
+                        if ($request->filled('date_retour') && !$request->filled('date_depart')) {
+                            $query->where('date_depart', '<=', $request->date_retour)
+                                ->where('date_retour', '>=', $request->date_retour);
+                        }
                     });
                 });
             }
 
             // Retrieve the filtered vehicles with their categories
-            $vehicles = $query->get();
+            $vehicles = $query->with('categorie')->paginate(5);
+            // Debugging output to see the filtered vehicles
+            // dd($vehicles);
+
+            if (Auth::user()->type == "admin") {
+                return inertia('admin/vehicules/index', [
+                    'vehicules' => $vehicles,
+                    'categories' => $categories, // Include categories for the dropdown filter
+                ]);
+            }
+
             // Return the filtered results
             return inertia('welcome/allCars', [
                 'latestVehicles' => $vehicles,
+                'categories' => $categories, // Include categories for the dropdown filter
             ]);
         }
 
-        // If no search parameters are provided, return all vehicles
+        // If no search parameters are provided, return all vehicles with pagination
         $vehicules = Vehicule::with('categorie')->paginate(5);
 
-
-        // dd($vehicules);
+        // Return the view with all vehicle data and categories for filtering
         return inertia('admin/vehicules/index', [
             'vehicules' => $vehicules,
-        ]); // Return to the view with all vehicle data
+            'categories' => $categories, // Include categories for the dropdown filter
+        ]);
     }
+
 
 
     /**

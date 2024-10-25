@@ -31,15 +31,16 @@ import PrimaryButton from '../Components/PrimaryButton';
 import SecondaryButton from '../Components/SecondaryButton';
 // import { Toast } from "@radix-ui/react-toast";
 
-export default function AdminLayout({ auth, header, children }) {
+export default function AdminLayout({ header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
-    const { flash } = usePage().props;
+    const { flash, auth } = usePage().props;
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [severity, setSeverity] = useState('success');
     const [confirmModal, setConfirmModal] = useState(false);
     const { post } = useForm();
+
     // console.log(auth);
 
     useEffect(() => {
@@ -125,73 +126,56 @@ export default function AdminLayout({ auth, header, children }) {
 
     return (
         <div className="flex h-screen bg-gray-50 transition-colors duration-300 dark:bg-gray-900">
-            <Sidebar>
+            <Sidebar auth={auth}>
                 <SidebarItem
                     icon={<LayoutDashboard size={20} />}
                     text="Tableau de bord"
-                    active
                     link="/admin/dashboard" // Add link prop for navigation
                 />
-                <SidebarItem
-                    icon={<CarIcon size={20} />}
-                    text="Véhicules"
-                    active={false}
-                >
+                <SidebarItem icon={<CarIcon size={20} />} text="Véhicules">
                     <SidebarItem
                         icon={<List size={20} />}
                         text="Toutes les véhicules"
-                        active={false}
                         link="/admin/vehicules"
                     />
                     <SidebarItem
                         icon={<Category size={20} />}
                         text="Toutes les categories"
-                        active={false}
                         link="/admin/categories"
                     />
                     <SidebarItem
                         icon={<Add size={20} />}
                         text="ajout"
-                        active={false}
                         link="/admin/vehicules/create"
                     />
 
                     <SidebarItem
                         icon={<Add size={20} />}
                         text="ajout categorie"
-                        active={false}
                         link="/admin/categories/create"
                     />
                 </SidebarItem>
 
-                <SidebarItem
-                    icon={<Users2 size={20} />}
-                    text="Clients"
-                    active={false}
-                >
+                <SidebarItem icon={<Users2 size={20} />} text="Clients">
                     <SidebarItem
                         icon={<List size={20} />}
                         text="Toutes"
-                        active={false}
                         link="/admin/clients"
                     />
                     <SidebarItem
                         icon={<Add size={20} />}
                         text="ajout"
-                        active={false}
                         link="/admin/clients/create"
                     />
                 </SidebarItem>
                 <SidebarItem
                     icon={<CarRental size={20} />}
                     text="Réservations"
-                    active={false}
                     link="/admin/reservations"
                 />
                 <SidebarItem
                     icon={<CarRental size={20} />}
                     text="Archives"
-                    active={false}
                     link="/admin/reservations/archived"
                 />
                 <hr className="my-3" />
@@ -278,8 +262,8 @@ export default function AdminLayout({ auth, header, children }) {
                                 <Dropdown>
                                     <Dropdown.Trigger>
                                         <button className="flex items-center focus:outline-none">
-                                            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300">
-                                                {/* {getInitials(auth?.user.nom)} */}
+                                            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border bg-gray-200 font-semibold text-gray-600 dark:bg-gray-600 dark:text-gray-300">
+                                                {getInitials(auth?.user.nom)}
                                             </span>
                                         </button>
                                     </Dropdown.Trigger>
@@ -290,7 +274,7 @@ export default function AdminLayout({ auth, header, children }) {
                                         <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
                                             Connecté en tant que:
                                             <div className="font-bold">
-                                                {/* {auth.login} */}
+                                                {auth.user.nom}
                                             </div>
                                         </div>
                                         <Divider />

@@ -3,31 +3,34 @@ import { useEffect, useState } from 'react';
 import Dropdown from '@/Components/Dropdown';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 
+import ConfirmModal from '@/Components/ConfirmModal';
 import Sidebar, { SidebarItem } from '@/Components/MySidebar';
 import Settings from '@/Components/Settings';
-import { router, usePage } from '@inertiajs/react';
-import { CarRental, HelpCenterOutlined } from '@mui/icons-material';
+import { router, useForm, usePage } from '@inertiajs/react';
+import { AccountCircle, CarRental, Logout } from '@mui/icons-material';
 import { Alert, Divider, Snackbar } from '@mui/material';
 import { GridAddIcon } from '@mui/x-data-grid';
 import {
     Fullscreen,
     LayoutDashboard,
+    LifeBuoy,
     Moon,
     Settings2,
-    SignatureIcon,
     Sun,
 } from 'lucide-react';
 import PrimaryButton from '../Components/PrimaryButton';
 import SecondaryButton from '../Components/SecondaryButton';
-// import { Toast } from "@radix-ui/react-toast";
 
-export default function ClientLayout({ auth, header, children }) {
+export default function AdminLayout({ header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
-    const { flash } = usePage().props;
+    const { flash, auth } = usePage().props;
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [severity, setSeverity] = useState('success');
+    const [confirmModal, setConfirmModal] = useState(false);
+    const { post } = useForm();
+    console.log(auth);
 
     useEffect(() => {
         // console.log(flash);
@@ -72,6 +75,11 @@ export default function ClientLayout({ auth, header, children }) {
         });
     };
 
+    const handleLogout = () => {
+        post(route('logout'));
+        setConfirmModal(!confirmModal);
+    };
+
     const toggleFullScreen = () => {
         if (!isFullScreen) {
             if (document.documentElement.requestFullscreen) {
@@ -106,30 +114,34 @@ export default function ClientLayout({ auth, header, children }) {
     }
 
     return (
-        <div className="flex h-screen bg-gray-50  transition-colors duration-300 dark:bg-gray-900">
-            <Sidebar>
+        <div className="flex h-screen bg-gray-50 transition-colors duration-300 dark:bg-gray-900">
+            <Sidebar auth={auth}>
                 <SidebarItem
                     icon={<LayoutDashboard size={20} />}
-                    text="Dashboard"
-                    active
-                />
-                <SidebarItem
-                    icon={<CarRental />}
-                    text="Réservation"
-                    active={false}
+                    text="Tableau de bord"
+                    link="/client/dashboard" // Add link prop for navigation
                 />
 
                 <SidebarItem
-                    icon={<SignatureIcon />}
-                    text="Contrat de location"
-                    active={false}
+                    icon={<CarRental size={20} />}
+                    text="Réservations"
+                    link="/client/reservations"
                 />
-
+                <SidebarItem
+                    icon={<CarRental size={20} />}
+                    text="Archives"
+                    link="/client/reservations/archived"
+                />
                 <hr className="my-3" />
-                <SidebarItem icon={<Settings2 size={20} />} text="Settings" />
                 <SidebarItem
-                    icon={<HelpCenterOutlined size={20} />}
-                    text="Aide"
+                    icon={<Settings2 size={20} />}
+                    text="Settings"
+                    // link="/settings"
+                />
+                <SidebarItem
+                    icon={<LifeBuoy size={20} />}
+                    text="Help"
+                    // link="/help"
                 />
             </Sidebar>
 
@@ -141,7 +153,6 @@ export default function ClientLayout({ auth, header, children }) {
                         boxShadow: `0 5px 10px rgba(0,0,0,0.1)`, // Subtle shadow using current palette
                     }}
                 >
-                    {' '}
                     <div className="flex h-16 items-center justify-between">
                         {/* Left Side (Optional Breadcrumbs or Back Button) */}
                         <div className="flex items-center">
@@ -170,13 +181,12 @@ export default function ClientLayout({ auth, header, children }) {
                                     <Moon className="h-5 w-5 text-gray-500" />
                                 )}
                             </button>
-
                             {/* Fullscreen Toggle */}
                             <button
                                 onClick={toggleFullScreen}
                                 className="rounded-full p-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-600"
                             >
-                                <Fullscreen className="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                                <Fullscreen className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                             </button>
                             {/* Search Bar */}
                             {/* <div className="relative hidden md:block">
@@ -187,18 +197,17 @@ export default function ClientLayout({ auth, header, children }) {
                                 />
                                 <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 transform text-gray-500 dark:text-gray-400" />
                             </div> */}
-
                             {/* Buttons */}
                             <div className="flex min-h-full items-center space-x-2">
                                 <SecondaryButton className="border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-700 dark:text-white">
-                                    <GridAddIcon className="mr-2 text-gray-500" />
-                                    Tâche
+                                    <GridAddIcon className="mr-2" />
+                                    Client
                                 </SecondaryButton>
                                 <PrimaryButton
                                     onClick={() => router.get('/projects/add')}
                                 >
                                     <GridAddIcon className="mr-2" />
-                                    Projet
+                                    Véhicule
                                 </PrimaryButton>
                             </div>
 
@@ -208,35 +217,52 @@ export default function ClientLayout({ auth, header, children }) {
                                     <Dropdown.Trigger>
                                         <button className="flex items-center focus:outline-none">
                                             <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 text-gray-600 dark:bg-gray-600 dark:text-gray-300">
-                                                {/* {getInitials(user.login)} */}
+                                                {getInitials(auth?.user.nom)}
                                             </span>
                                         </button>
                                     </Dropdown.Trigger>
-                                    <Dropdown.Content align="right">
+                                    <Dropdown.Content
+                                        align="right"
+                                        className="w-48 rounded-lg bg-white shadow-lg dark:bg-gray-700"
+                                    >
                                         <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
                                             Connecté en tant que:
                                             <div className="font-bold">
-                                                {/* {auth.user.nom} */}
+                                                {auth.user.nom}
                                             </div>
                                         </div>
                                         <Divider />
                                         <Dropdown.Link
                                             href={route('profile.edit')}
+                                            className="flex items-center rounded-lg px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-600"
                                         >
+                                            <AccountCircle className="mr-2" />{' '}
+                                            {/* User icon */}
                                             Profil
                                         </Dropdown.Link>
                                         <Dropdown.Link
-                                            href={route('logout')}
-                                            method="post"
+                                            href="#"
+                                            onClick={(e) => e.preventDefault()}
                                             as="button"
+                                            className="flex items-center rounded-lg px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-600"
                                         >
-                                            Déconnexion
+                                            <button
+                                                onClick={(e) =>
+                                                    setConfirmModal(true)
+                                                }
+                                                className="flex min-h-full w-full items-center text-start"
+                                            >
+                                                <Logout className="mr-2" />{' '}
+                                                {/* Logout icon */}
+                                                Déconnexion
+                                            </button>
                                         </Dropdown.Link>
                                     </Dropdown.Content>
                                 </Dropdown>
                             </div>
                         </div>
                     </div>
+
                     {/* Mobile Navigation Dropdown */}
                     <div
                         className={
@@ -246,8 +272,8 @@ export default function ClientLayout({ auth, header, children }) {
                     >
                         <div className="space-y-1 pb-3 pt-2">
                             <ResponsiveNavLink
-                                href={route('client.dashboard')}
-                                active={route().current('client.dashboard')}
+                                href={route('home')}
+                                active={route().current('home')}
                             >
                                 Accueil
                             </ResponsiveNavLink>
@@ -255,10 +281,10 @@ export default function ClientLayout({ auth, header, children }) {
                         <div className="border-t border-gray-200 pb-1 pt-4 dark:border-gray-700">
                             <div className="px-4">
                                 <div className="text-base font-medium text-gray-800 dark:text-gray-300">
-                                    {/* {user.login} */}
+                                    {/* {auth.login} */}
                                 </div>
                                 <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                    {/* {user.email} */}
+                                    {/* {auth.email} */}
                                 </div>
                             </div>
                             <div className="mt-3 space-y-1">
@@ -266,9 +292,7 @@ export default function ClientLayout({ auth, header, children }) {
                                     Profil
                                 </ResponsiveNavLink>
                                 <ResponsiveNavLink
-                                    method="post"
-                                    href={route('logout')}
-                                    as="button"
+                                    onClick={() => setConfirmModal(true)}
                                 >
                                     Déconnexion
                                 </ResponsiveNavLink>
@@ -295,6 +319,13 @@ export default function ClientLayout({ auth, header, children }) {
                             />
                         </Alert>
                     </Snackbar>
+                    <ConfirmModal
+                        open={confirmModal}
+                        onClose={() => setConfirmModal(!confirmModal)}
+                        onConfirm={handleLogout}
+                        title="Confirmer la deconxxion"
+                        content="Êtes-vous sûr de vouloir vous deconnecter ?"
+                    />
                     {header}
                     {children}
                     <Settings />

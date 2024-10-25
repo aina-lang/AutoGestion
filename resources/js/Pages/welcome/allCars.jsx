@@ -194,7 +194,7 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                 </section>
 
                 {/* Display filtered cars */}
-                <section className="mt-12 min-h-screen  w-full flex-grow overflow-auto px-12 pb-32">
+                <section className="mt-12 min-h-screen w-full flex-grow overflow-auto px-12 pb-32">
                     <div>
                         <h3 className="my-14 text-3xl font-bold">
                             Derniers Véhicules Disponibles
@@ -300,24 +300,32 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                                                             );
                                                         }
                                                     }}
-                                                    disabled={
-                                                        car.isReservedByUser &&
-                                                        car.reservationStatus !==
-                                                            'en attente'
-                                                    }
+                                                    // disabled={
+                                                    //     car.isReservedByUser &&
+                                                    //     car.reservationStatus !==
+                                                    //         'en attente'
+                                                    // }
                                                     className="flex-1"
                                                 >
-                                                    {car.isReservedByUser
+                                                    {/* {car.isReservedByUser
                                                         ? car.reservationStatus ===
                                                           'confirmée'
                                                             ? 'Déjà réservé'
                                                             : 'Annuler la réservation'
-                                                        : 'Réserver'}
+                                                        : 'Réserver'} */}
+                                                    Reserver
                                                 </PrimaryButton>
                                             )}
 
                                             <SecondaryButton
-                                                onClick={() => {}}
+                                                onClick={() => {
+                                                    router.visit(
+                                                        route(
+                                                            'cars.show',
+                                                            car.id,
+                                                        ),
+                                                    );
+                                                }}
                                                 className="flex-1"
                                             >
                                                 Voir plus

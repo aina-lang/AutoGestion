@@ -31,6 +31,7 @@ import {
     Delete as DeleteIcon,
     Edit as EditIcon,
     Ellipsis,
+    FilterIcon,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import ConfirmModal from './ConfirmModal';
@@ -42,6 +43,7 @@ const StyledDataGrid = ({
     pdfUrl,
     toggleStatusUrl,
     approveBtnShow,
+    FilterComponent,
 }) => {
     const [sorting, setSorting] = useState([]);
     const [columnFilters, setColumnFilters] = useState([]);
@@ -285,7 +287,7 @@ const StyledDataGrid = ({
     };
 
     const table = useReactTable({
-        data: data.data,
+        data: data?.data || [],
         columns: selectableColumns,
         onSortingChange: setSorting,
         onColumnFiltersChange: setColumnFilters,
@@ -322,65 +324,74 @@ const StyledDataGrid = ({
     return (
         <div className="w-full overflow-hidden rounded-lg">
             {/* Filter bar */}
-            <div className="flex items-center space-x-4 py-4">
+            <div className="flex items-center justify-between space-x-4 py-4">
                 {/* Column visibility dropdown */}
-                <DropdownMenu className="ml-auto border shadow-md">
-                    <DropdownMenuTrigger asChild>
-                        <button className="flex items-center rounded-sm border border-gray-300 bg-white p-2 py-1 text-gray-700 dark:border-none dark:bg-gray-800">
-                            Colonnes <ChevronDown className="ml-5 h-4 w-4" />
-                        </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="w-56 rounded-md bg-white p-2 shadow-md">
-                        <button
-                            onClick={handleResetVisibility}
-                            className="mb-2 flex w-full justify-start text-gray-700 hover:bg-gray-200"
+                <div className="flex space-x-2">
+                    {' '}
+                    <DropdownMenu className="ml-auto border shadow-md">
+                        <DropdownMenuTrigger asChild>
+                            <button className="flex items-center rounded-sm border border-gray-300 bg-white p-2 py-1 text-gray-700 dark:border-none dark:bg-gray-800">
+                                Colonnes{' '}
+                                <ChevronDown className="ml-5 h-4 w-4" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56 rounded-md bg-white p-2 shadow-md">
+                            <button
+                                onClick={handleResetVisibility}
+                                className="mb-2 flex w-full justify-start text-gray-700 hover:bg-gray-200"
+                            >
+                                Reinitialiser
+                            </button>
+                            {table
+                                .getAllColumns()
+                                .filter((column) => column.getCanHide())
+                                .map((column) => (
+                                    <DropdownMenuCheckboxItem
+                                        key={column.id}
+                                        className="flex w-full space-x-4 capitalize text-gray-700"
+                                        checked={column.getIsVisible()}
+                                        onCheckedChange={(value, e) => {
+                                            // e.preventDefault()
+                                            setColumnVisibility((prev) => ({
+                                                ...prev,
+                                                [column.id]: value,
+                                            }));
+                                            column.toggleVisibility(value);
+                                        }}
+                                    >
+                                        <span className="flex-grow p-1">
+                                            {column.id}
+                                        </span>
+                                    </DropdownMenuCheckboxItem>
+                                ))}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    {/* Export CSV button */}
+                    <DropdownMenu className="ml-auto border shadow-md">
+                        <DropdownMenuTrigger asChild>
+                            <button className="flex items-center rounded-sm border border-gray-300 bg-white p-2 py-1 text-gray-700 dark:border-none dark:bg-gray-800">
+                                Export <Download className="ml-5 h-4 w-4" />
+                            </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent
+                            align="end"
+                            className="min-w-52 rounded-md bg-white p-2 shadow-md"
                         >
-                            Reinitialiser
-                        </button>
-                        {table
-                            .getAllColumns()
-                            .filter((column) => column.getCanHide())
-                            .map((column) => (
-                                <DropdownMenuCheckboxItem
-                                    key={column.id}
-                                    className="flex w-full space-x-4 capitalize text-gray-700"
-                                    checked={column.getIsVisible()}
-                                    onCheckedChange={(value,e) => {
-                                        // e.preventDefault()
-                                        setColumnVisibility((prev) => ({
-                                            ...prev,
-                                            [column.id]: value,
-                                        }));
-                                        column.toggleVisibility(value);
-                                    }}
-                                >
-                                    <span className="flex-grow p-1">
-                                        {column.id}
-                                    </span>
-                                </DropdownMenuCheckboxItem>
-                            ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-
-                {/* Export CSV button */}
-                <DropdownMenu className="ml-auto border shadow-md">
-                    <DropdownMenuTrigger asChild>
-                        <button className="flex items-center rounded-sm border border-gray-300 bg-white p-2 py-1 text-gray-700 dark:border-none dark:bg-gray-800">
-                            Export <Download className="ml-5 h-4 w-4" />
-                        </button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent
-                        align="end"
-                        className="min-w-52 rounded-md bg-white p-2 shadow-md"
-                    >
-                        <DropdownMenuItem
-                            onClick={handleExportCSV}
-                            className="flex cursor-pointer items-center"
-                        >
-                            <Download className="mr-2" /> Exporter vers CSV
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                            <DropdownMenuItem
+                                onClick={handleExportCSV}
+                                className="flex cursor-pointer items-center"
+                            >
+                                <Download className="mr-2" /> Exporter vers CSV
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+                {FilterComponent && (
+                    <div className="flex items-center  justify-end space-x-4 flex-grow">
+                        <FilterIcon className="text-gray-500" />
+                        <FilterComponent className="flex-grow"/>
+                    </div>
+                )}
             </div>
 
             {/* Table */}
@@ -510,7 +521,7 @@ const StyledDataGrid = ({
                     </div>
                 )}
                 <span className="text-sm text-gray-500">
-                    {data.from} to {data.to} of {data.total} row(s)
+                    {data.from} à {data.to} de {data.total} line(s)
                 </span>
                 <div className="space-x-2">
                     {/* Previous Page Button */}

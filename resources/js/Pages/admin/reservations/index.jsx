@@ -3,7 +3,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import StyledDataGrid from '@/Components/StyledDataGrid'; // Importation de la table générique
 import { Input } from '@/components/ui/input';
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { MoreHorizSharp, TableView } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import { GridAddIcon } from '@mui/x-data-grid';
@@ -59,7 +59,7 @@ const index = ({ reservations }) => {
                                 }
                             >
                                 <GridAddIcon />
-                                Nouveau Véhicule
+                                Nouveau Reservation
                             </PrimaryButton>
                         </div>
                     }
@@ -121,10 +121,35 @@ const index = ({ reservations }) => {
                 ) : (
                     <StyledDataGrid
                         columns={[
-                            { accessorKey: 'user.nom', header: 'Client' },
+                            {
+                                accessorKey: 'user.nom',
+                                header: 'Client',
+                                cell: (props) => (
+                                    <Link
+                                        href={route(
+                                            'clients.show',
+                                            props.row.original.id,
+                                        )}
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        {props.getValue()}
+                                    </Link>
+                                ),
+                            },
                             {
                                 accessorKey: 'vehicule.marque',
                                 header: 'Voiture',
+                                cell: (props) => (
+                                    <Link
+                                        href={route(
+                                            'vehicules.show',
+                                            props.row.original.id,
+                                        )}
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        {props.getValue()}
+                                    </Link>
+                                ),
                             },
                             { accessorKey: 'motif', header: 'Motif' },
                             {

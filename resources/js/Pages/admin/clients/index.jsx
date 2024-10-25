@@ -44,7 +44,7 @@ function Index({ clients }) {
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage,
     );
-    
+
     const getStatusBadge = (status) => {
         switch (status) {
             case 'active':
@@ -154,24 +154,25 @@ function Index({ clients }) {
                                 accessorKey: 'phones',
                                 header: 'Téléphones',
                                 // Format phone numbers for display if needed
-                                // cell: ({ row }) => (
-                                //     row.original.phones.length > 0 ? row.original.phones.join(', ') : 'Aucun téléphone'
-                                // ),
+                                cell: ({ row }) =>
+                                    row.original.phones && row.original.phones.length > 0
+                                        ? row.original.phones.join(', ')
+                                        : 'Aucun téléphone',
                             },
-                            {
-                                accessorKey: 'status',
-                                header: 'Status',
-                                cell: ({ row }) => (
-                                    <span
-                                        className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${getStatusBadge(row.original.status)}`}
-                                    >
-                                        {row.original.status
-                                            .charAt(0)
-                                            .toUpperCase() +
-                                            row.original.status.slice(1)}
-                                    </span>
-                                ),
-                            },
+                            //     {
+                            //         accessorKey: 'status',
+                            //         header: 'Status',
+                            //         cell: ({ row }) => (
+                            //             <span
+                            //                 className={`inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold ${getStatusBadge(row.original.status)}`}
+                            //             >
+                            //                 {row.original.status
+                            //                     .charAt(0)
+                            //                     .toUpperCase() +
+                            //                     row.original.status.slice(1)}
+                            //             </span>
+                            //         ),
+                            //     },
                         ]}
                         actionUrl={route(route().current())}
                         pdfUrl={'vehicule.pdf'}

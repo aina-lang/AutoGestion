@@ -3,7 +3,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import ReservationModal from '@/Components/ReservationModal';
 import SecondaryButton from '@/Components/SecondaryButton';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, router } from '@inertiajs/react';
+import { Head, router, useForm } from '@inertiajs/react';
 import { Grid, MenuItem, TextField, Typography } from '@mui/material';
 import {
     SpaceEvenlyVerticallyIcon,
@@ -21,10 +21,20 @@ export default function Welcome({
     latestVehicles,
     categories,
 }) {
-    console.log(latestVehicles);
-
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedCar, setSelectedCar] = useState(null);
+
+    const { data, setData, post, processing, errors } = useForm({
+        nom: auth?.user ? auth?.user?.nom : '',
+        email: auth?.user ? auth?.user?.email : '',
+        message: '', // Initialize an array for phone numbers
+    });
+
+    const submit = (e) => {
+        e.preventDefault();
+        post(route('contact.submit'));
+    };
+
     const handleOpenModal = (car) => {
         setSelectedCar(car);
         setModalOpen(true);
@@ -410,19 +420,20 @@ export default function Welcome({
                                                             );
                                                         }
                                                     }}
-                                                    disabled={
-                                                        car.isReservedByUser &&
-                                                        car.reservationStatus !==
-                                                            'en attente'
-                                                    }
+                                                    // disabled={
+                                                    //     car.isReservedByUser &&
+                                                    //     car.reservationStatus !==
+                                                    //         'en attente'
+                                                    // }
                                                     className="flex-1"
                                                 >
-                                                    {car.isReservedByUser
+                                                    {/* {car.isReservedByUser
                                                         ? car.reservationStatus ===
                                                           'confirmée'
                                                             ? 'Déjà réservé'
                                                             : 'Annuler la réservation'
-                                                        : 'Réserver'}
+                                                        : 'Réserver'} */}
+                                                    Réserver
                                                 </PrimaryButton>
                                             )}
 
@@ -471,19 +482,30 @@ export default function Welcome({
                             votre disposition pour vous aider.
                         </p>
                         <div className="mt-2 flex flex-col items-center md:flex-row">
-                            <form className="mx-auto mt-6 w-full rounded-lg bg-white p-8 shadow-lg dark:bg-gray-900 md:w-1/2">
+                            <form
+                                className="mx-auto mt-6 w-full rounded-lg bg-white p-8 shadow-lg dark:bg-gray-900 md:w-1/2"
+                                onSubmit={submit}
+                            >
                                 <TextField
                                     fullWidth
                                     label="Nom"
                                     variant="outlined"
+                                    value={data.nom}
                                     sx={{ marginBottom: 2 }}
+                                    onChange={(e) =>
+                                        setData('nom', e.target.value)
+                                    }
                                 />
                                 <TextField
                                     fullWidth
                                     label="Email"
                                     type="email"
                                     variant="outlined"
+                                    value={data.email}
                                     sx={{ marginBottom: 2 }}
+                                    onChange={(e) =>
+                                        setData('email', e.target.value)
+                                    }
                                 />
                                 <TextField
                                     fullWidth
@@ -492,9 +514,19 @@ export default function Welcome({
                                     multiline
                                     rows={4}
                                     sx={{ marginBottom: 2 }}
+                                    value={data.message}
+                                    onChange={(e) =>
+                                        setData('message', e.target.value)
+                                    }
                                 />
-                                <PrimaryButton type="submit" className="w-full">
-                                    Envoyer
+                                <PrimaryButton
+                                    type="submit"
+                                    className="w-full"
+                                    disabled={auth?.user?.type == 'admin'}
+                                >
+                                    {auth?.user?.type == 'admin'
+                                        ? "vous etes l'administrateur "
+                                        : ' Envoyer'}
                                 </PrimaryButton>
                             </form>
                             <div className="mt-6 w-full md:ml-6 md:mt-0 md:w-1/2">

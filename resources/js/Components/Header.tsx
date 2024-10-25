@@ -39,7 +39,7 @@ const MyHeader: React.FC<MyHeaderProps> = ({
                                             <BreadcrumbItem>
                                                 {item.href ? (
                                                     <BreadcrumbLink
-                                                        className="cursor-pointer text-blue-600 hover:underline"
+                                                        className="cursor-pointer text-gray-500 hover:underline"
                                                         onClick={() => {
                                                             router.get(item.href);
                                                         }}
@@ -47,7 +47,7 @@ const MyHeader: React.FC<MyHeaderProps> = ({
                                                         {item.label}
                                                     </BreadcrumbLink>
                                                 ) : (
-                                                    <BreadcrumbPage className="font-semibold">
+                                                    <BreadcrumbPage className="font-semibold text-gray-600">
                                                         {item.label}
                                                     </BreadcrumbPage>
                                                 )}

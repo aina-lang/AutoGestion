@@ -103,12 +103,20 @@ class HomeController extends Controller
         if ($marque) {
             $query->where('marque', 'like', '%' . $marque . '%');
         }
-        if ($date_depart) {
-            $query->where('  date_depart', '<=', $date_depart); // Replace with your actual field for availability
+
+        if ($request->filled('date_depart') && $request->filled('date_retour')) {
+            $query->whereDoesntHave('reservations', function ($q) use ($request) {
+                $q->where(function ($query) use ($request) {
+                    $query->whereBetween('date_depart', [$request->date_depart, $request->date_retour])
+                        ->orWhereBetween('date_retour', [$request->date_depart, $request->date_retour])
+                        ->orWhere(function ($query) use ($request) {
+                            $query->where('date_depart', '<=', $request->date_depart)
+                                ->where('date_retour', '>=', $request->date_retour);
+                        });
+                });
+            });
         }
-        if ($date_retour) {
-            $query->where('date_retour', '>=', $date_retour); // Replace with your actual field for availability
-        }
+
         if ($categorie) {
             $query->where('categorie', $categorie);
         }

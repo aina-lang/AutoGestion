@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\ContratController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
@@ -21,14 +22,10 @@ use Illuminate\Http\Request;
 
 
 Route::get('/', [HomeController::class, "index"])->name("home");
-
-
-
 Route::get('/allcars', [HomeController::class, "all"])->name("cars.all");
-
 Route::get('/search-cars', [VehiculeController::class, 'search'])->name('cars.filter');
 Route::get('vehicules/{vehicule}/show', [VehiculeController::class, "showall"])->name('cars.show');
-
+Route::post('contact', [ContactFormController::class, 'submit'])->name('contact.submit');
 
 
 Route::middleware('auth', 'verified')->group(function () {
@@ -51,6 +48,8 @@ Route::middleware('auth', 'verified')->group(function () {
         });
 
         Route::prefix('client')->as("client.")->group(function () {
+            Route::get('reservations/archived', [ReservationController::class, 'archived'])->name('archived');
+
             Route::resource('reservations', ReservationController::class);
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         });

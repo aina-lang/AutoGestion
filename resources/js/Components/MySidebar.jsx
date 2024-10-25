@@ -7,28 +7,32 @@ import {
     ChevronLast,
     MoreVertical,
 } from 'lucide-react';
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import ApplicationLogo from './ApplicationLogo';
 
 const SidebarContext = createContext();
 
-export default function Sidebar({ children }) {
-    const [expanded, setExpanded] = useState(true);
-    const { paletteName } = useThemeContext(); // Obtenez le nom de la palette
+export default function Sidebar({ children, auth }) {
+    // Load the expanded state from local storage or default to true
+    const [expanded, setExpanded] = useState(() => {
+        const savedState = localStorage.getItem('sidebarExpanded');
+        return savedState === 'false' ? false : true; // Default to true if not found
+    });
 
-    // Palette active selon le thème
+    // Save the expanded state to local storage whenever it changes
+    useEffect(() => {
+        localStorage.setItem('sidebarExpanded', expanded);
+    }, [expanded]);
+
+    const { paletteName } = useThemeContext();
     const currentPalette = palette[paletteName];
 
     return (
         <aside
-            className={`h-screen bg-white dark:bg-gray-800 shadow-lg rounded-tr-[30px] ${expanded ? 'w-60' : ''}`}
+            className={`h-screen rounded-tr-[30px] transition-all ease-in  bg-white shadow-lg dark:bg-gray-800 ${expanded ? 'w-60' : ''}`}
         >
-            {/* sm:w-64 md:w-72 lg:W-80 xl:w-96 */}
-
-            <nav
-                className={`flex h-full flex-col  bg-[${currentPalette[500]}]`}
-            >
-                <div className="mb-5 flex items-center justify-between p-4 pb-2 space-x-2">
+            <nav className={`flex h-full flex-col bg-[${currentPalette[500]}]`}>
+                <div className="mb-5 flex items-center justify-between space-x-2 p-4 pb-2">
                     {expanded && <ApplicationLogo />}
                     <button
                         onClick={() => setExpanded((curr) => !curr)}
@@ -49,9 +53,11 @@ export default function Sidebar({ children }) {
                         } `}
                     >
                         <div className="leading-4">
-                            <h4 className="font-semibold">constGenius</h4>
+                            <h4 className="font-semibold text-gray-700">
+                                {auth.user.nom}
+                            </h4>
                             <span className="text-xs text-gray-600">
-                                constgenius@gmail.com
+                                {auth.user.email}
                             </span>
                         </div>
                         <MoreVertical size={20} />
@@ -62,24 +68,45 @@ export default function Sidebar({ children }) {
     );
 }
 
-export function SidebarItem({ icon, text, active, alert, children, link }) {
+export function SidebarItem({ icon, text, alert, children, link }) {
     const { expanded } = useContext(SidebarContext);
-    const [isActive, setIsActive] = useState(active);
+    const [isActive, setIsActive] = useState(false);
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
-    const { paletteName } = useThemeContext(); // Obtenez le nom de la palette
-
-    // Palette actuelle selon le thème
+    const { paletteName } = useThemeContext();
     const currentPalette = palette[paletteName];
 
-    // Gestion des enfants actifs
-    const hasActiveChild =
-        children &&
-        React.Children.toArray(children).some((child) => child.props.active);
+    // Check local storage for the active link
+    useEffect(() => {
+        const activeLink = localStorage.getItem('activeSidebarItem');
+        console.log(activeLink, link, activeLink === link);
+        if (activeLink === link) {
+            setIsActive(true);
+            setIsSubMenuOpen(true); // Open submenu if this item is active
+        } else {
+            setIsActive(false);
+        }
+    }, [link]);
 
-    // Function to handle navigation with Inertia
+    useEffect(() => {
+        if (children) {
+            const childActive = React.Children.toArray(children).some(
+                (child) => {
+                    const childLink = child.props.link; // Assuming children have a 'link' prop
+                    return (
+                        childLink &&
+                        localStorage.getItem('activeSidebarItem') === childLink
+                    );
+                },
+            );
+            setIsSubMenuOpen(childActive); // Open submenu if any child is active
+        }
+    }, [children]);
+    // Handle navigation and toggle submenu
     const handleNavigation = () => {
         if (link) {
+            localStorage.setItem('activeSidebarItem', link);
             router.visit(link); // Inertia's navigation function
+            setIsActive(true);
         } else {
             setIsSubMenuOpen((prev) => !prev); // Toggle submenu if no link provided
         }
@@ -89,7 +116,7 @@ export function SidebarItem({ icon, text, active, alert, children, link }) {
         <>
             <li
                 className={`group relative my-1 flex cursor-pointer flex-col items-start rounded-md px-3 py-2 font-medium transition-colors dark:text-gray-200`}
-                onClick={handleNavigation} // Use handleNavigation for onclick event
+                onClick={handleNavigation}
                 style={{
                     backgroundColor: isActive
                         ? currentPalette[50]
@@ -97,23 +124,18 @@ export function SidebarItem({ icon, text, active, alert, children, link }) {
                     color: isActive
                         ? currentPalette[600]
                         : palette['gray'][600],
-                        
                 }}
             >
                 <div className="flex w-full items-center">
                     <span>{icon}</span>
                     <span
-                        className={`overflow-hidden transition-all ${
-                            expanded ? 'ml-3 w-52' : 'hidden w-0'
-                        }`}
+                        className={`overflow-hidden transition-all ${expanded ? 'ml-3 w-52' : 'hidden w-0'}`}
                     >
                         {text}
                     </span>
                     {children && expanded && (
                         <ChevronDown
-                            className={`ml-auto transform transition-transform ${
-                                isSubMenuOpen ? 'rotate-180' : 'rotate-0'
-                            }`}
+                            className={`ml-auto transform transition-transform ${isSubMenuOpen ? 'rotate-180' : 'rotate-0'}`}
                         />
                     )}
                     {alert && (
@@ -124,10 +146,11 @@ export function SidebarItem({ icon, text, active, alert, children, link }) {
                 </div>
 
                 {/* Tooltip lorsque le menu est réduit */}
-                {!children && !expanded && (
+                {!children && !expanded && !isSubMenuOpen && (
                     <div
-                        className={`invisible absolute left-full ml-6 -translate-x-3 rounded-md bg-indigo-100 px-2 py-1 text-sm text-[${paletteName[800]}] opacity-20 transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100`}
+                        className={`invisible absolute left-full ml-6 flex min-w-[150px] -translate-x-3 items-center rounded-md bg-indigo-100 px-3 py-2 text-sm text-[${paletteName[800]}] opacity-20 transition-all group-hover:visible group-hover:translate-x-0 group-hover:opacity-100`}
                     >
+                        <span>{icon}</span>
                         {text}
                     </div>
                 )}
@@ -143,7 +166,7 @@ export function SidebarItem({ icon, text, active, alert, children, link }) {
 
             {/* Expanded submenu when sidebar is expanded */}
             {children && isSubMenuOpen && expanded && (
-                <ul className="pl-6 ">{children}</ul>
+                <ul className="pl-6">{children}</ul>
             )}
         </>
     );

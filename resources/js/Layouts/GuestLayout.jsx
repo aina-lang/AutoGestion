@@ -95,7 +95,10 @@ export default function Guest({ children, auth }) {
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900 sm:pt-0">
             {/* Header */}
             <motion.header
-                initial={{ opacity: 0, y: -50 }}
+                initial={{
+                     opacity: 0,
+                    
+                     y: -50 }}
                 animate={{ opacity: isSticky ? 1 : 0.9, y: isSticky ? 0 : -10 }}
                 transition={{ type: 'tween', duration: 0.5 }}
                 className={`fixed top-0 z-50 flex w-full items-center justify-between bg-white px-6 py-4 shadow-md`}

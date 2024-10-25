@@ -93,7 +93,7 @@ class ClientController extends Controller
                 'nom' => 'required|string|max:255',
                 'email' => 'required|string|email|max:255|unique:users,email,' . $id,
                 'phone' => 'nullable|string|max:15',
-                'status' => 'required|string|in:active,inactive,pending',
+                // 'status' => 'required|string|in:active,inactive,pending',
             ]);
 
             // Find the client and update the data

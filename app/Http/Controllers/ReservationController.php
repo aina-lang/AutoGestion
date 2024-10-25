@@ -75,7 +75,7 @@ class ReservationController extends Controller
         $vehicules = Vehicule::all();
         $categories = Categorie::all();
 
-        return Inertia::render('admin/reservations/create', [
+        return Inertia::render('admin/reservations/add', [
             'users' => $users,
             'vehicules' => $vehicules,
             'categories' => $categories,
@@ -94,10 +94,11 @@ class ReservationController extends Controller
             'date_retour' => 'required|date|after:date_depart',
             'motif' => 'required|string|max:255',
             'type_voyage' => 'required|in:circuit,boucle,transfert', // Validation du type de voyage
-            'pieces_jointes' => 'array',
-            'pieces_jointes.*' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
+            // 'pieces_jointes' => 'array',
+            // 'pieces_jointes.*' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
+        // dd($validator);
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
@@ -134,7 +135,7 @@ class ReservationController extends Controller
                 'date_retour' => $request->date_retour,
                 'motif' => $request->motif,
                 'type_voyage' => $request->type_voyage, // Ajout du type de voyage
-                'pieces_jointes' => json_encode($request->pieces_jointes),
+                // 'pieces_jointes' => json_encode($request->pieces_jointes),
                 // 'status' => 'en_attente',
             ]);
 
@@ -191,9 +192,9 @@ class ReservationController extends Controller
             'date_retour' => 'required|date|after:date_depart',
             'motif' => 'required|string|max:255',
             'type_voyage' => 'required|in:circuit,boucle,transfert', // Validation du type de voyage
-            'pieces_jointes' => 'array',
-            'pieces_jointes.*' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'status' => 'required|in:en_attente,confirmée,annulée',
+            // 'pieces_jointes' => 'array',
+            // 'pieces_jointes.*' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
+            // 'status' => 'required|in:en_attente,confirmée,annulée',
         ]);
 
         if ($validator->fails()) {
@@ -228,8 +229,8 @@ class ReservationController extends Controller
                 'date_retour' => $request->date_retour,
                 'motif' => $request->motif,
                 'type_voyage' => $request->type_voyage, // Mise à jour du type de voyage
-                'pieces_jointes' => json_encode($request->pieces_jointes),
-                'status' => $request->status,
+                // 'pieces_jointes' => json_encode($request->pieces_jointes),
+                // 'status' => $request->status,
             ]);
 
             session()->flash('success', 'Réservation mise à jour avec succès.');
@@ -249,7 +250,7 @@ class ReservationController extends Controller
         $reservation->delete();
 
         session()->flash('success', 'Réservation supprimée avec succès.');
-        return redirect()->route('reservations.index');
+        return redirect()->back();
     }
 
 

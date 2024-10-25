@@ -4,7 +4,7 @@ import PrimaryButton from '@/Components/PrimaryButton';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, router, useForm } from '@inertiajs/react';
 import AddCircle from '@mui/icons-material/AddCircle'; 
-import { Chip, InputLabel, TextField } from '@mui/material'; 
+import { Chip, InputLabel, TextField, FormControl } from '@mui/material'; 
 import React, { useState } from 'react';
 
 function AddClient() {
@@ -69,78 +69,70 @@ function AddClient() {
                     <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <InputLabel htmlFor="nom" value="Nom Complet" />
-                                <TextField
-                                    id="nom"
-                                    name="nom"
-                                    value={data.nom}
-                                    className="mt-1 block w-full"
-                                    autoComplete="nom"
-                                    isFocused={true}
-                                    onChange={(e) =>
-                                        setData('nom', e.target.value)
-                                    }
-                                    required
-                                    error={!!errors.nom}
-                                    helperText={errors.nom}
-                                />
+                                <FormControl fullWidth error={!!errors.nom}>
+                                    <InputLabel htmlFor="nom">Nom Complet</InputLabel>
+                                    <TextField
+                                        id="nom"
+                                        name="nom"
+                                        value={data.nom}
+                                        className="mt-1 block w-full"
+                                        autoComplete="nom"
+                                        isFocused={true}
+                                        onChange={(e) => setData('nom', e.target.value)}
+                                        required
+                                    />
+                                    <InputError message={errors.nom} />
+                                </FormControl>
                             </div>
                             <div>
-                                <InputLabel htmlFor="email" value="Email" />
-                                <TextField
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    value={data.email}
-                                    className="mt-1 block w-full"
-                                    autoComplete="username"
-                                    onChange={(e) =>
-                                        setData('email', e.target.value)
-                                    }
-                                    required
-                                    error={!!errors.email}
-                                    helperText={errors.email}
-                                />
+                                <FormControl fullWidth error={!!errors.email}>
+                                    <InputLabel htmlFor="email">Email</InputLabel>
+                                    <TextField
+                                        id="email"
+                                        type="email"
+                                        name="email"
+                                        value={data.email}
+                                        className="mt-1 block w-full"
+                                        autoComplete="username"
+                                        onChange={(e) => setData('email', e.target.value)}
+                                        required
+                                    />
+                                    <InputError message={errors.email} />
+                                </FormControl>
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <InputLabel htmlFor="password" value="Mot de Passe" />
-                                <TextField
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    value={data.password}
-                                    className="mt-1 block w-full"
-                                    autoComplete="new-password"
-                                    onChange={(e) =>
-                                        setData('password', e.target.value)
-                                    }
-                                    required
-                                    error={!!errors.password}
-                                    helperText={errors.password}
-                                />
+                                <FormControl fullWidth error={!!errors.password}>
+                                    <InputLabel htmlFor="password">Mot de Passe</InputLabel>
+                                    <TextField
+                                        id="password"
+                                        type="password"
+                                        name="password"
+                                        value={data.password}
+                                        className="mt-1 block w-full"
+                                        autoComplete="new-password"
+                                        onChange={(e) => setData('password', e.target.value)}
+                                        required
+                                    />
+                                    <InputError message={errors.password} />
+                                </FormControl>
                             </div>
-
                             <div>
-                                <InputLabel htmlFor="password_confirmation" value="Confirmer le Mot de Passe" />
-                                <TextField
-                                    id="password_confirmation"
-                                    type="password"
-                                    name="password_confirmation"
-                                    value={data.password_confirmation}
-                                    className="mt-1 block w-full"
-                                    autoComplete="new-password"
-                                    onChange={(e) =>
-                                        setData(
-                                            'password_confirmation',
-                                            e.target.value,
-                                        )
-                                    }
-                                    required
-                                    error={!!errors.password_confirmation}
-                                    helperText={errors.password_confirmation}
-                                />
+                                <FormControl fullWidth error={!!errors.password_confirmation}>
+                                    <InputLabel htmlFor="password_confirmation">Confirmer le Mot de Passe</InputLabel>
+                                    <TextField
+                                        id="password_confirmation"
+                                        type="password"
+                                        name="password_confirmation"
+                                        value={data.password_confirmation}
+                                        className="mt-1 block w-full"
+                                        autoComplete="new-password"
+                                        onChange={(e) => setData('password_confirmation', e.target.value)}
+                                        required
+                                    />
+                                    <InputError message={errors.password_confirmation} />
+                                </FormControl>
                             </div>
                         </div>
                         <div className="col-span-2">
@@ -148,9 +140,7 @@ function AddClient() {
                             <div className="relative mt-2 flex items-center">
                                 <TextField
                                     value={phoneInput}
-                                    onChange={(e) =>
-                                        setPhoneInput(e.target.value)
-                                    }
+                                    onChange={(e) => setPhoneInput(e.target.value)}
                                     className="mt-1 block w-full"
                                     placeholder="Ajouter un numéro de téléphone"
                                 />
@@ -168,9 +158,7 @@ function AddClient() {
                                     <Chip
                                         key={index}
                                         label={phone}
-                                        onDelete={() =>
-                                            removePhoneNumber(phone)
-                                        }
+                                        onDelete={() => removePhoneNumber(phone)}
                                         className="mr-2 mt-2"
                                     />
                                 ))}
