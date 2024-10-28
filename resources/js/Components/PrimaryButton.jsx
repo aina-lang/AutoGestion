@@ -23,8 +23,8 @@ export default function PrimaryButton({
                 color: '#fff', // Text color
                 border: 'none', // No border for MUI style
                 fontSize: '0.7rem', // Smaller font size (14px)
-                padding: '8px 16px', // Adjust padding for smaller size
-                // borderRadius: '8px', // Rounded corners for modern look
+                padding: '7px 16px', // Adjust padding for smaller size
+                borderRadius: '8px', // Rounded corners for modern look
                 // textTransform: 'none', // Prevent text from being uppercase
                 minWidth: '120px', // Set minimum button width
                 '&:hover': {

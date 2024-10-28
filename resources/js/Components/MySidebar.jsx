@@ -26,10 +26,10 @@ export default function Sidebar({ children, auth }) {
 
     const { paletteName } = useThemeContext();
     const currentPalette = palette[paletteName];
-
+// bg-zinc-800
     return (
         <aside
-            className={`h-screen rounded-tr-[30px] bg-white shadow-lg transition-all ease-in dark:bg-gray-800 ${expanded ? 'w-60' : ''}`}
+            className={`h-screen rounded-tr-[30px] bg-white  shadow-lg transition-all ease-in dark:bg-gray-800 ${expanded ? 'w-60' : ''}`}
         >
             <nav className={`flex h-full flex-col bg-[${currentPalette[500]}]`}>
                 <div className="mb-5 flex items-center justify-between space-x-2 p-4 pb-2">
@@ -119,15 +119,16 @@ export function SidebarItem({ icon, text, alert, children, link }) {
     return (
         <>
             <li
-                className={`group relative my-1 flex cursor-pointer flex-col items-start rounded-md px-3 py-2 font-medium transition-colors dark:text-gray-200`}
+                className={`group relative my-1  flex cursor-pointer flex-col items-start rounded-md px-3 py-2 text-sm font-medium transition-colors dark:text-gray-200`}
                 onClick={handleNavigation}
                 style={{
                     backgroundColor: isActive
-                        ? currentPalette[100]
+                        ? currentPalette[50]
                         : 'transparent',
                     color: isActive
                         ? currentPalette[600]
-                        : palette['gray'][600],
+                        : palette['gray'][500],
+                    // color: isActive ? currentPalette[600] : 'white',
                 }}
             >
                 <div className="flex w-full items-center">

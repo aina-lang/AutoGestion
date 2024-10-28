@@ -1,7 +1,6 @@
 // resources/js/Pages/Dashboard.jsx
 
 import MyHeader from '@/Components/Header';
-import PrimaryButton from '@/Components/PrimaryButton';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, router } from '@inertiajs/react';
 import {
@@ -9,7 +8,6 @@ import {
     CarRentalSharp,
 } from '@mui/icons-material';
 import { BarChart } from '@mui/x-charts';
-import { GridAddIcon } from '@mui/x-data-grid';
 
 import { CarIcon } from 'lucide-react';
 
@@ -32,18 +30,15 @@ export default function Dashboard({
             header={
                 <MyHeader
                     title="Tableau de Bord"
-                    breadcrumbItems={[
-                        { label: 'Accueil', href: '/' },
-                        { label: 'Projets' },
-                    ]}
-                    right={
-                        <div className="flex space-x-4">
-                            <PrimaryButton onClick={handleAddProject}>
-                                <GridAddIcon />
-                                Nouveau Projet
-                            </PrimaryButton>
-                        </div>
-                    }
+                    breadcrumbItems={[{ label: 'Dashboard' }]}
+                    // right={
+                    //     <div className="flex space-x-4">
+                    //         <PrimaryButton onClick={handleAddProject}>
+                    //             <GridAddIcon />
+                    //             Nouveau Projet
+                    //         </PrimaryButton>
+                    //     </div>
+                    // }
                 />
             }
         >
@@ -55,28 +50,28 @@ export default function Dashboard({
                     <Card
                         title="Total de Voitures"
                         value={totalCars}
-                        icon={<CarIcon className="text-blue-500" />}
-                        color="bg-blue-200"
+                        icon={<CarIcon className="text-white" />}
+                        color="bg-gradient-to-tr from-blue-500 to-blue-300 shadow-blue-200 shadow-lg"
                     />
                     <Card
                         title="Réservations"
                         value={totalReservations}
-                        icon={<CarRentalSharp className="text-green-500" />}
-                        color="bg-green-200"
+                        icon={<CarRentalSharp className="text-white" />}
+                        color="bg-gradient-to-tr from-green-500 to-green-300 shadow-green-200 shadow-lg"
                     />
                     <Card
                         title="Utilisateurs"
                         value={totalUsers}
                         icon={
-                            <AdminPanelSettingsOutlined className="text-orange-500" />
+                            <AdminPanelSettingsOutlined className="text-white" />
                         }
-                        color="bg-orange-200"
+                        color="bg-gradient-to-tr from-orange-500 to-orange-300 shadow-orange-200 shadow-lg"
                     />
                     <Card
                         title="Voitures Louées (%)"
                         // value={`${rentedCarsPercentage}%`}
-                        icon={<CarRentalSharp className="text-red-500" />}
-                        color="bg-red-200"
+                        icon={<CarRentalSharp className="text-white" />}
+                        color="bg-gradient-to-tr from-pink-500 to-pink-300 shadow-pink-200 shadow-lg"
                     />
                     {/* <Card
                         title="Voitures Disponibles (%)"
@@ -128,7 +123,7 @@ export default function Dashboard({
                             />
                         }
                     />
-                    <div className="min-h-full bg-white p-4 shadow-lg rounded-md dark:bg-gray-800">
+                    <div className="min-h-full rounded-md bg-white p-4 shadow-lg dark:bg-gray-800">
                         <h2 className="text-xl font-bold">
                             Top 3 Voitures les Plus Louées (3 derniers mois)
                         </h2>
@@ -138,7 +133,7 @@ export default function Dashboard({
                                     {mostRentedCars.map((car, index) => (
                                         <li
                                             key={index}
-                                            className="flex justify-between rounded-lg p-4 "
+                                            className="flex justify-between rounded-lg p-4"
                                         >
                                             <span className="font-medium">
                                                 {car.car.marque}
@@ -165,17 +160,17 @@ export default function Dashboard({
 
 const Card = ({ title, value, icon, color }) => (
     <div
-        className={`space-x-4 rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800`}
+        className={`relative space-x-4 rounded-lg bg-white p-4 py-8 pt-2 shadow-lg dark:bg-gray-800`}
     >
+        <div
+            className={`-top-5 h-16 w-16 ${color} absolute flex items-center justify-center rounded-xl`}
+        >
+            {icon}
+        </div>
         <div className="flex justify-between text-3xl">
-            <div
-                className={`h-10 w-10 ${color} flex items-center justify-center rounded-full`}
-            >
-                {icon}
-            </div>
             <div className="flex-grow text-right">
                 <h6 className="text-lg font-semibold">{title}</h6>
-                <p className="text-3xl font-bold">{value}</p>
+                <p className="text-3xl font-bold text-gray-600">{value}</p>
             </div>
         </div>
     </div>

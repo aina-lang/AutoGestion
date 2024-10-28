@@ -17,6 +17,7 @@ import {
     Download,
     PictureAsPdf,
 } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
 import {
     flexRender,
     getCoreRowModel,
@@ -172,7 +173,7 @@ const StyledDataGrid = ({
             id: 'select',
             header: ({ table }) => (
                 <input
-                    className="rounded-sm dark:border-none border-gray-300"
+                    className="rounded-sm border-gray-300 dark:border-none"
                     style={{
                         backgroundColor: table.getIsAllRowsSelected()
                             ? currentPalette[500]
@@ -185,7 +186,7 @@ const StyledDataGrid = ({
             ),
             cell: ({ row }) => (
                 <input
-                    className="rounded-sm dark:border-none border-gray-300"
+                    className="rounded-sm border-gray-300 dark:border-none"
                     type="checkbox"
                     style={{
                         backgroundColor: row.getIsSelected()
@@ -212,20 +213,20 @@ const StyledDataGrid = ({
                         // onOpenChange={setDropdownOpen}
                     >
                         <DropdownMenuTrigger asChild>
-                            <button
+                            <IconButton
                                 onClick={() => {
                                     // setDropdownOpen(!dropdownOpen);
                                     setSelectedRow(row);
                                 }}
                             >
                                 <Ellipsis />
-                            </button>
+                            </IconButton>
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent className="bg-white">
-                            <DropdownMenuLabel className="font-bold text-gray-900">
+                            {/* <DropdownMenuLabel className="font-bold text-gray-900">
                                 Actions
-                            </DropdownMenuLabel>
+                            </DropdownMenuLabel> */}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                                 onClick={() => handleBulkAction('edit', row)}
@@ -330,12 +331,12 @@ const StyledDataGrid = ({
                     {' '}
                     <DropdownMenu className="ml-auto border shadow-md">
                         <DropdownMenuTrigger asChild>
-                            <button className="flex text-gray-500 items-center rounded-sm border border-gray-200 bg-white p-2 py-1  dark:border-none dark:bg-gray-800">
+                            <button className="flex items-center rounded-sm border border-gray-200 bg-white p-2 py-1 text-gray-500 dark:border-none dark:bg-gray-800">
                                 Colonnes{' '}
                                 <ChevronDown className="ml-5 h-4 w-4" />
                             </button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56 rounded-md text-gray-500 bg-white p-2 shadow-md">
+                        <DropdownMenuContent className="w-56 rounded-md bg-white p-2 text-gray-500 shadow-md">
                             <button
                                 onClick={handleResetVisibility}
                                 className="mb-2 flex w-full justify-start text-gray-700 hover:bg-gray-200"
@@ -369,33 +370,33 @@ const StyledDataGrid = ({
                     {/* Export CSV button */}
                     <DropdownMenu className="ml-auto border shadow-md">
                         <DropdownMenuTrigger asChild>
-                            <button className="flex text-gray-500 items-center rounded-sm border border-gray-200 bg-white p-2 py-1 dark:border-none dark:bg-gray-800">
+                            <button className="flex items-center rounded-sm border border-gray-200 bg-white p-2 py-1 text-gray-500 dark:border-none dark:bg-gray-800">
                                 Export <Download className="ml-5 h-4 w-4" />
                             </button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
                             align="end"
-                            className="min-w-52 rounded-md bg-white p-2 shadow-md text-gray-500"
+                            className="min-w-52 rounded-md bg-white p-2 text-gray-500 shadow-md"
                         >
                             <DropdownMenuItem
                                 onClick={handleExportCSV}
                                 className="flex cursor-pointer items-center"
                             >
-                                <Download className="mr-2 " /> Exporter vers CSV
+                                <Download className="mr-2" /> Exporter vers CSV
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>
                 {FilterComponent && (
-                    <div className="flex items-center  justify-end space-x-4 flex-grow">
+                    <div className="flex flex-grow items-center justify-end space-x-4">
                         <FilterIcon className="text-gray-500" />
-                        <FilterComponent className="flex-grow"/>
+                        <FilterComponent className="flex-grow" />
                     </div>
                 )}
             </div>
 
             {/* Table */}
-            <div className="mb-4 min-h-56 overflow-x-auto overflow-y-hidden rounded-sm border border-gray-200 shadow-sm bg-white dark:border-none dark:bg-gray-800">
+            <div className="mb-4 min-h-56 overflow-x-auto overflow-y-hidden rounded-sm border border-gray-200 bg-white shadow-sm dark:border-none dark:bg-gray-800">
                 <table className="min-w-full">
                     <thead>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -473,7 +474,7 @@ const StyledDataGrid = ({
             </div>
 
             {/* Data from Laravel */}
-            <div className="mb-2 flex items-center justify-between rounded-sm bg-white p-4 shadow-lg dark:border-none dark:bg-gray-800 mb-5">
+            <div className="mb-2 mb-5 flex items-center justify-between rounded-sm bg-white p-4 shadow-lg dark:border-none dark:bg-gray-800">
                 {selectedRows.length > 0 && (
                     <div
                         sx={{ borderRadius: '8px' }}

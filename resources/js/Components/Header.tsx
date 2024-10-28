@@ -7,11 +7,13 @@ import {
     BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb';
 import { router } from '@inertiajs/react';
+import { HomeIcon } from 'lucide-react';
 import React from 'react';
 
 interface BreadcrumbItemType {
     label: string;
     href: string | URL;
+    icon?: React.ReactNode; // Make icon optional
 }
 
 interface MyHeaderProps {
@@ -25,25 +27,40 @@ const MyHeader: React.FC<MyHeaderProps> = ({
     breadcrumbItems,
     right,
 }) => {
+    // Add "Accueil" as the first breadcrumb item
+    const items: BreadcrumbItemType[] = [
+        {
+            label: 'Accueil',
+            href: '/',
+            icon: <HomeIcon className="h-5 w-5" aria-hidden="true" />, // Adjust icon size as needed
+        },
+        ...breadcrumbItems,
+    ];
+
     return (
-        <div className="overflow-y-hidden py-0  ">
+        <div className="overflow-y-hidden py-0">
             <div className="mx-auto w-full">
                 <div className="overflow-hidden">
-                    <div className="p-6 text-gray-900 border-b ">
+                    <div className="p-6 text-gray-900 border-b">
                         <div className="flex flex-row items-center justify-between">
                             {/* Breadcrumb Component */}
                             <Breadcrumb>
                                 <BreadcrumbList className="flex items-center space-x-2">
-                                    {breadcrumbItems.map((item, index) => (
+                                    {items.map((item, index) => (
                                         <React.Fragment key={index}>
                                             <BreadcrumbItem>
                                                 {item.href ? (
                                                     <BreadcrumbLink
-                                                        className="cursor-pointer text-gray-500 hover:underline"
+                                                        className="cursor-pointer text-gray-500 hover:underline flex items-center"
                                                         onClick={() => {
                                                             router.get(item.href);
                                                         }}
                                                     >
+                                                        {item.icon && (
+                                                            <span className="mr-1">
+                                                                {item.icon}
+                                                            </span>
+                                                        )}
                                                         {item.label}
                                                     </BreadcrumbLink>
                                                 ) : (
@@ -52,8 +69,10 @@ const MyHeader: React.FC<MyHeaderProps> = ({
                                                     </BreadcrumbPage>
                                                 )}
                                             </BreadcrumbItem>
-                                            {index < breadcrumbItems.length - 1 && (
-                                                <BreadcrumbSeparator className="text-gray-400">/</BreadcrumbSeparator>
+                                            {index < items.length - 1 && (
+                                                <BreadcrumbSeparator className="text-gray-400">
+                                                    /
+                                                </BreadcrumbSeparator>
                                             )}
                                         </React.Fragment>
                                     ))}

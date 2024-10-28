@@ -25,7 +25,7 @@ export default function SecondaryButton({
                 color: palette.gray[500], // Text color
                 backgroundColor: "transparent", // Transparent background
                 padding: "6px 14px", // Compact padding
-                // borderRadius: "6px", // Rounded corners for a clean look
+                borderRadius: '8px', 
                 fontSize: "0.875rem", // Smaller font size (14px)
                 minWidth: '100px', // Minimum button width
                 textTransform: 'none', // Avoid uppercase text
