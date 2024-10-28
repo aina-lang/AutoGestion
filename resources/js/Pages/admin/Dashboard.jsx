@@ -7,23 +7,26 @@ import { Head, router } from '@inertiajs/react';
 import {
     AdminPanelSettingsOutlined,
     CarRentalSharp,
-    Money,
 } from '@mui/icons-material';
-import { BarChart, PieChart } from '@mui/x-charts';
+import { BarChart } from '@mui/x-charts';
 import { GridAddIcon } from '@mui/x-data-grid';
+
 import { CarIcon } from 'lucide-react';
 
 export default function Dashboard({
     totalCars,
     totalReservations,
     totalUsers,
-    totalRevenue,
+    rentedCarsPercentage,
+    availableCarsPercentage,
     monthlyData,
+    mostRentedCars,
 }) {
     const handleAddProject = () => {
         router.get('/projects/add');
     };
 
+    console.log(mostRentedCars);
     return (
         <AdminLayout
             header={
@@ -62,7 +65,7 @@ export default function Dashboard({
                         color="bg-green-200"
                     />
                     <Card
-                        title="Users"
+                        title="Utilisateurs"
                         value={totalUsers}
                         icon={
                             <AdminPanelSettingsOutlined className="text-orange-500" />
@@ -70,11 +73,17 @@ export default function Dashboard({
                         color="bg-orange-200"
                     />
                     <Card
-                        title="Revenus"
-                        value={`$${totalRevenue}`}
-                        icon={<Money className="text-purple-500" />}
-                        color="bg-purple-200"
+                        title="Voitures Louées (%)"
+                        // value={`${rentedCarsPercentage}%`}
+                        icon={<CarRentalSharp className="text-red-500" />}
+                        color="bg-red-200"
                     />
+                    {/* <Card
+                        title="Voitures Disponibles (%)"
+                        value={`${availableCarsPercentage}%`}
+                        icon={<CarIcon className="text-green-500" />}
+                        color="bg-green-200"
+                    /> */}
                 </div>
 
                 {/* Section des Graphiques */}
@@ -115,29 +124,39 @@ export default function Dashboard({
                                     '#388E3C',
                                     '#FF9800',
                                     '#9C27B0',
-                                ]} // Couleurs personnalisées pour les barres
-                            />
-                        }
-                    />
-                    <ChartCard
-                        title="Distribution des Voitures"
-                        chart={
-                            <PieChart
-                                series={[
-                                    {
-                                        data: [
-                                            { id: 0, value: 10, label: 'Voiture A' },
-                                            { id: 1, value: 15, label: 'Voiture B' },
-                                            { id: 2, value: 20, label: 'Voiture C' },
-                                        ],
-                                    },
                                 ]}
-                                width={400}
-                                height={200}
-                                // colors={['#FF6384', '#36A2EB', '#FFCE56']} // Couleurs personnalisées pour le graphique circulaire
                             />
                         }
                     />
+                    <div className="min-h-full bg-white p-4 shadow-lg rounded-md dark:bg-gray-800">
+                        <h2 className="text-xl font-bold">
+                            Top 3 Voitures les Plus Louées (3 derniers mois)
+                        </h2>
+                        <div className="mt-4">
+                            {mostRentedCars.length > 0 ? (
+                                <ul className="space-y-2">
+                                    {mostRentedCars.map((car, index) => (
+                                        <li
+                                            key={index}
+                                            className="flex justify-between rounded-lg p-4 "
+                                        >
+                                            <span className="font-medium">
+                                                {car.car.marque}
+                                            </span>
+                                            <span className="text-sm text-gray-500">
+                                                {car.rental_count} réservations
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>
+                                    Aucune donnée disponible pour les trois
+                                    derniers mois.
+                                </p>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
         </AdminLayout>

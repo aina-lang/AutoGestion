@@ -13,23 +13,27 @@ import {
 import { GridAddIcon } from '@mui/x-data-grid';
 import React, { useEffect, useState } from 'react';
 
-function EditVehicule({ vehicule, categories, errors }) {
-    const { data, setData, put, processing, setError } = useForm({
+function EditVehicule({ vehicule, categories }) {
+    const { data, setData, put, processing, setError, errors } = useForm({
         marque: vehicule.marque || '',
         modele: vehicule.modele || '',
         immatriculation: vehicule.immatriculation || '',
         categorie: vehicule.categorie.id || '',
         kilometrage: vehicule.kilometrage || '',
         description: vehicule.description || '',
-        images: vehicule.images ? JSON.parse(vehicule.images) : [],
+        new_images: [],
+        delete_images: [],
     });
 
     const [confirmModal, setConfirmModal] = useState(false);
-    const [imagePreviews, setImagePreviews] = useState(data.images);
+    const [imagePreviews, setImagePreviews] = useState(
+        vehicule.images
+            ? JSON.parse(vehicule.images).map((image) => `/storage/${image}`)
+            : [],
+    );
     const [selectedImageIndex, setSelectedImageIndex] = useState(null);
 
     useEffect(() => {
-        // Décoder les images existantes du véhicule et les afficher.
         const decodedImages = vehicule.images
             ? JSON.parse(vehicule.images)
             : [];
@@ -40,18 +44,20 @@ function EditVehicule({ vehicule, categories, errors }) {
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
 
-        // Ajouter les nouvelles images à la liste existante.
-        const newImages = files.map((file) => URL.createObjectURL(file));
-        setImagePreviews((prevImages) => [...prevImages, ...newImages]);
-
-        // Mettre à jour seulement le champ 'images' dans les données du formulaire.
+        // Only store the files in new_images
         setData((prevData) => ({
             ...prevData,
-            images: [...prevData.images, ...files],
+            new_images: [...prevData.new_images, ...files], // Append new files
         }));
+
+        // Update image previews (URLs)
+        const newImages = files.map((file) => URL.createObjectURL(file));
+        setImagePreviews((prevImages) => [
+            ...prevImages.filter((_, index) => index < vehicule.images.length), // Keep existing images
+            ...newImages, // Add new images
+        ]);
     };
 
-    console.log(data);
     const handleRemoveImage = (index) => {
         setSelectedImageIndex(index);
         setConfirmModal(true);
@@ -59,31 +65,52 @@ function EditVehicule({ vehicule, categories, errors }) {
 
     const handleConfirmRemoveImage = () => {
         if (selectedImageIndex !== null) {
-            // Supprimer l'image de l'aperçu.
             const updatedPreviews = imagePreviews.filter(
                 (_, i) => i !== selectedImageIndex,
             );
             setImagePreviews(updatedPreviews);
 
-            // Supprimer l'image des données à envoyer.
-            setData((prevData) => ({
-                ...prevData,
-                images: prevData.images.filter(
-                    (_, i) => i !== selectedImageIndex,
-                ),
-            }));
+            const isExistingImage = selectedImageIndex < vehicule.images.length;
+            if (isExistingImage) {
+                const deletedImage = vehicule.images[selectedImageIndex];
+                setData((prevData) => ({
+                    ...prevData,
+                    delete_images: [...prevData.delete_images, deletedImage],
+                }));
+            } else {
+                setData((prevData) => ({
+                    ...prevData,
+                    new_images: prevData.new_images.filter(
+                        (_, i) =>
+                            i !== selectedImageIndex - vehicule.images.length,
+                    ),
+                }));
+            }
 
             setConfirmModal(false);
             setSelectedImageIndex(null);
         }
     };
+
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(`/admin/vehicules/${vehicule.id}`); // Ajoutez la route pour l'envoi du formulaire
+
+        // Debugging: Log the data before sending
+        console.log('Submitting data:', data);
+
+        put(`/admin/vehicules/${vehicule.id}`, {
+            data,
+            onSuccess: () => {
+                // Redirect or perform other actions on success
+            },
+            onError: (errors) => {
+                console.error(errors); // Log any errors
+            },
+        });
     };
 
+    // Handle errors for the form
     useEffect(() => {
-        // Si des erreurs sont présentes, les afficher dans le formulaire
         if (errors) {
             Object.keys(errors).forEach((field) => {
                 setError(field, { type: 'manual', message: errors[field][0] });
@@ -194,6 +221,9 @@ function EditVehicule({ vehicule, categories, errors }) {
                                 helperText={errors.kilometrage}
                                 fullWidth
                                 variant="outlined"
+                                inputProps={{
+                                    min: 10, // Set the minimum value to 10
+                                }}
                             />
                         </div>
                         <TextField
@@ -211,7 +241,6 @@ function EditVehicule({ vehicule, categories, errors }) {
                         />
                     </div>
                     <div className="flex h-full flex-col rounded-md bg-white p-5 shadow-lg">
-                        {/* Section pour la sélection des images */}
                         <div className="mt-4 flex-grow">
                             <label className="block text-sm font-medium text-gray-700">
                                 Images du Véhicule
@@ -265,9 +294,8 @@ function EditVehicule({ vehicule, categories, errors }) {
                                 </div>
                             </div>
 
-                            {/* Affichage des aperçus d'images en grille */}
                             {imagePreviews.length > 0 && (
-                                <div className="mt-4 grid grid-cols-4 gap-3">
+                                <div className="mt-4 grid grid-cols-3 gap-2">
                                     {imagePreviews.map((image, index) => (
                                         <div
                                             key={index}
@@ -292,22 +320,24 @@ function EditVehicule({ vehicule, categories, errors }) {
                                 </div>
                             )}
                         </div>
-                        {/* Bouton fixe en bas */}
+                    </div>
+                    <div className="mt-5 flex justify-end">
                         <PrimaryButton
                             type="submit"
-                            className="mt-4"
                             disabled={processing}
+                            className="bg-blue-600 text-white"
                         >
-                            Enregistrer les modifications
+                            {processing ? 'Enregistrement...' : 'Enregistrer'}
                         </PrimaryButton>
                     </div>
                 </form>
             </div>
             <ConfirmModal
                 open={confirmModal}
-                message="Voulez-vous vraiment supprimer cette image ?"
                 onClose={() => setConfirmModal(false)}
                 onConfirm={handleConfirmRemoveImage}
+                title="Confirmer la Suppression"
+                message="Êtes-vous sûr de vouloir supprimer cette image ?"
             />
         </AdminLayout>
     );

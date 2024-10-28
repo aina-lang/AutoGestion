@@ -125,7 +125,7 @@ export default function AdminLayout({ header, children }) {
     }
 
     return (
-        <div className="flex h-screen bg-gray-50 transition-colors duration-300 dark:bg-gray-900">
+        <div className="flex h-screen bg-gray-50 transition-colors duration-300 dark:bg-gray-900 overflow-y-hidden">
             <Sidebar auth={auth}>
                 <SidebarItem
                     icon={<LayoutDashboard size={20} />}

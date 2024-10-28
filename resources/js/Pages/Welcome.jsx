@@ -228,7 +228,7 @@ export default function Welcome({
                             ].map((service, index) => (
                                 <motion.div
                                     key={index}
-                                    className="rounded-lg border bg-white p-6 text-center shadow-lg"
+                                    className="rounded-lg border bg-white p-6 text-center shadow-lg h-full"
                                     initial={{ opacity: 0, x: -50 }}
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: false, amount: 0.5 }}

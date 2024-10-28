@@ -5,18 +5,68 @@ import { Input } from '@/components/ui/input';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import { MoreHorizSharp, TableView } from '@mui/icons-material';
-import { Grid } from '@mui/material';
+import { debounce, Grid, TextField } from '@mui/material';
 import { GridAddIcon } from '@mui/x-data-grid';
 import { SearchIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 const index = ({ reservations }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [gridView, setGridView] = useState(false);
+    // const [dateDepart, setDateDepart] = useState('');
+    // const [dateRetour, setDateRetour] = useState('');
+    // const [selectedCategory, setSelectedCategory] = useState('');
+    // const [currentPage, setCurrentPage] = useState(
+    //     reservations.data.current_page,
+    // );
+
+    // const handlePageChange = (page) => {
+    //     if (page >= 1 && page <= data.last_page) {
+    //         // Update current page and fetch new data
+    //         setCurrentPage(page);
+    //         // Fetch data from the server, e.g., using Inertia.js
+    //         router.get(`${actionUrl}?page=${page}`);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     setCurrentPage(reservations.data.current_page);
+    // }, [reservations.data]);
+
     const toggleGridView = () => {
-        setItemsPerPage(gridView ? 5 : 8);
         setGridView(!gridView);
     };
+
+    // // Handle real-time filter change with debouncing
+    // const handleFilter = useCallback(
+    //     debounce(() => {
+    //         router.get(
+    //             route(route().current()),
+    //             {
+    //                 search: searchQuery,
+    //                 date_depart: dateDepart,
+    //                 date_retour: dateRetour,
+    //             },
+    //             {
+    //                 preserveState: true,
+    //                 preserveScroll: true,
+    //             },
+    //         );
+    //     }, 500), // 500ms debounce delay
+    //     [searchQuery, dateDepart, dateRetour, selectedCategory],
+    // );
+
+    // // Clean up the debounce function on component unmount
+    // useEffect(() => {
+    //     return () => {
+    //         handleFilter.cancel();
+    //     };
+    // }, [handleFilter]);
+
+    // // Call handleFilter on changes to search, category, or dates
+    // useEffect(() => {
+    //     handleFilter();
+    // }, [searchQuery, dateDepart, dateRetour, selectedCategory, handleFilter]);
 
     return (
         <AdminLayout
@@ -142,7 +192,7 @@ const index = ({ reservations }) => {
                                 cell: (props) => (
                                     <Link
                                         href={route(
-                                            'vehicules.show',
+                                            'admin.reservations.show',
                                             props.row.original.id,
                                         )}
                                         className="text-blue-600 hover:underline"
@@ -194,6 +244,36 @@ const index = ({ reservations }) => {
                         pdfUrl={'vehicule.pdf'}
                         toggleStatusUrl={'admin.reservations.approve'}
                         approveBtnShow={true}
+                        // FilterComponent={() => (
+                        //     <div className="flex w-2/3 items-center justify-between space-x-4">
+                        //         {' '}
+                        //         <TextField
+                        //             fullWidth
+                        //             type="date"
+                        //             variant="standard"
+                        //             // label="Date de départ"
+                        //             InputLabelProps={{ shrink: true }}
+                        //             value={dateDepart}
+                        //             onChange={(e) =>
+                        //                 setDateDepart(e.target.value)
+                        //             }
+                        //             className="text-gray-800"
+                        //         />
+                        //         <span>à</span>
+                        //         <TextField
+                        //             fullWidth
+                        //             type="date"
+                        //             variant="standard"
+                        //             // label="Date de retour"
+                        //             InputLabelProps={{ shrink: true }}
+                        //             value={dateRetour}
+                        //             onChange={(e) =>
+                        //                 setDateRetour(e.target.value)
+                        //             }
+                        //             className="text-gray-800"
+                        //         />
+                        //     </div>
+                        // )}
                     />
                 )}
             </div>

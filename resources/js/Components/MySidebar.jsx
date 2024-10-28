@@ -29,7 +29,7 @@ export default function Sidebar({ children, auth }) {
 
     return (
         <aside
-            className={`h-screen rounded-tr-[30px] transition-all ease-in  bg-white shadow-lg dark:bg-gray-800 ${expanded ? 'w-60' : ''}`}
+            className={`h-screen rounded-tr-[30px] bg-white shadow-lg transition-all ease-in dark:bg-gray-800 ${expanded ? 'w-60' : ''}`}
         >
             <nav className={`flex h-full flex-col bg-[${currentPalette[500]}]`}>
                 <div className="mb-5 flex items-center justify-between space-x-2 p-4 pb-2">
@@ -43,7 +43,11 @@ export default function Sidebar({ children, auth }) {
                 </div>
 
                 <SidebarContext.Provider value={{ expanded }}>
-                    <ul className="flex-1 px-3">{children}</ul>
+                    <ul
+                        className={`mt-5 flex-1 px-3 ${expanded ? 'overflow-y-auto' : ''}`}
+                    >
+                        {children}
+                    </ul>
                 </SidebarContext.Provider>
 
                 <div className="flex border-t p-3">
@@ -119,7 +123,7 @@ export function SidebarItem({ icon, text, alert, children, link }) {
                 onClick={handleNavigation}
                 style={{
                     backgroundColor: isActive
-                        ? currentPalette[50]
+                        ? currentPalette[100]
                         : 'transparent',
                     color: isActive
                         ? currentPalette[600]

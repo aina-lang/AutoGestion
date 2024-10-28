@@ -1,161 +1,192 @@
 import MyHeader from '@/Components/Header';
 import InputError from '@/Components/InputError';
+import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
+import SecondaryButton from '@/Components/SecondaryButton';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, router, useForm } from '@inertiajs/react';
 import AddCircle from '@mui/icons-material/AddCircle';
-import { Chip, InputLabel, TextField } from '@mui/material';
+import { Chip, IconButton, TextField } from '@mui/material';
 import React, { useState } from 'react';
 
 function EditClient({ client }) {
-    // Supposons que vous recevez les données du client en tant que prop
     const { data, setData, put, processing, errors } = useForm({
         nom: client.nom || '',
+        prenoms: client.prenoms || '',
         email: client.email || '',
-        phones: client.phones || [], // Utilise les numéros de téléphone existants
+        password: '',
+        phones: JSON.parse(JSON.parse(client.phones)) || [],
+        phones_remove: [], // Add this to track phones to remove
     });
+
+    console.log(data.phones);
 
     const [phoneInput, setPhoneInput] = useState('');
 
     const submit = (e) => {
         e.preventDefault();
-        put(route('clients.update', client.id)); // Utilisez la route pour mettre à jour le client
+
+        // Include phones to be removed in the form data
+        put(route('clients.update', client.id), data);
     };
 
     const addPhoneNumber = () => {
-        if (phoneInput) {
-            setData('phones', [...data.phones, phoneInput]);
+        const phonePattern = /^\+?[0-9 ]+$/;
+
+        if (phoneInput.trim() && phonePattern.test(phoneInput.trim())) {
+            setData('phones', [...data.phones, phoneInput.trim()]);
             setPhoneInput('');
+        } else {
+            alert(
+                'Veuillez entrer un numéro de téléphone valide (peut contenir des chiffres, des espaces, et un "+" au début).',
+            );
         }
     };
-
     const removePhoneNumber = (phoneToRemove) => {
-        const newPhones = data.phones.filter(
-            (phone) => phone !== phoneToRemove,
-        );
-        setData('phones', newPhones);
+        // Remove the phone from the current phones array
+        setData((prevData) => {
+            const updatedPhones = prevData.phones.filter(
+                (phone) => phone !== phoneToRemove,
+            );
+
+            return {
+                ...prevData,
+                phones: updatedPhones,
+                phones_remove: [...prevData.phones_remove, phoneToRemove], // Track the phone number to be removed
+            };
+        });
+
+        console.log(data, phoneToRemove); // This may still show the old state due to async nature of setData
     };
 
     return (
         <AdminLayout
             header={
                 <MyHeader
-                    title="Modifier Client"
+                    title="Gestion des Clients"
                     breadcrumbItems={[
                         { label: 'Accueil', href: '/' },
                         { label: 'Clients', href: '/admin/clients' },
-                        { label: 'Modifier Client' },
+                        { label: 'Modifier' },
                     ]}
-                    right={
-                        <div className="flex space-x-4">
-                            <PrimaryButton
-                                onClick={() =>
-                                    router.get('/admin/clients/create')
-                                }
-                                aria-label="Ajouter un nouveau client"
-                            >
-                                Nouveau Client
-                            </PrimaryButton>
-                        </div>
-                    }
                 />
             }
         >
-            <Head title="Modifier un Client" />
-            <div className="mx-auto max-w-2xl p-6">
-                <h1 className="mb-4 text-xl font-bold">Modifier Client</h1>
+            <Head title="Modifier Client" />
+            <div className="mx-auto max-w-3xl p-6">
+                <h1 className="mb-6 text-2xl font-bold text-gray-800">
+                    Modifier Client: {data.nom} {data.prenoms}
+                </h1>
 
                 <form
                     onSubmit={submit}
-                    className="rounded-md bg-white p-8 shadow-lg"
+                    className="space-y-6 rounded-lg bg-white p-8 shadow-lg"
                 >
-                    <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <InputLabel htmlFor="nom" value="Nom Complet" />
-                                <TextField
-                                    id="nom"
-                                    name="nom"
-                                    value={data.nom}
-                                    className="mt-1 block w-full"
-                                    onChange={(e) =>
-                                        setData('nom', e.target.value)
-                                    }
-                                    required
-                                    error={!!errors.nom}
-                                    helperText={errors.nom}
-                                />
-                            </div>
-                            <div>
-                                <InputLabel htmlFor="email" value="Email" />
-                                <TextField
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    value={data.email}
-                                    className="mt-1 block w-full"
-                                    onChange={(e) =>
-                                        setData('email', e.target.value)
-                                    }
-                                    required
-                                    error={!!errors.email}
-                                    helperText={errors.email}
-                                />
-                            </div>
-                        </div>
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <TextField
+                            id="nom"
+                            name="nom"
+                            value={data.nom}
+                            className="w-full"
+                            autoComplete="nom"
+                            label="Nom"
+                            error={!!errors.nom}
+                            helperText={errors.nom}
+                            onChange={(e) => setData('nom', e.target.value)}
+                            required
+                        />
+                        <TextField
+                            id="prenoms"
+                            name="prenoms"
+                            value={data.prenoms}
+                            className="w-full"
+                            autoComplete="prenoms"
+                            label="Prénoms"
+                            error={!!errors.prenoms}
+                            helperText={errors.prenoms}
+                            onChange={(e) => setData('prenoms', e.target.value)}
+                            required
+                        />
+                        <TextField
+                            id="email"
+                            type="email"
+                            name="email"
+                            value={data.email}
+                            className="w-full"
+                            autoComplete="username"
+                            label="Email"
+                            error={!!errors.email}
+                            helperText={errors.email}
+                            onChange={(e) => setData('email', e.target.value)}
+                            required
+                        />{' '}
+                        <TextField
+                            id="password"
+                            type="password"
+                            name="password"
+                            value={data.password}
+                            className="w-full"
+                            autoComplete="new-password"
+                            label="Mot de Passe"
+                            error={!!errors.password}
+                            helperText={errors.password}
+                            onChange={(e) =>
+                                setData('password', e.target.value)
+                            }
+                        />
+                    </div>
 
-                        {/* Section des Numéros de Téléphone */}
-                        <div className="col-span-2">
-                            <InputLabel value="Numéros de téléphone" />
-                            <div className="relative mt-2 flex items-center">
-                                <TextField
-                                    value={phoneInput}
-                                    onChange={(e) =>
-                                        setPhoneInput(e.target.value)
-                                    }
-                                    className="mt-1 block w-full"
-                                    placeholder="Ajouter un numéro de téléphone"
-                                />
-                                <button
-                                    className="absolute right-3 ml-2"
-                                    onClick={addPhoneNumber}
-                                    type="button"
-                                >
-                                    <AddCircle />
-                                </button>
-                            </div>
-                            <div className="mt-2">
-                                {data.phones.map((phone, index) => (
-                                    <Chip
-                                        key={index}
-                                        label={phone}
-                                        onDelete={() =>
-                                            removePhoneNumber(phone)
-                                        }
-                                        className="mr-2 mt-2"
-                                    />
-                                ))}
-                            </div>
-                            {errors.phones && (
-                                <InputError
-                                    message={errors.phones.join(', ')}
-                                    className="mt-2"
-                                />
-                            )}
-                        </div>
-
-                        <div className="flex items-center justify-between">
-                            <PrimaryButton type="submit" disabled={processing}>
-                                Mettre à Jour
-                            </PrimaryButton>
-                            <button
-                                type="button"
-                                onClick={() => router.get('/admin/clients')}
-                                className="text-sm text-blue-600 hover:underline"
+                    <div>
+                        <InputLabel
+                            value="Numéros de téléphone"
+                            className="mb-2"
+                        />
+                        <div className="flex items-center gap-2">
+                            <TextField
+                                value={phoneInput}
+                                onChange={(e) => setPhoneInput(e.target.value)}
+                                placeholder="Ajouter un numéro de téléphone"
+                                className="flex-grow"
+                            />
+                            <IconButton
+                                onClick={addPhoneNumber}
+                                color="primary"
+                                aria-label="Ajouter un numéro de téléphone"
                             >
-                                Annuler
-                            </button>
+                                <AddCircle />
+                            </IconButton>
                         </div>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                            {data.phones.map((phone, index) => (
+                                <Chip
+                                    key={index}
+                                    label={phone}
+                                    onDelete={() => removePhoneNumber(phone)}
+                                    className="bg-blue-100 text-blue-800"
+                                />
+                            ))}
+                        </div>
+                        {errors.phones && (
+                            <InputError
+                                message={errors.phones.join(', ')}
+                                className="mt-2"
+                            />
+                        )}
+                    </div>
+
+                    <div className="flex justify-start space-x-4">
+                        <PrimaryButton type="submit" disabled={processing}>
+                            {processing
+                                ? 'Enregistrement...'
+                                : 'Modifier Client'}
+                        </PrimaryButton>
+                        <SecondaryButton
+                            type="button"
+                            onClick={() => router.get('/admin/clients')}
+                            className="text-sm text-gray-600 hover:underline"
+                        >
+                            Annuler
+                        </SecondaryButton>
                     </div>
                 </form>
             </div>

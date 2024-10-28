@@ -222,68 +222,65 @@ class VehiculeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
         $vehicule = Vehicule::findOrFail($id);
-
-        dd($request->all());
+    
+        // dd($request->all());
         // Validation des données
         $validator = Validator::make($request->all(), [
             'marque' => 'required|string|max:255',
             'modele' => 'required|string|max:255',
-            'immatriculation' => 'required|string|max:50|unique:vehicules,immatriculation,' . $vehicule->id,
+            'immatriculation' => 'required|string|max:50|unique:vehicules,immatriculation,' . $id,
             'categorie' => 'required|exists:categories,id',
-            // 'prix_journalier' => 'required|numeric',
-            // 'disponible' => 'required|boolean',
             'kilometrage' => 'required|numeric',
             'description' => 'required|string|max:500',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:30720', // Validation des images (optionnel)
+            'new_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:30720',
         ]);
-
+    
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-
+    
         try {
+            // Suppression des images sélectionnées
+            $imagePaths = json_decode($vehicule->images, true) ?: [];
+            if ($request->has('delete_images')) {
+                foreach ($request->delete_images as $image) {
+                    // Supprimer le fichier du stockage
+                    Storage::disk('public')->delete($image);
+                    // Retirer l'image du tableau
+                    $imagePaths = array_diff($imagePaths, [$image]);
+                }
+            }
+    
             // Gestion du stockage des nouvelles images
-            $imagePaths = json_decode($vehicule->images, true) ?? []; // Récupérer les anciennes images
-
-            if ($request->hasFile('images')) {
-                foreach ($request->file('images') as $image) {
+            if ($request->hasFile('new_images')) {
+                foreach ($request->file('new_images') as $image) {
                     $path = $image->store('vehicules', 'public');
                     $imagePaths[] = $path;
                 }
             }
-
-            // Gérer la suppression des images sélectionnées
-            if ($request->has('images_to_delete')) {
-                foreach ($request->images_to_delete as $imageToDelete) {
-                    Storage::disk('public')->delete($imageToDelete);
-                    $imagePaths = array_diff($imagePaths, [$imageToDelete]);
-                }
-            }
-
-            // Mise à jour du véhicule
+    
+            // Mise à jour des données du véhicule
             $vehicule->update([
                 'marque' => $request->marque,
                 'modele' => $request->modele,
                 'immatriculation' => $request->immatriculation,
                 'categorie_id' => $request->categorie,
-                // 'prix_journalier' => $request->prix_journalier,
-                // 'disponible' => $request->disponible,
                 'kilometrage' => $request->kilometrage,
                 'description' => $request->description,
-                'images' => json_encode($imagePaths), // Mettre à jour les chemins d'image au format JSON
+                'images' => json_encode(array_values($imagePaths)), // Stocker les chemins d'image au format JSON
             ]);
-
+    
             session()->flash('success', 'Véhicule mis à jour avec succès.');
-            return redirect()->route('vehicules.index');
+            return redirect()->route('admin.vehicules.index');
         } catch (\Exception $e) {
             session()->flash('error', 'Erreur lors de la mise à jour du véhicule : ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
     }
-
+    
 
 
 

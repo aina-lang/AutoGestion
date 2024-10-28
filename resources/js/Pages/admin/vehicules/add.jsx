@@ -155,6 +155,9 @@ function AddVehicule({ categories, errors }) {
                                 helperText={errors.kilometrage}
                                 fullWidth
                                 variant="outlined"
+                                inputProps={{
+                                    min: 10, // Set the minimum value to 10
+                                }}
                             />
                         </div>
                         <TextField

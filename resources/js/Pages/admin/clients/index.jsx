@@ -148,16 +148,36 @@ function Index({ clients }) {
                     <StyledDataGrid
                         data={clients}
                         columns={[
-                            { accessorKey: 'nom', header: 'Nom Complet' },
+                            { accessorKey: 'nom', header: 'Nom ' },
+                            { accessorKey: 'prenoms', header: 'Prenom(s)' },
                             { accessorKey: 'email', header: 'Email' },
                             {
                                 accessorKey: 'phones',
                                 header: 'Téléphones',
                                 // Format phone numbers for display if needed
-                                cell: ({ row }) =>
-                                    row.original.phones && row.original.phones.length > 0
-                                        ? row.original.phones.join(', ')
-                                        : 'Aucun téléphone',
+                                cell: ({ row }) => {
+                                    const phones = JSON.parse(
+                                        JSON.parse(row.original.phones),
+                                    );
+
+                                    console.log(phones);
+                                    return phones.length > 0 ? (
+                                        <div className="flex flex-col space-y-2">
+                                            {phones.map((phone, index) => (
+                                                <span
+                                                    key={index}
+                                                    className="rounded-full bg-blue-200 px-3 py-1 text-sm font-medium text-blue-500 w-full text-center"
+                                                >
+                                                    {phone}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <span className="text-gray-500">
+                                            Aucun téléphone
+                                        </span>
+                                    );
+                                },
                             },
                             //     {
                             //         accessorKey: 'status',

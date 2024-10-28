@@ -16,7 +16,7 @@ export default function ApplicationLogo({ className }) {
         >
             {/* "Vezo" stylisé avec une couleur, et "Tours" avec une autre */}
             <span style={{ color: currentPalette[500] }}>Vezo</span>
-            <span style={{ color: currentPalette.secondary }}>Tours</span>
+            <span style={{ color: palette["gray"][500] }}>Tours</span>
         </div>
     );
 }

@@ -96,6 +96,7 @@ class HomeController extends Controller
         $date_retour = $request->input('search.date_retour', '');
         $categorie = $request->input('search.categorie', '');
 
+        
         // Build the query
         $query = Vehicule::with('categorie'); // Eager load categorie relationship
 

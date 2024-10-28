@@ -21,7 +21,7 @@ import {
 import PrimaryButton from '../Components/PrimaryButton';
 import SecondaryButton from '../Components/SecondaryButton';
 
-export default function AdminLayout({ header, children }) {
+export default function ClientLayout({ header, children }) {
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
     const { flash, auth } = usePage().props;

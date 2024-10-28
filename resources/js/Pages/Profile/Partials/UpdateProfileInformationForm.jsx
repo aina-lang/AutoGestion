@@ -1,9 +1,10 @@
 import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
 import { Transition } from '@headlessui/react';
-import { Link, useForm, usePage } from '@inertiajs/react';
+import { useForm, usePage } from '@inertiajs/react';
+import { AddCircle } from '@mui/icons-material';
+import { Chip, IconButton, TextField, Typography } from '@mui/material';
+import { useState } from 'react';
 
 export default function UpdateProfileInformation({
     mustVerifyEmail,
@@ -12,88 +13,171 @@ export default function UpdateProfileInformation({
 }) {
     const user = usePage().props.auth.user;
 
-    const { data, setData, patch, errors, processing, recentlySuccessful } =
+    const { data, setData, patch, processing, errors, recentlySuccessful } =
         useForm({
-            nom: user.nom,
+            nom: user.nom || '',
+            prenoms: user.prenoms || '',
             email: user.email,
+            phones:
+                user.type != 'admin'
+                    ? JSON.parse(JSON.parse(user.phones)) || []
+                    : null,
+            phones_remove: [], // To track numbers to remove
         });
+
+    const [newPhone, setNewPhone] = useState('');
 
     const submit = (e) => {
         e.preventDefault();
+        // Send the numbers to remove with the form data
+        patch(route('profile.update'), {
+            onSuccess: () => {},
+        });
+    };
 
-        patch(route('profile.update'));
+    const addPhone = () => {
+        if (newPhone) {
+            setData('phones', [...data.phones, newPhone]);
+            setNewPhone('');
+        }
+    };
+
+    const removePhone = (phoneToRemove) => {
+        setData((prevData) => {
+            const updatedPhones = prevData.phones.filter(
+                (phone) => phone !== phoneToRemove,
+            );
+
+            return {
+                ...prevData,
+                phones: updatedPhones,
+                phones_remove: [...prevData.phones_remove, phoneToRemove], // Track the phone number to be removed
+            };
+        });
+
+        console.log(data, phoneToRemove);
     };
 
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    Profile Information
-                </h2>
-
-                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    Update your account's profile information and email address.
-                </p>
+                <Typography variant="h6" gutterBottom>
+                    Informations du Profil
+                </Typography>
+                <Typography variant="body2" color="textSecondary">
+                    Mettez à jour les informations de votre compte et votre
+                    adresse e-mail.
+                </Typography>
             </header>
 
             <form onSubmit={submit} className="mt-6 space-y-6">
                 <div>
-                    <InputLabel htmlFor="nom" value="Name" />
-
-                    <TextInput
+                    <TextField
                         id="nom"
-                        className="mt-1 block w-full"
+                        label="Nom"
+                        variant="outlined"
+                        fullWidth
                         value={data.nom}
                         onChange={(e) => setData('nom', e.target.value)}
                         required
-                        isFocused
-                        autoComplete="nom"
+                        error={!!errors.nom}
+                        helperText={errors.nom}
                     />
-
-                    <InputError className="mt-2" message={errors.nom} />
                 </div>
 
-                <div>
-                    <InputLabel htmlFor="email" value="Email" />
+                {/* <div>
+                    <TextField
+                        id="prenoms"
+                        label="Prénoms"
+                        variant="outlined"
+                        fullWidth
+                        value={data.prenoms}
+                        onChange={(e) => setData('prenoms', e.target.value)}
+                        required
+                        error={!!errors.prenoms}
+                        helperText={errors.prenoms}
+                    />
+                </div> */}
 
-                    <TextInput
+                <div>
+                    <TextField
                         id="email"
-                        type="email"
-                        className="mt-1 block w-full"
+                        label="Email"
+                        variant="outlined"
+                        fullWidth
                         value={data.email}
                         onChange={(e) => setData('email', e.target.value)}
                         required
-                        autoComplete="usernom"
+                        error={!!errors.email}
+                        helperText={errors.email}
                     />
-
-                    <InputError className="mt-2" message={errors.email} />
                 </div>
+
+                {user.type != 'admin' && (
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <TextField
+                                label={'Numéros de téléphone'}
+                                value={newPhone}
+                                onChange={(e) => setNewPhone(e.target.value)}
+                                placeholder="Ajouter un numéro de téléphone"
+                                className="flex-grow"
+                            />
+                            <IconButton
+                                onClick={addPhone}
+                                color="primary"
+                                aria-label="Ajouter un numéro de téléphone"
+                            >
+                                <AddCircle />
+                            </IconButton>
+                        </div>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                            {data.phones.map((phone, index) => (
+                                <Chip
+                                    key={index}
+                                    label={phone}
+                                    onDelete={() => removePhone(phone)}
+                                    className="bg-blue-100 text-blue-800"
+                                />
+                            ))}
+                        </div>
+                        {errors.phones && (
+                            <InputError
+                                message={errors.phones.join(', ')}
+                                className="mt-2"
+                            />
+                        )}
+                    </div>
+                )}
 
                 {mustVerifyEmail && user.email_verified_at === null && (
                     <div>
                         <p className="mt-2 text-sm text-gray-800 dark:text-gray-200">
-                            Your email address is unverified.
+                            Votre adresse e-mail n'est pas vérifiée.
                             <Link
                                 href={route('verification.send')}
                                 method="post"
                                 as="button"
                                 className="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
                             >
-                                Click here to re-send the verification email.
+                                Cliquez ici pour renvoyer l'e-mail de
+                                vérification.
                             </Link>
                         </p>
 
                         {status === 'verification-link-sent' && (
                             <div className="mt-2 text-sm font-medium text-green-600 dark:text-green-400">
-                                A new verification link has been sent to your
-                                email address.
+                                Un nouveau lien de vérification a été envoyé à
+                                votre adresse e-mail.
                             </div>
                         )}
                     </div>
                 )}
 
                 <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                    <PrimaryButton disabled={processing} type="submit">
+                        Sauvegarder
+                    </PrimaryButton>
 
                     <Transition
                         show={recentlySuccessful}
@@ -103,7 +187,7 @@ export default function UpdateProfileInformation({
                         leaveTo="opacity-0"
                     >
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Saved.
+                            Sauvegardé.
                         </p>
                     </Transition>
                 </div>

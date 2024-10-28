@@ -35,35 +35,38 @@ class RegisteredUserController extends Controller
      * @throws \Illuminate\Validation\ValidationException
      */
 
-    public function store(Request $request): RedirectResponse
-    {
-        try {
-            $request->validate([
-                'nom' => 'required|string|max:255',
-                'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
-                'password' => ['required', 'confirmed', Rules\Password::defaults()],
-                'phones' => 'nullable|array', // Validation pour le tableau de numéros de téléphone
-                'phones.*' => 'string|max:15', // Validation pour chaque numéro de téléphone
-            ]);
-
-            // Créez l'utilisateur avec le tableau de numéros de téléphone
-            $user = User::create([
-                'nom' => $request->nom,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-                'phones' => json_encode($request->phones), // Encodez les numéros en JSON
-            ]);
-
-            event(new Registered($user));
-
-            Session::flash('success', 'Votre compte a été créé avec succès !');
-
-            return redirect(route('client.dashboard', absolute: false));
-        } catch (\Exception $e) {
-            Session::flash('error', 'Une erreur s\'est produite lors de la création de votre compte. <br>' . htmlspecialchars($e->getMessage()));
-            return redirect()->back()->withInput();
-        }
-    }
+     public function store(Request $request): RedirectResponse
+     {
+         try {
+             $request->validate([
+                 'nom' => 'required|string|max:255',
+                 'prenoms' => 'nullable|string|max:255', // Make prenoms nullable
+                 'email' => 'required|string|lowercase|email|max:255|unique:' . User::class,
+                 'password' => ['required', 'confirmed', Rules\Password::defaults()],
+                 'phones' => 'nullable|array', // Validation for phone numbers
+                 'phones.*' => 'string|max:15', // Validation for each phone number
+             ]);
+ 
+             // Create the user with the phone numbers and optional prenoms
+             $user = User::create([
+                 'nom' => $request->nom,
+                 'prenoms' => $request->prenoms, // Add prenoms here
+                 'email' => $request->email,
+                 'password' => Hash::make($request->password),
+                 'phones' => json_encode($request->phones), // Encode phone numbers as JSON
+             ]);
+ 
+             event(new Registered($user));
+ 
+             Session::flash('success', 'Votre compte a été créé avec succès !');
+ 
+             return redirect(route('client.dashboard', absolute: false));
+         } catch (\Exception $e) {
+             Session::flash('error', 'Une erreur s\'est produite lors de la création de votre compte. <br>' . htmlspecialchars($e->getMessage()));
+             return redirect()->back()->withInput();
+         }
+     }
+ 
 
 
 
