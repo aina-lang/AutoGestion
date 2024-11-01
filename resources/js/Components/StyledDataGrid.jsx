@@ -168,6 +168,18 @@ const StyledDataGrid = ({
         }
     };
 
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleButtonClick = (event) => {
+        setAnchorEl(event.currentTarget); // Définit l'élément déclencheur comme ancre
+        // Autres actions si nécessaires
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null); // Ferme le menu
+    };
+
+    const open = Boolean(anchorEl);
     const selectableColumns = [
         {
             id: 'select',
@@ -323,11 +335,11 @@ const StyledDataGrid = ({
     };
 
     return (
-        <div className="w-full overflow-hidden rounded-lg">
+        <div className="w-full overflow-hidden rounded-sm p-2">
             {/* Filter bar */}
-            <div className="flex items-center justify-between space-x-4 py-4">
+            <div className="flex items-center justify-between space-x-4 rounded-sm bg-white p-2 py-3 pt-5">
                 {/* Column visibility dropdown */}
-                <div className="flex space-x-2">
+                <div className="flex items-center space-x-2">
                     {' '}
                     <DropdownMenu className="ml-auto border shadow-md">
                         <DropdownMenuTrigger asChild>
@@ -396,85 +408,88 @@ const StyledDataGrid = ({
             </div>
 
             {/* Table */}
-            <div className="mb-4 min-h-56 overflow-x-auto overflow-y-hidden rounded-sm border border-gray-200 bg-white shadow-sm dark:border-none dark:bg-gray-800">
-                <table className="min-w-full">
-                    <thead>
-                        {table.getHeaderGroups().map((headerGroup) => (
-                            <tr key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                    <th
-                                        key={header.id}
-                                        className="p-3 text-left text-sm font-semibold text-gray-600"
-                                    >
-                                        {/* Sortable header */}
-                                        <div
-                                            {...{
-                                                className:
-                                                    header.column.getCanSort()
-                                                        ? 'cursor-pointer flex items-center'
-                                                        : '',
-                                                onClick:
-                                                    header.column.getToggleSortingHandler(),
-                                            }}
+            <div className="rounded-sm bg-white p-2 pb-0.5 shadow-lg">
+                <div className="mb-4 min-h-56 overflow-x-auto overflow-y-hidden rounded-sm border border-gray-200 bg-white dark:border-none dark:bg-gray-800">
+                    <table className="min-w-full">
+                        <thead>
+                            {table.getHeaderGroups().map((headerGroup) => (
+                                <tr key={headerGroup.id}>
+                                    {headerGroup.headers.map((header) => (
+                                        <th
+                                            key={header.id}
+                                            className="  bg-gray-200 p-3 text-left text-sm font-semibold text-gray-600" // Ajoutez une couleur de fond et une bordure
                                         >
-                                            {header.isPlaceholder
-                                                ? null
-                                                : flexRender(
-                                                      header.column.columnDef
-                                                          .header,
-                                                      header.getContext(),
-                                                  )}
-                                            {/* Sorting indicator */}
-                                            {header.column.getIsSorted() ? (
-                                                header.column.getIsSorted() ===
-                                                'asc' ? (
-                                                    <ChevronUp className="ml-2 h-4 w-4 text-gray-500" />
-                                                ) : (
-                                                    <ChevronDown className="ml-2 h-4 w-4 text-gray-500" />
-                                                )
-                                            ) : null}
-                                        </div>
-                                    </th>
-                                ))}
-                            </tr>
-                        ))}
-                    </thead>
-                    <tbody>
-                        {table.getRowModel().rows.length ? (
-                            table.getRowModel().rows.map((row) => (
-                                <tr
-                                    key={row.id}
-                                    className={`w-full hover:bg-gray-100 dark:hover:bg-gray-50/10 ${row.getIsSelected() ? 'bg-gray-200 dark:bg-gray-500/10' : ''}`}
-                                >
-                                    {row.getVisibleCells().map((cell) => (
-                                        <td
-                                            key={cell.id}
-                                            className="border-t border-gray-200 p-3 text-sm text-gray-700 dark:border-gray-900"
-                                        >
-                                            {flexRender(
-                                                cell.column.columnDef.cell,
-                                                cell.getContext(),
-                                            )}
-                                        </td>
+                                            {/* Sortable header */}
+                                            <div
+                                                {...{
+                                                    className:
+                                                        header.column.getCanSort()
+                                                            ? 'cursor-pointer flex items-center'
+                                                            : '',
+                                                    onClick:
+                                                        header.column.getToggleSortingHandler(),
+                                                }}
+                                            >
+                                                {header.isPlaceholder
+                                                    ? null
+                                                    : flexRender(
+                                                          header.column
+                                                              .columnDef.header,
+                                                          header.getContext(),
+                                                      )}
+                                                {/* Sorting indicator */}
+                                                {header.column.getIsSorted() ? (
+                                                    header.column.getIsSorted() ===
+                                                    'asc' ? (
+                                                        <ChevronUp className="ml-2 h-4 w-4 text-gray-500" />
+                                                    ) : (
+                                                        <ChevronDown className="ml-2 h-4 w-4 text-gray-500" />
+                                                    )
+                                                ) : null}
+                                            </div>
+                                        </th>
                                     ))}
                                 </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td
-                                    colSpan={columns.length}
-                                    className="h-24 text-center text-gray-400"
-                                >
-                                    No results.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
+                            ))}
+                        </thead>
+
+                        <tbody>
+                            {table.getRowModel().rows.length ? (
+                                table.getRowModel().rows.map((row) => (
+                                    <tr
+                                        key={row.id}
+                                        className={`w-full hover:bg-gray-100 dark:hover:bg-gray-50/10 ${row.getIsSelected() ? 'bg-gray-200 dark:bg-gray-500/10' : ''}`}
+                                    >
+                                        {row.getVisibleCells().map((cell) => (
+                                            <td
+                                                key={cell.id}
+                                                className="border-t border-gray-200 p-3 text-sm text-gray-700 dark:border-gray-900"
+                                            >
+                                                {flexRender(
+                                                    cell.column.columnDef.cell,
+                                                    cell.getContext(),
+                                                )}
+                                            </td>
+                                        ))}
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td
+                                        colSpan={columns.length}
+                                        className="h-24 text-center text-gray-400"
+                                    >
+                                        No results.
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Data from Laravel */}
-            <div className="mb-2 mb-5 flex items-center justify-between rounded-sm bg-white p-4 shadow-lg dark:border-none dark:bg-gray-800">
+            <div className="mb-5 flex items-center justify-between rounded-sm p-4 dark:border-none dark:bg-gray-800">
                 {selectedRows.length > 0 && (
                     <div
                         sx={{ borderRadius: '8px' }}
@@ -521,29 +536,40 @@ const StyledDataGrid = ({
                         </DropdownMenu>
                     </div>
                 )}
-                <span className="text-sm text-gray-500">
-                    {data.from} à {data.to} de {data.total} line(s)
-                </span>
-                <div className="space-x-2">
+
+                <div className="flex items-center space-x-2">
                     {/* Previous Page Button */}
                     <button
                         disabled={data.current_page === 1}
                         onClick={() => handlePageChange(data.current_page - 1)}
-                        className="rounded-md bg-gray-200 px-4 py-2 text-gray-600 disabled:opacity-50"
+                        className="flex items-center justify-center rounded-full bg-gray-200 px-2 py-2 text-gray-600 transition-colors duration-200 hover:bg-gray-300 disabled:opacity-50"
                     >
-                        <ChevronLeft />
+                        <ChevronLeft className="h-2 w-2" />
                     </button>
-                    <button className="rounded-md bg-gray-200 px-4 py-2 text-gray-600 disabled:opacity-50">
+
+                    {/* Current Page Indicator */}
+                    <button
+                        style={{
+                            background: `linear-gradient(to right, ${currentPalette[600]}, ${currentPalette[500]})`,
+                        }}
+                        className="rounded-full px-4 py-2 text-white shadow-lg transition-shadow duration-200"
+                    >
                         {data.current_page}
                     </button>
+
+                    {/* Next Page Button */}
                     <button
                         disabled={data.current_page === data.last_page}
                         onClick={() => handlePageChange(data.current_page + 1)}
-                        className="rounded-md bg-gray-200 px-4 py-2 text-gray-600 disabled:opacity-50"
+                        className="flex items-center justify-center rounded-full bg-gray-200 px-2 py-2 text-gray-600 transition-colors duration-200 hover:bg-gray-300 disabled:opacity-50"
                     >
-                        <ChevronRight />
+                        <ChevronRight className="h-5 w-5" />
                     </button>
                 </div>
+
+                <span className="text-sm text-gray-500">
+                    {data.from} à {data.to} de {data.total} ligne(s)
+                </span>
             </div>
 
             <ConfirmModal

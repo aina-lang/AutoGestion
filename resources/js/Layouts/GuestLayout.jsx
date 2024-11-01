@@ -1,16 +1,18 @@
 import ApplicationLogo from '@/Components/ApplicationLogo';
 import ConfirmModal from '@/Components/ConfirmModal';
-import Dropdown from '@/Components/Dropdown';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { ScrollToTopButton } from '@/Components/ScrollToTopButton';
 import SecondaryButton from '@/Components/SecondaryButton';
+import UserDropdown from '@/Components/UserDropdown';
+import { palette } from '@/constants/palette';
+import { useThemeContext } from '@/contexts/ThemeContext';
 import { router, useForm, usePage } from '@inertiajs/react';
-import { Alert, Divider, Menu, MenuItem, Snackbar } from '@mui/material';
+import { Alert, Menu, MenuItem, Snackbar } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Fullscreen, Sun } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { ChevronDown, ChevronUp, Fullscreen, Sun } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
-export default function Guest({ children, auth }) {
+const GuestLayout = ({ children, auth }) => {
     const [isSticky, setSticky] = useState(false);
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -19,26 +21,39 @@ export default function Guest({ children, auth }) {
     const [message, setMessage] = useState('');
     const [confirmModal, setConfirmModal] = useState(false);
     const [severity, setSeverity] = useState('success');
-    const [activeLink, setActiveLink] = useState('');
+    const [activeLink, setActiveLink] = useState('home');
     const { post } = useForm();
-    const sectionsRef = {
-        home: useRef(null),
-        service: useRef(null),
-        about: useRef(null),
-        cars: useRef(null),
-        contact: useRef(null),
-    };
+    const { paletteName } = useThemeContext();
+
+    const currentPalette = palette[paletteName];
+
+    useEffect(() => {
+        const currentURL = window.location.href;
+
+        if (currentURL !== `${window.location.origin}/`) {
+            setSticky(true);
+        } else {
+            setSticky(false);
+        }
+    }, []);
 
     useEffect(() => {
         const handleScroll = () => {
-            setSticky(window.scrollY > 50);
+            const currentURL = route().current('home');
 
-            // Vérifiez quelle section est visible
-            for (const section in sectionsRef) {
-                if (sectionsRef[section].current) {
-                    const rect =
-                        sectionsRef[section].current.getBoundingClientRect();
-                    if (rect.top >= 0 && rect.top < window.innerHeight) {
+            console.log(currentURL);
+            if (currentURL) {
+                setSticky(window.scrollY > 50);
+            } else {
+                setSticky(true);
+            }
+
+            const sections = ['home', 'service', 'about', 'cars', 'contact'];
+            for (const section of sections) {
+                const element = document.getElementById(section);
+                if (element) {
+                    const rect = element.getBoundingClientRect();
+                    if (rect.top >= 0 && rect.top < window.innerHeight / 2) {
                         setActiveLink(section);
                         break;
                     }
@@ -53,7 +68,6 @@ export default function Guest({ children, auth }) {
     }, []);
 
     useEffect(() => {
-        // console.log(flash);
         if (flash && (flash.success || flash.error)) {
             setMessage(flash.success || flash.error);
             setSeverity(flash.success ? 'success' : 'error');
@@ -66,61 +80,166 @@ export default function Guest({ children, auth }) {
     };
 
     const toggleMenu = (event) => {
-        setMenuOpen(!isMenuOpen);
-        setAnchorEl(event.currentTarget);
+        setAnchorEl(anchorEl ? null : event.currentTarget);
+        setMenuOpen((prev) => !prev);
     };
 
     const handleLogout = () => {
-        post(route('logout'));
         setConfirmModal(!confirmModal);
     };
 
     const links = [
         { href: 'home', label: 'Accueil' },
         { href: 'service', label: 'Services' },
-        { href: 'about', label: 'Apropos' },
+        { href: 'about', label: 'À propos' },
         { href: 'cars', label: 'Véhicules' },
         { href: 'contact', label: 'Contact' },
     ];
 
     const scrollToSection = (id) => {
-        const element = sectionsRef[id].current;
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
+        const currentURL = route().current('home');
+        if (currentURL) {
+            const element = document.getElementById(id);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        } else {
+            router.visit('/', {
+                data: { scrollTo: id },
+                preserveScroll: false,
+            });
         }
+
+        setMenuOpen(false);
+    };
+
+    const handleOpenMenu = (event) => {
+        setAnchorEl(event.currentTarget);
+        setMenuOpen(true);
+    };
+
+    const handleCloseMenu = () => {
+        setAnchorEl(null);
         setMenuOpen(false);
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 sm:pt-0">
-            {/* Header */}
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 sm:pt-0">
             <motion.header
-                initial={{
-                     opacity: 0,
-                    
-                     y: -50 }}
-                animate={{ opacity: isSticky ? 1 : 0.9, y: isSticky ? 0 : -10 }}
+                initial={{ y: -50 }}
+                animate={{ y: isSticky ? 0 : -10 }}
                 transition={{ type: 'tween', duration: 0.5 }}
-                className={`fixed top-0 z-50 flex w-full items-center justify-between bg-white px-6 py-4 shadow-md`}
+                className={`fixed top-0 z-50 flex w-full items-center justify-center ${
+                    isSticky ? 'bg-white shadow-md' : 'bg-transparent'
+                } px-6 py-4`}
             >
-                <div className="flex items-center">
-                    <ApplicationLogo className="mr-8 hidden md:flex" />
+                <ApplicationLogo
+                    className="mr-8 hidden md:flex"
+                    isSticky={isSticky}
+                />
+
+                <div className="flex w-full items-center">
                     <nav className="mx-auto hidden md:flex">
                         {links.map((link) => (
                             <button
                                 key={link.href}
                                 onClick={() => scrollToSection(link.href)}
-                                className={`px-4 py-2 hover:text-blue-500 ${
-                                    activeLink === link.href
-                                        ? 'font-bold text-blue-500'
-                                        : ''
-                                }`}
+                                className={`relative px-4 py-2 transition-all duration-300 ${activeLink === link.href ? 'font-bold' : isSticky ? 'text-gray-600' : 'text-white'}`}
+                                style={{
+                                    color:
+                                        activeLink === link.href
+                                            ? currentPalette[500]
+                                            : isSticky
+                                              ? palette['gray'][600]
+                                              : 'white',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.target.style.color = currentPalette[400]; // Change to desired hover color
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.color =
+                                        activeLink === link.href
+                                            ? currentPalette[500]
+                                            : isSticky
+                                              ? palette['gray'][600]
+                                              : 'white';
+                                }}
                             >
                                 {link.label}
+                                <span
+                                    className={`absolute bottom-0 left-0 h-0.5 w-full scale-x-0 rounded-full transition-transform duration-300 ease-in-out ${
+                                        activeLink === link.href
+                                            ? 'scale-x-100'
+                                            : ''
+                                    }`}
+                                    style={{
+                                        backgroundColor: currentPalette[500],
+                                    }}
+                                ></span>
                             </button>
                         ))}
+                        <div>
+                            <button
+                                onClick={handleOpenMenu}
+                                className={`flex items-center px-4 py-2 transition-all duration-300 ${activeLink === '#' ? 'font-bold' : isSticky ? 'text-gray-600' : 'text-white'}`}
+                                style={{
+                                    color:
+                                        activeLink === '#'
+                                            ? currentPalette[500]
+                                            : isSticky
+                                              ? palette['gray'][600]
+                                              : 'white',
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.target.style.color = currentPalette[400]; // Change to desired hover color
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.color =
+                                        activeLink === '#'
+                                            ? currentPalette[500]
+                                            : isSticky
+                                              ? palette['gray'][600]
+                                              : 'white';
+                                }}
+                            >
+                                Prestations de services
+                                {isMenuOpen ? (
+                                    <ChevronUp className="ml-2" />
+                                ) : (
+                                    <ChevronDown className="ml-2" />
+                                )}
+                            </button>
+
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={isMenuOpen}
+                                onClose={handleCloseMenu}
+                                PaperProps={{
+                                    style: {
+                                        boxShadow: 'none',
+                                        border: 'none',
+                                    },
+                                }}
+                                className="mt-2 w-full"
+                            >
+                                <MenuItem
+                                    onClick={() => scrollToSection('service1')}
+                                >
+                                    Service 1
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => scrollToSection('service2')}
+                                >
+                                    Service 2
+                                </MenuItem>
+                                <MenuItem
+                                    onClick={() => scrollToSection('service3')}
+                                >
+                                    Service 3
+                                </MenuItem>
+                            </Menu>
+                        </div>
                     </nav>
-                    {/* Hamburger Menu for Mobile */}
                     <div className="md:hidden">
                         <button
                             onClick={toggleMenu}
@@ -141,29 +260,16 @@ export default function Guest({ children, auth }) {
                                 />
                             </svg>
                         </button>
-                        <Menu
-                            open={isMenuOpen}
-                            anchorEl={anchorEl}
-                            onClose={() => setMenuOpen(false)}
-                            className="absolute right-0 top-16 bg-white shadow-lg"
-                        >
-                            {links.map((link) => (
-                                <MenuItem
-                                    key={link.href}
-                                    onClick={() => scrollToSection(link.href)}
-                                >
-                                    {link.label}
-                                </MenuItem>
-                            ))}
-                        </Menu>
                     </div>
                 </div>
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-2">
                     <button className="rounded-full p-2 focus:outline-none">
                         <Sun className="h-5 w-5 text-yellow-500" />
                     </button>
                     <button className="hidden rounded-full p-2 focus:outline-none md:flex">
-                        <Fullscreen className="h-5 w-5 text-gray-600" />
+                        <Fullscreen
+                            className={`h-5 w-5 ${isSticky ? 'text-gray-600' : 'text-white'}`}
+                        />
                     </button>
                     {!auth?.user ? (
                         <>
@@ -174,96 +280,52 @@ export default function Guest({ children, auth }) {
                             </PrimaryButton>
                             <SecondaryButton
                                 onClick={() => router.visit('/register')}
+                                isSticky={isSticky}
                             >
                                 S'inscrire
                             </SecondaryButton>
                         </>
                     ) : (
-                        <div className="relative">
-                            <Dropdown>
-                                <Dropdown.Trigger>
-                                    <button className="flex items-center focus:outline-none">
-                                        <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 p-2 text-gray-600">
-                                            {auth.user.nom
-                                                .charAt(0)
-                                                .toUpperCase()}
-                                        </span>
-                                    </button>
-                                </Dropdown.Trigger>
-                                <Dropdown.Content align="right">
-                                    <div className="px-4 py-2 text-sm text-gray-700">
-                                        Connecté en tant que:{' '}
-                                        <div className="font-bold">
-                                            {auth.user.nom}
-                                        </div>
-                                    </div>
-                                    <Divider />
-                                    {auth.user.type == 'client' && (
-                                        <Dropdown.Link
-                                            href={route('client.dashboard')}
-                                        >
-                                            Dashboard
-                                        </Dropdown.Link>
-                                    )}
-
-                                    <Dropdown.Link
-                                        href={
-                                            auth.user.type == 'admin'
-                                                ? route('admin.dashboard')
-                                                : route('client.dashboard')
-                                        }
-                                    >
-                                        Dashboard
-                                    </Dropdown.Link>
-
-                                    <Dropdown.Link href={route('profile.edit')}>
-                                        Profil
-                                    </Dropdown.Link>
-                                    <Dropdown.Link
-                                        href={'#'}
-                                        onClick={(e) => e.preventDefault()}
-                                        as="button"
-                                        className="p-0"
-                                    >
-                                        <button
-                                            onClick={(e) =>
-                                                setConfirmModal(true)
-                                            }
-                                            className="min-h-full w-full py-2 text-start"
-                                        >
-                                            Déconnexion
-                                        </button>
-                                    </Dropdown.Link>
-                                </Dropdown.Content>
-                            </Dropdown>
-                        </div>
+                        <UserDropdown
+                            auth={auth}
+                            handleLogout={handleLogout}
+                            menuItems={[
+                                { label: 'Profil', action: () => {} },
+                                { label: 'Paramètres', action: () => {} },
+                                { label: 'Aide', action: () => {} },
+                            ]}
+                        />
                     )}
                 </div>
             </motion.header>
 
-            <div className="w-full overflow-hidden">
-                {flash && (
-                    <Snackbar
-                        open={open}
-                        autoHideDuration={6000}
-                        onClose={handleClose}
-                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                    >
-                        <Alert onClose={handleClose} severity={severity}>
-                            {message}
-                        </Alert>
-                    </Snackbar>
-                )}
-                <ConfirmModal
-                    open={confirmModal}
-                    onClose={() => setConfirmModal(!confirmModal)}
-                    onConfirm={handleLogout}
-                    title="Confirmer la deconxxion"
-                    content="Êtes-vous sûr de vouloir vous deconnecter ?"
-                />
-                {children}
-                <ScrollToTopButton />
-            </div>
+            <main>{children}</main>
+
+            <ScrollToTopButton />
+
+            <Snackbar
+                open={open}
+                autoHideDuration={6000}
+                onClose={handleClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            >
+                <Alert onClose={handleClose} severity={severity}>
+                    {message}
+                </Alert>
+            </Snackbar>
+
+            <ConfirmModal
+                open={confirmModal}
+                onClose={() => setConfirmModal(false)}
+                title="Déconnexion"
+                message="Êtes-vous sûr de vouloir vous déconnecter ?"
+                onConfirm={() => {
+                    post(route('logout'));
+                    setConfirmModal(false);
+                }}
+            />
         </div>
     );
-}
+};
+
+export default GuestLayout;

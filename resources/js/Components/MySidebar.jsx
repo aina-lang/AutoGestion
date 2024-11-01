@@ -26,19 +26,23 @@ export default function Sidebar({ children, auth }) {
 
     const { paletteName } = useThemeContext();
     const currentPalette = palette[paletteName];
-// bg-zinc-800
+    // bg-zinc-800
     return (
         <aside
-            className={`h-screen rounded-tr-[30px] bg-white  shadow-lg transition-all ease-in dark:bg-gray-800 ${expanded ? 'w-60' : ''}`}
+            className={`h-screen rounded-tr-[30px] bg-white shadow-lg transition-all ease-in dark:bg-gray-800 ${expanded ? 'w-60' : ''}`}
         >
             <nav className={`flex h-full flex-col bg-[${currentPalette[500]}]`}>
                 <div className="mb-5 flex items-center justify-between space-x-2 p-4 pb-2">
-                    {expanded && <ApplicationLogo />}
+                    {expanded && <ApplicationLogo isSticky />}
                     <button
                         onClick={() => setExpanded((curr) => !curr)}
-                        className="rounded-lg bg-gray-50 p-2 hover:bg-gray-100"
+                        className="rounded-lg bg-gray-50 p-2 text-gray-600 hover:bg-gray-100 dark:bg-gray-700"
                     >
-                        {expanded ? <ChevronFirst /> : <ChevronLast />}
+                        {expanded ? (
+                            <ChevronFirst className="" />
+                        ) : (
+                            <ChevronLast />
+                        )}
                     </button>
                 </div>
 
@@ -119,15 +123,13 @@ export function SidebarItem({ icon, text, alert, children, link }) {
     return (
         <>
             <li
-                className={`group relative my-1  flex cursor-pointer flex-col items-start rounded-md px-3 py-2 text-sm font-medium transition-colors dark:text-gray-200`}
+                className={`group relative z-50 my-1 flex cursor-pointer flex-col items-start rounded-md px-3 py-2 text-sm font-medium transition-colors  ${isActive ? 'shadow-lg' : ''}`}
                 onClick={handleNavigation}
                 style={{
-                    backgroundColor: isActive
-                        ? currentPalette[50]
+                    background: isActive
+                        ? `linear-gradient(to right ,${currentPalette[500]},${currentPalette[400]})`
                         : 'transparent',
-                    color: isActive
-                        ? currentPalette[600]
-                        : palette['gray'][500],
+                    color: isActive ? 'white' : palette['gray'][600],
                     // color: isActive ? currentPalette[600] : 'white',
                 }}
             >

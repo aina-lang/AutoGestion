@@ -2,16 +2,21 @@
 import PrimaryButton from '@/Components/PrimaryButton';
 import ReservationModal from '@/Components/ReservationModal';
 import SecondaryButton from '@/Components/SecondaryButton';
+import { palette } from '@/constants/palette';
+import { useThemeContext } from '@/contexts/ThemeContext';
 import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, router, useForm } from '@inertiajs/react';
-import { Grid, MenuItem, TextField, Typography } from '@mui/material';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import {
-    SpaceEvenlyVerticallyIcon,
-    TransformIcon,
-} from '@radix-ui/react-icons';
+    BookOnlineTwoTone,
+    CarRentalOutlined,
+    EventRounded,
+    TravelExplore,
+} from '@mui/icons-material';
+import { Grid, MenuItem, TextField, Typography } from '@mui/material';
+import { ReloadIcon } from '@radix-ui/react-icons';
 import { motion } from 'framer-motion';
-import { AlignVerticalDistributeCenterIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import { CarIcon } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
 import { ReactTyped } from 'react-typed';
 import banner from '../../assets/images/bgbanner.jpg';
 export default function Welcome({
@@ -23,12 +28,37 @@ export default function Welcome({
 }) {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedCar, setSelectedCar] = useState(null);
+    const { paletteName } = useThemeContext();
+
+    const currentPalette = palette[paletteName];
+    // useEffect(() => {
+    //     // Récupérer tous les <span> dans le <h2>
+    //     const spans = document.querySelectorAll('h2 span');
+
+    //     // Ajouter dynamiquement la classe highlight avec la couleur actuelle
+    //     spans.forEach((span) => {
+    //         span.classList.add(
+    //             `highlight`,
+    //             `highlight-[${currentPalette[500]}]`,
+    //         );
+    //     });
+    // }, [currentPalette]);
 
     const { data, setData, post, processing, errors } = useForm({
         nom: auth?.user ? auth?.user?.nom : '',
         email: auth?.user ? auth?.user?.email : '',
         message: '', // Initialize an array for phone numbers
     });
+    const { scrollTo } = usePage().props; // Access the passed data
+
+    useEffect(() => {
+        if (scrollTo) {
+            const element = document.getElementById(scrollTo); // Get the element by ID
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' }); // Scroll to the element
+            }
+        }
+    }, [scrollTo]);
 
     const submit = (e) => {
         e.preventDefault();
@@ -71,7 +101,7 @@ export default function Welcome({
                                 showCursor={true}
                             />
                         </h1>
-                        <p className="mx-auto mb-6 p-5 text-gray-300 md:w-1/2 md:p-0">
+                        <p className="mx-auto mb-6 p-5 text-gray-200 md:w-1/2 md:p-0">
                             Notre plateforme vous permet de réserver rapidement
                             et simplement une voiture pour vos déplacements à
                             travers tout Madagascar. Que ce soit pour un voyage
@@ -94,6 +124,7 @@ export default function Welcome({
                                     router.visit('allcars');
                                 }}
                             >
+                                <CarRentalOutlined className="mr-2" />
                                 réserver maintenant
                             </PrimaryButton>
                         </motion.div>
@@ -195,32 +226,53 @@ export default function Welcome({
                 {/* Section des Services */}
                 <section
                     id="service"
-                    className="flex min-h-screen items-center bg-white px-10"
+                    className="flex min-h-screen items-center bg-gray-100 px-6 py-10"
                 >
-                    <div className="p-6">
-                        <h2 className="mb-8 mt-24 text-center text-3xl font-bold">
-                            NOS MEILLEURS SERVICES POUR VOUS
-                        </h2>
-                        <div className="grid items-center justify-center gap-10 md:grid-cols-3">
+                    <div className="h-full p-6">
+                        <div className="mb-8 text-center">
+                            <h2 className="mb-2 mt-24 text-3xl font-bold text-gray-700">
+                                NOS MEILLEURS SERVICES
+                            </h2>
+                            <span className="text-gray-600">
+                                Des solutions sur mesure pour vos besoins de
+                                location
+                            </span>
+                        </div>
+
+                        <div
+                            className="grid h-full items-center justify-center gap-6 rounded-3xl p-8 py-10 md:grid-cols-3"
+                            // style={{ backgroundC}}
+                        >
                             {[
                                 {
                                     name: 'RÉSERVATION EN LIGNE',
                                     icon: (
-                                        <AlignVerticalDistributeCenterIcon fontSize="large" />
+                                        <BookOnlineTwoTone
+                                            fontSize="large"
+                                            className="text-yellow-600"
+                                        />
                                     ),
                                     description:
-                                        'Notre service de location de voitures en ligne offre une expérience de réservation fluide...',
+                                        'Notre service de location de voitures en ligne offre une expérience de réservation fluide',
                                 },
                                 {
                                     name: 'TRANSPORT EN VILLE',
-                                    icon: <TransformIcon fontSize="large" />,
+                                    icon: (
+                                        <TravelExplore
+                                            fontSize="large"
+                                            className="text-green-600"
+                                        />
+                                    ),
                                     description:
                                         'Des services de transport fiables à travers la ville pour votre confort.',
                                 },
                                 {
                                     name: 'ÉVÉNEMENTS SPÉCIAUX',
                                     icon: (
-                                        <SpaceEvenlyVerticallyIcon fontSize="large" />
+                                        <EventRounded
+                                            fontSize="large"
+                                            className="text-purple-600"
+                                        />
                                     ),
                                     description:
                                         'Des services de transport personnalisés pour des occasions spéciales.',
@@ -228,7 +280,7 @@ export default function Welcome({
                             ].map((service, index) => (
                                 <motion.div
                                     key={index}
-                                    className="rounded-lg border bg-white p-6 text-center shadow-lg h-full"
+                                    className="[border border-gray-300] h-full rounded-lg bg-white p-6 text-center shadow-lg transition-shadow duration-300 hover:shadow-xl"
                                     initial={{ opacity: 0, x: -50 }}
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: false, amount: 0.5 }}
@@ -237,60 +289,103 @@ export default function Welcome({
                                         delay: index * 0.2,
                                     }}
                                 >
-                                    <div className="mx-auto mb-4 flex w-full items-center justify-center text-center">
+                                    <div className="mx-auto mb-4 flex w-full items-center justify-center text-center text-5xl">
                                         {service.icon}
                                     </div>
-                                    <h3 className="mb-2 text-xl font-semibold">
+                                    <h3
+                                        className="mb-2 text-2xl font-semibold text-gray-700"
+                                        // style={{ color: currentPalette[900] }}
+                                    >
                                         {service.name}
                                     </h3>
                                     <p className="mb-4 text-gray-600">
                                         {service.description}
                                     </p>
-                                    {/* <PrimaryButton >
-                        Voir plus
-                    </PrimaryButton> */}
+                                    {/* Uncomment if needed */}
+                                    {/* <PrimaryButton>
+                                Voir plus
+                            </PrimaryButton> */}
                                 </motion.div>
                             ))}
                         </div>
                     </div>
                 </section>
-
                 {/* About Section */}
+
                 <section
                     id="about"
-                    className="min-h-screen bg-gray-50 p-10 dark:bg-gray-800"
+                    className="min-h-screen bg-gray-50 p-5 dark:bg-gray-800"
                 >
-                    <div className="mt-24">
-                        <h2 className="mb-8 text-center text-3xl font-bold">
-                            À PROPOS DE NOUS
+                    <div className="mb-8 text-center">
+                        <h2 className="mb-2 mt-12 text-3xl font-bold uppercase text-gray-700">
+                            À propos de Vezo Tours
                         </h2>
+                        <span className="text-gray-600">
+                            Votre partenaire de confiance pour la location de
+                            voitures
+                        </span>
                     </div>
                     <div className="flex w-full">
-                        <div className="p-5 text-center md:w-1/2 md:text-left">
+                        <div className="p-5 py-10 text-center md:w-1/2 md:text-left">
                             <p className="mb-4 text-gray-700">
-                                Vezo Tours est votre partenaire de confiance
-                                pour la location de voitures, offrant un service
-                                de qualité supérieure et des véhicules fiables
-                                pour rendre votre expérience de voyage
-                                inoubliable.
+                                Fondée en 2020,{' '}
+                                <span className="p-2 highlight highlight-amber-500">
+                                    Vezo Tours
+                                </span>{' '}
+                                a été créée par des passionnés de voyages qui
+                                souhaitaient offrir une expérience de location
+                                de voitures de premier ordre. Depuis nos débuts,
+                                nous nous sommes engagés à fournir un service
+                                exceptionnel à nos clients.
                             </p>
-                            <p className="text-gray-700">
+
+                            <p className="mb-4 text-gray-700">
                                 Notre mission est de rendre vos déplacements
-                                faciles et accessibles, tout en garantissant
-                                votre confort et votre sécurité. Vezo Toursest
-                                votre partenaire de confiance pour la location
-                                de voitures, offrant un service de qualité
-                                supérieure et des véhicules fiables pour rendre
-                                votre expérience de voyage inoubliable. Ayna lbr
-                                est votre partenaire de confiance pour la
-                                location de voitures, offrant un service de
-                                qualité supérieure et des véhicules fiables pour
-                                rendre votre expérience de voyage inoubliable.
-                                Vezo Toursest votre partenaire de confiance pour
-                                la location de voitures, offrant un service de
-                                qualité supérieure et des véhicules fiables pour
-                                rendre votre expérience de voyage inoubliable.
+                                aussi agréables que possible. Nous croyons que
+                                la qualité de service et la sécurité doivent
+                                toujours être nos priorités.
                             </p>
+
+                            <p className="mb-4 text-gray-700">
+                                Nous nous engageons à sélectionner uniquement
+                                des véhicules de haute qualité, répondant à nos
+                                normes strictes de sécurité et de confort.
+                            </p>
+
+                            <h3 className="mb-2 mt-3 text-xl font-semibold">
+                                Nos Avantages
+                            </h3>
+                            <ul className="ml-4 space-y-4">
+                                <li className="flex items-center">
+                                    <CarIcon className="mr-2 text-blue-500" />{' '}
+                                    {/* Remplacez par l'icône appropriée */}
+                                    <span>
+                                        Véhicules fiables et bien entretenus
+                                    </span>
+                                </li>
+                                <li className="flex items-center">
+                                    <CarIcon className="mr-2 text-blue-500" />{' '}
+                                    {/* Remplacez par l'icône appropriée */}
+                                    <span>
+                                        Assurance complète pour votre
+                                        tranquillité d'esprit
+                                    </span>
+                                </li>
+                                <li className="flex items-center">
+                                    <CarIcon className="mr-2 text-blue-500" />{' '}
+                                    {/* Remplacez par l'icône appropriée */}
+                                    <span>
+                                        Service client exceptionnel 24/7
+                                    </span>
+                                </li>
+                                <li className="flex items-center">
+                                    <CarIcon className="mr-2 text-blue-500" />{' '}
+                                    {/* Remplacez par l'icône appropriée */}
+                                    <span>
+                                        Réservation facile et rapide en ligne
+                                    </span>
+                                </li>
+                            </ul>
                         </div>
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
@@ -302,9 +397,9 @@ export default function Welcome({
                             className="hidden w-1/2 p-5 md:flex"
                         >
                             <img
-                                src={banner} // Replace with your actual image URL
-                                alt="A propos de nous"
-                                className="h-auto w-full rounded-lg shadow-md" // Add styling as needed
+                                src={banner} // Remplacez par l'URL de votre image
+                                alt="À propos de nous"
+                                className="h-auto w-full rounded-lg shadow-md"
                             />
                         </motion.div>
                     </div>
@@ -316,14 +411,21 @@ export default function Welcome({
                     id="cars"
                 >
                     <div>
-                        <h2 className="my-14 mt-0 text-center text-3xl font-bold text-gray-800">
-                            VOITURES RECENTES
-                        </h2>
+                        <div className="mb-12 text-center">
+                            <h2 className="mb-2 mt-24 text-center text-3xl font-bold text-gray-700">
+                                NOS VOITURES RÉCENTES
+                            </h2>
+                            <span className="text-gray-600">
+                                Découvrez notre flotte moderne et bien
+                                entretenue
+                            </span>
+                        </div>
+
                         <Grid container spacing={3}>
                             {latestVehicles.map((car, index) => (
-                                <Grid item xs={12} sm={6} md={4} key={index}>
+                                <Grid item xs={12} sm={6} md={3} key={index}>
                                     <motion.div
-                                        className="flex h-full flex-col rounded-lg border border-gray-300 bg-white p-4 shadow-md transition-shadow duration-200 hover:shadow-lg"
+                                        className="flex h-full flex-col rounded-lg bg-white p-4 shadow-md transition-shadow duration-200 hover:shadow-lg"
                                         initial={{ opacity: 0, x: -50 }}
                                         whileInView={{ opacity: 1, x: 0 }}
                                         viewport={{ once: false, amount: 0.5 }}
@@ -347,9 +449,8 @@ export default function Welcome({
                                                     {car.marque}
                                                 </div>
                                             </div>
-
                                             <span
-                                                className={`absolute right-2 top-2 rounded-full bg-yellow-200 px-3 py-1 text-sm font-medium text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300`}
+                                                className={`absolute left-0 top-0 rounded-full px-3 py-1 text-sm font-medium text-white dark:bg-yellow-800 dark:text-yellow-300`}
                                             >
                                                 {car.kilometrage} km/h
                                             </span>
@@ -447,6 +548,7 @@ export default function Welcome({
                                                     );
                                                 }}
                                                 className="flex-1"
+                                                isSticky={true}
                                             >
                                                 Voir plus
                                             </SecondaryButton>
@@ -461,19 +563,20 @@ export default function Welcome({
                             onClick={() => {
                                 router.visit('allcars');
                             }}
+                            isSticky={true}
                         >
+                            <ReloadIcon className='mr-2' />
                             Voir plus
                         </SecondaryButton>
                     </div>
                 </section>
-
                 {/* Contact Section */}
                 <section
                     id="contact"
                     className="flex min-h-screen items-center justify-center bg-gray-50 px-10 py-10 dark:bg-gray-800"
                 >
                     <div className="w-full">
-                        <h2 className="mb-8 text-center text-3xl font-bold text-gray-900 dark:text-white">
+                        <h2 className="mb-2 text-center text-3xl font-bold text-gray-700 dark:text-white">
                             CONTACTEZ-NOUS
                         </h2>
                         <p className="mb-4 text-center text-gray-700 dark:text-gray-300">
@@ -543,7 +646,6 @@ export default function Welcome({
                         </div>
                     </div>
                 </section>
-
                 {selectedCar && (
                     <ReservationModal
                         open={modalOpen}
@@ -552,90 +654,96 @@ export default function Welcome({
                         isAuthenticated={auth.user ? true : false}
                     />
                 )}
-
-                <footer className="text-surface flex flex-col items-center bg-zinc-50 text-center dark:bg-neutral-700 dark:text-white lg:text-left">
+                <footer className="text-surface flex flex-col items-center bg-zinc-100 text-center dark:bg-neutral-700 dark:text-white lg:text-left">
                     <div className="container p-6">
-                        <div className="grid place-items-center md:grid-cols-2 lg:grid-cols-4">
+                        <div className="grid place-items-center gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {/* Contact Information */}
                             <div className="mb-6">
                                 <h5 className="mb-2.5 font-bold uppercase">
-                                    Links
+                                    Contact
                                 </h5>
-
                                 <ul className="mb-0 list-none">
                                     <li>
-                                        <a href="#!">Link 1</a>
+                                        <span>Email: </span>
+                                        <a href="mailto:contact@aynalbr.com">
+                                            contact@aynalbr.com
+                                        </a>
                                     </li>
                                     <li>
-                                        <a href="#!">Link 2</a>
+                                        <span>Phone: </span>
+                                        <a href="tel:+123456789">
+                                            +123 456 789
+                                        </a>
                                     </li>
                                     <li>
-                                        <a href="#!">Link 3</a>
-                                    </li>
-                                    <li>
-                                        <a href="#!">Link 4</a>
+                                        <span>Address: </span>
+                                        <p>123 Ayna Street, City, Country</p>
                                     </li>
                                 </ul>
                             </div>
 
+                            {/* Social Media Links */}
                             <div className="mb-6">
                                 <h5 className="mb-2.5 font-bold uppercase">
-                                    Links
+                                    Follow Us
                                 </h5>
-
                                 <ul className="mb-0 list-none">
                                     <li>
-                                        <a href="#!">Link 1</a>
+                                        <a
+                                            href="https://www.facebook.com/aynalbr"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Facebook
+                                        </a>
                                     </li>
                                     <li>
-                                        <a href="#!">Link 2</a>
+                                        <a
+                                            href="https://www.twitter.com/aynalbr"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Twitter
+                                        </a>
                                     </li>
                                     <li>
-                                        <a href="#!">Link 3</a>
+                                        <a
+                                            href="https://www.instagram.com/aynalbr"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Instagram
+                                        </a>
                                     </li>
                                     <li>
-                                        <a href="#!">Link 4</a>
+                                        <a
+                                            href="https://www.linkedin.com/company/aynalbr"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            LinkedIn
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
 
+                            {/* Quick Links */}
                             <div className="mb-6">
                                 <h5 className="mb-2.5 font-bold uppercase">
-                                    Links
+                                    Quick Links
                                 </h5>
-
                                 <ul className="mb-0 list-none">
                                     <li>
-                                        <a href="#!">Link 1</a>
+                                        <a href="#home">Home</a>
                                     </li>
                                     <li>
-                                        <a href="#!">Link 2</a>
+                                        <a href="#about">About Us</a>
                                     </li>
                                     <li>
-                                        <a href="#!">Link 3</a>
+                                        <a href="#services">Services</a>
                                     </li>
                                     <li>
-                                        <a href="#!">Link 4</a>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            <div className="mb-6">
-                                <h5 className="mb-2.5 font-bold uppercase">
-                                    Links
-                                </h5>
-
-                                <ul className="mb-0 list-none">
-                                    <li>
-                                        <a href="#!">Link 1</a>
-                                    </li>
-                                    <li>
-                                        <a href="#!">Link 2</a>
-                                    </li>
-                                    <li>
-                                        <a href="#!">Link 3</a>
-                                    </li>
-                                    <li>
-                                        <a href="#!">Link 4</a>
+                                        <a href="#contact">Contact</a>
                                     </li>
                                 </ul>
                             </div>

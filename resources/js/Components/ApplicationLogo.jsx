@@ -2,7 +2,7 @@ import { palette } from '@/constants/palette';
 import { useThemeContext } from '@/contexts/ThemeContext';
 import { router } from '@inertiajs/react';
 
-export default function ApplicationLogo({ className }) {
+export default function ApplicationLogo({ className, isSticky }) {
     const { paletteName } = useThemeContext(); // Obtenez le nom de la palette
 
     // Accédez à la palette actuelle
@@ -16,7 +16,9 @@ export default function ApplicationLogo({ className }) {
         >
             {/* "Vezo" stylisé avec une couleur, et "Tours" avec une autre */}
             <span style={{ color: currentPalette[500] }}>Vezo</span>
-            <span style={{ color: palette["gray"][500] }}>Tours</span>
+            <span style={{ color: isSticky ? palette['gray'][500] : 'white' }}>
+                Tours
+            </span>
         </div>
     );
 }

@@ -19,22 +19,22 @@ export default function PrimaryButton({
             {...props}
             variant="contained" // Use appropriate MUI variant
             sx={{
-                backgroundColor: currentPalette[500], // Main color from palette
+                background :`linear-gradient(to right ,${currentPalette[500]},${currentPalette[400]})`, // Main color from palette
                 color: '#fff', // Text color
                 border: 'none', // No border for MUI style
-                fontSize: '0.7rem', // Smaller font size (14px)
+                fontSize: "0.875rem", // Smaller font size (14px)
                 padding: '7px 16px', // Adjust padding for smaller size
                 borderRadius: '8px', // Rounded corners for modern look
-                // textTransform: 'none', // Prevent text from being uppercase
+                textTransform: 'none', // Prevent text from being uppercase
                 minWidth: '120px', // Set minimum button width
                 '&:hover': {
-                    backgroundColor: currentPalette[700], // Hover color
+                    backgroundColor: currentPalette[600], // Hover color
                 },
                 '&:disabled': {
                     opacity: 0.5, // Handle opacity when disabled
                 },
                 transition: 'background-color 0.2s ease-in-out',
-                boxShadow: `0 5px 10px rgba(0,0,0,0.1)`, // Subtle shadow using current palette
+                boxShadow: `0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)`, // Subtle shadow using current palette
             }}
             disabled={disabled}
             className={className}

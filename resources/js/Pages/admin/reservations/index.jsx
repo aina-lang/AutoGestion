@@ -2,13 +2,14 @@ import MyHeader from '@/Components/Header';
 import PrimaryButton from '@/Components/PrimaryButton';
 import StyledDataGrid from '@/Components/StyledDataGrid'; // Importation de la table générique
 import { Input } from '@/components/ui/input';
+import UserTooltip from '@/Components/UserTooltip';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link, router } from '@inertiajs/react';
 import { MoreHorizSharp, TableView } from '@mui/icons-material';
-import { debounce, Grid, TextField } from '@mui/material';
+import { Grid } from '@mui/material';
 import { GridAddIcon } from '@mui/x-data-grid';
 import { SearchIcon } from 'lucide-react';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 const index = ({ reservations }) => {
     const [searchQuery, setSearchQuery] = useState('');
@@ -175,15 +176,7 @@ const index = ({ reservations }) => {
                                 accessorKey: 'user.nom',
                                 header: 'Client',
                                 cell: (props) => (
-                                    <Link
-                                        href={route(
-                                            'clients.show',
-                                            props.row.original.id,
-                                        )}
-                                        className="text-blue-600 hover:underline"
-                                    >
-                                        {props.getValue()}
-                                    </Link>
+                                    <UserTooltip user={props.row.original.user} />
                                 ),
                             },
                             {
@@ -241,7 +234,7 @@ const index = ({ reservations }) => {
                         data={reservations}
                         filterableColumns={['motif', 'label', 'assignedTo']}
                         actionUrl={route(route().current())}
-                        pdfUrl={'vehicule.pdf'}
+                        pdfUrl={'reservation.pdf'}
                         toggleStatusUrl={'admin.reservations.approve'}
                         approveBtnShow={true}
                         // FilterComponent={() => (

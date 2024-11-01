@@ -1,21 +1,14 @@
 import { useEffect, useState } from 'react';
 
-import Dropdown from '@/Components/Dropdown';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 
 import ConfirmModal from '@/Components/ConfirmModal';
 import Sidebar, { SidebarItem } from '@/Components/MySidebar';
 import Settings from '@/Components/Settings';
+import UserDropdown from '@/Components/UserDropdown';
 import { router, useForm, usePage } from '@inertiajs/react';
-import {
-    AccountCircle,
-    Add,
-    CarRental,
-    Category,
-    List,
-    Logout,
-} from '@mui/icons-material';
-import { Alert, Divider, Snackbar } from '@mui/material';
+import { Add, CarRental, Category, List } from '@mui/icons-material';
+import { Alert, Snackbar } from '@mui/material';
 import { GridAddIcon } from '@mui/x-data-grid';
 import {
     CarIcon,
@@ -87,8 +80,7 @@ export default function AdminLayout({ header, children }) {
     };
 
     const handleLogout = () => {
-        post(route('logout'));
-        setConfirmModal(!confirmModal);
+        setConfirmModal(true);
     };
 
     const toggleFullScreen = () => {
@@ -117,15 +109,8 @@ export default function AdminLayout({ header, children }) {
         setIsFullScreen(!isFullScreen);
     };
 
-    function getInitials(name) {
-        return name
-            .split(' ')
-            .map((part) => part.charAt(0).toUpperCase())
-            .join('');
-    }
-
     return (
-        <div className="flex h-screen bg-gray-100 transition-colors duration-300 dark:bg-gray-900 overflow-y-hidden">
+        <div className="flex h-screen overflow-y-hidden bg-gray-100 transition-colors duration-300 dark:bg-gray-900 ">
             <Sidebar auth={auth}>
                 <SidebarItem
                     icon={<LayoutDashboard size={20} />}
@@ -245,7 +230,10 @@ export default function AdminLayout({ header, children }) {
                             </div> */}
                             {/* Buttons */}
                             <div className="flex min-h-full items-center space-x-2">
-                                <SecondaryButton className="border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                                <SecondaryButton
+                                    isSticky
+                                    className="border border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-700 dark:text-white"
+                                >
                                     <GridAddIcon className="mr-2" />
                                     Client
                                 </SecondaryButton>
@@ -259,52 +247,18 @@ export default function AdminLayout({ header, children }) {
 
                             {/* User Dropdown */}
                             <div className="relative">
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <button className="flex items-center focus:outline-none">
-                                            <span className="inline-flex h-10 w-10 items-center justify-center rounded-full border bg-gray-200 font-semibold text-gray-600 dark:bg-gray-600 dark:text-gray-300">
-                                                {getInitials(auth?.user.nom)}
-                                            </span>
-                                        </button>
-                                    </Dropdown.Trigger>
-                                    <Dropdown.Content
-                                        align="right"
-                                        className="w-48 rounded-lg bg-white shadow-lg dark:bg-gray-700"
-                                    >
-                                        <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">
-                                            Connecté en tant que:
-                                            <div className="font-bold">
-                                                {auth.user.nom}
-                                            </div>
-                                        </div>
-                                        <Divider />
-                                        <Dropdown.Link
-                                            href={route('profile.edit')}
-                                            className="flex items-center rounded-lg px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-600"
-                                        >
-                                            <AccountCircle className="mr-2" />{' '}
-                                            {/* User icon */}
-                                            Profil
-                                        </Dropdown.Link>
-                                        <Dropdown.Link
-                                            href="#"
-                                            onClick={(e) => e.preventDefault()}
-                                            as="button"
-                                            className="flex items-center rounded-lg px-4 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-600"
-                                        >
-                                            <button
-                                                onClick={(e) =>
-                                                    setConfirmModal(true)
-                                                }
-                                                className="flex min-h-full w-full items-center text-start"
-                                            >
-                                                <Logout className="mr-2" />{' '}
-                                                {/* Logout icon */}
-                                                Déconnexion
-                                            </button>
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
+                                <UserDropdown
+                                    auth={auth}
+                                    handleLogout={handleLogout}
+                                    menuItems={[
+                                        { label: 'Profil', action: () => {} },
+                                        // {
+                                        //     label: 'Paramètres',
+                                        //     action: () => {},
+                                        // },
+                                        { label: 'Aide', action: () => {} },
+                                    ]}
+                                />
                             </div>
                         </div>
                     </div>
@@ -348,7 +302,7 @@ export default function AdminLayout({ header, children }) {
                 </nav>
 
                 {/* Main Content Area */}
-                <main className="h-screen overflow-y-auto p-5 pb-20">
+                <main className="h-screen overflow-y-auto p-5 pb-24">
                     <Snackbar
                         open={open}
                         autoHideDuration={6000}
@@ -368,7 +322,10 @@ export default function AdminLayout({ header, children }) {
                     <ConfirmModal
                         open={confirmModal}
                         onClose={() => setConfirmModal(!confirmModal)}
-                        onConfirm={handleLogout}
+                        onConfirm={() => {
+                            post(route('logout'));
+                            setConfirmModal(false);
+                        }}
                         title="Confirmer la deconxxion"
                         content="Êtes-vous sûr de vouloir vous deconnecter ?"
                     />

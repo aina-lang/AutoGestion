@@ -1,11 +1,10 @@
 import Checkbox from '@/Components/Checkbox';
-import InputError from '@/Components/InputError';
-import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import banner from '../../../assets/images/bgbanner.jpg';
+import { Box, TextField, Typography } from '@mui/material';
+import banner from '../../../assets/images/3.jpg';
+
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
@@ -15,7 +14,6 @@ export default function Login({ status, canResetPassword }) {
 
     const submit = (e) => {
         e.preventDefault();
-
         post(route('login'), {
             onFinish: () => reset('password'),
         });
@@ -24,8 +22,7 @@ export default function Login({ status, canResetPassword }) {
     return (
         <GuestLayout>
             <Head title="Log in" />
-
-            <div className="flex min-h-screen">
+            <div className="flex min-h-screen pt-10">
                 {/* Left Section: Form */}
                 <div className="flex flex-1 items-center justify-center p-8">
                     <div className="w-full max-w-md">
@@ -35,55 +32,42 @@ export default function Login({ status, canResetPassword }) {
                             </div>
                         )}
 
-                        <form
-                            onSubmit={submit}
-                            className="rounded-md bg-white p-8 shadow-md"
-                        >
-                            <div>
-                                <InputLabel htmlFor="email" value="Email" />
+                        <form onSubmit={submit} className="rounded-md p-8">
+                            <Typography variant="h5" gutterBottom>
+                                Connectez-vous à votre compte
+                            </Typography>
 
-                                <TextInput
-                                    id="email"
-                                    type="email"
-                                    name="email"
-                                    value={data.email}
-                                    className="mt-1 block w-full"
-                                    autoComplete="username"
-                                    // isFocused={true}
-                                    onChange={(e) =>
-                                        setData('email', e.target.value)
-                                    }
-                                />
+                            <TextField
+                                label="Email"
+                                id="email"
+                                type="email"
+                                name="email"
+                                value={data.email}
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                onChange={(e) =>
+                                    setData('email', e.target.value)
+                                }
+                                error={!!errors.email}
+                                helperText={errors.email}
+                            />
 
-                                <InputError
-                                    message={errors.email}
-                                    className="mt-2"
-                                />
-                            </div>
-
-                            <div className="mt-4">
-                                <InputLabel
-                                    htmlFor="password"
-                                    value="Password"
-                                />
-
-                                <TextInput
-                                    id="password"
-                                    type="password"
-                                    name="password"
-                                    value={data.password}
-                                    className="mt-1 block w-full"
-                                    autoComplete="current-password"
-                                    onChange={(e) =>
-                                        setData('password', e.target.value)
-                                    }
-                                />
-
-                                <InputError
-                                    message={errors.password}
-                                    className="mt-2"
-                                />
-                            </div>
+                            <TextField
+                                label="Password"
+                                id="password"
+                                type="password"
+                                name="password"
+                                value={data.password}
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
+                                onChange={(e) =>
+                                    setData('password', e.target.value)
+                                }
+                                error={!!errors.password}
+                                helperText={errors.password}
+                            />
 
                             <div className="mt-4 block">
                                 <label className="flex items-center">
@@ -97,8 +81,8 @@ export default function Login({ status, canResetPassword }) {
                                             )
                                         }
                                     />
-                                    <span className="ms-2 text-sm text-gray-600 dark:text-gray-400">
-                                        Me rappeller
+                                    <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                                        Me rappeler
                                     </span>
                                 </label>
                             </div>
@@ -125,13 +109,28 @@ export default function Login({ status, canResetPassword }) {
                     </div>
                 </div>
 
-                {/* Right Section: Image */}
-                <div className="hidden flex-1 items-center justify-center bg-gray-100 lg:flex">
+                {/* Right Section: Image with Overlay */}
+                <div className="relative hidden flex-1 items-center justify-center lg:flex">
                     <img
-                        src={banner} // Change this to the path of your image
+                        src={banner}
                         alt="Login Illustration"
-                        className="h-full w-full object-cover"
+                        className="h-[80%] w-[90%] rounded-xl object-cover" // Added rounded-xl class
+                        style={{ filter: 'brightness(0.5)' }}
                     />
+                    <Box
+                        position="absolute"
+                        color="white"
+                        textAlign="center"
+                        px={2}
+                    >
+                        <Typography variant="h4" gutterBottom>
+                            Bienvenue sur notre plateforme
+                        </Typography>
+                        <Typography variant="body1">
+                            Connectez-vous pour découvrir toutes nos
+                            fonctionnalités.
+                        </Typography>
+                    </Box>
                 </div>
             </div>
         </GuestLayout>

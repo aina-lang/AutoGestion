@@ -6,11 +6,14 @@ use App\Models\Categorie;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Models\Vehicule;
+use App\Notifications\ReservationCreated;
+use App\Notifications\ReservationStatusUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 use Exception;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 
 class ReservationController extends Controller
 {
@@ -34,7 +37,8 @@ class ReservationController extends Controller
             } else {
                 // Récupérer toutes les réservations dont la date de retour n'est pas passée pour les administrateurs
                 $reservations = Reservation::with(['user', 'vehicule'])
-                    ->where('date_retour', '>=', now()) // Ajout de la condition pour la date de retour
+                    ->where('date_retour', '>=', now()) // Condition pour la date de retour
+                    ->orderBy('created_at', 'desc') // Trier par date de création, du plus récent au plus ancien
                     ->paginate(5);
 
                 return Inertia::render('admin/reservations/index', [
@@ -138,6 +142,12 @@ class ReservationController extends Controller
                 // 'pieces_jointes' => json_encode($request->pieces_jointes),
                 // 'status' => 'en_attente',
             ]);
+
+
+            if (Auth::check() && Auth::user()->type == "user") {
+                $admin = User::where('type', 'admin')->first(); // Récupère l'administrateur
+                Notification::send($admin, new ReservationCreated($reservation));
+            }
 
             session()->flash('success', 'Réservation ajoutée avec succès.');
             return redirect()->route('reservations.index');
@@ -293,6 +303,9 @@ class ReservationController extends Controller
             }
 
             $reservation->save();
+
+            $reservation->user->notify(new ReservationStatusUpdated($reservation, $reservation->status));
+
 
             session()->flash('success', 'Réservation ' . $reservation->status . ' avec succès.');
         } catch (Exception $e) {

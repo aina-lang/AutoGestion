@@ -74,7 +74,7 @@ const index = ({ vehicules, categories }) => {
                 <MyHeader
                     title="Véhicules"
                     breadcrumbItems={[
-                        { label: 'Accueil', href: '/' },
+                     
                         { label: 'Véhicules' },
                     ]}
                     right={
@@ -165,7 +165,7 @@ const index = ({ vehicules, categories }) => {
                                         {vehicule.description}
                                     </p>
                                     <div className="mb-4 flex items-center">
-                                        <span className="mr-2 rounded bg-yellow-200 px-2.5 py-0.5 text-xs font-medium text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300">
+                                        <span className="mr-2 rounded bg-green-200 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:bg-green-800 dark:text-green-300">
                                             {vehicule.kilometrage} Km/h
                                         </span>
                                     </div>
@@ -207,7 +207,7 @@ const index = ({ vehicules, categories }) => {
                                 accessorKey: 'kilometrage',
                                 header: 'Kilométrage',
                                 cell: (props) => (
-                                    <span className="rounded bg-yellow-100 p-2 px-2.5 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300">
+                                    <span className="rounded-full bg-green-100 p-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">
                                         {props.getValue()} Km/h
                                     </span>
                                 ),
@@ -217,43 +217,67 @@ const index = ({ vehicules, categories }) => {
                         actionUrl={route(route().current())}
                         pdfUrl={'vehicule.pdf'}
                         FilterComponent={() => (
-                            <div className="flex w-2/3 items-center justify-between space-x-4">
-                                {' '}
+                            <div className="flex w-2/3 items-center justify-between space-x-4 rounded-md ">
                                 <TextField
                                     fullWidth
                                     type="date"
-                                    variant="standard"
-                                    // label="Date de départ"
+                                    variant="outlined" // Changez à 'outlined' pour un style plus clair
                                     InputLabelProps={{ shrink: true }}
                                     value={dateDepart}
                                     onChange={(e) =>
                                         setDateDepart(e.target.value)
                                     }
                                     className="text-gray-800"
+                                    sx={{
+                                        '& .MuiInputBase-root': {
+                                            borderRadius: '2px', // Coins arrondis
+                                            border: '0px solid #ccc', // Bordure claire
+                                        },
+                                        '& .MuiOutlinedInput-input': {
+                                            padding: '5px',
+                                            // Espacement interne
+                                        },
+                                    }}
                                 />
-                                <span>à</span>
+                                <span className="text-gray-800">à</span>
                                 <TextField
                                     fullWidth
                                     type="date"
-                                    variant="standard"
-                                    // label="Date de retour"
+                                    variant="outlined" // Changez à 'outlined' pour un style plus clair
                                     InputLabelProps={{ shrink: true }}
                                     value={dateRetour}
                                     onChange={(e) =>
                                         setDateRetour(e.target.value)
                                     }
                                     className="text-gray-800"
+                                    sx={{
+                                        '& .MuiInputBase-root': {
+                                            borderRadius: '2px', // Coins arrondis
+                                            border: '0px solid #ccc', // Bordure claire
+                                        },
+                                        '& .MuiOutlinedInput-input': {
+                                            padding: '5px', // Espacement interne
+                                        },
+                                    }}
                                 />
                                 <TextField
                                     fullWidth
                                     select
-                                    variant="standard"
-                                    // label="Catégorie"
+                                    variant="outlined" // Changez à 'outlined' pour un style plus clair
                                     value={selectedCategory}
                                     onChange={(e) =>
                                         setSelectedCategory(e.target.value)
                                     }
                                     className="text-gray-800"
+                                    sx={{
+                                        '& .MuiInputBase-root': {
+                                            borderRadius: '2px', // Coins arrondis
+                                            border: '0px solid #ccc', // Bordure claire
+                                        },
+                                        '& .MuiOutlinedInput-input': {
+                                            padding: '5px', // Espacement interne
+                                        },
+                                    }}
                                 >
                                     <MenuItem value="">
                                         Toutes les catégories

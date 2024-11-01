@@ -28,11 +28,13 @@ const MyHeader: React.FC<MyHeaderProps> = ({
     right,
 }) => {
     // Add "Accueil" as the first breadcrumb item
+
+    // Ajout de "Tableau de bord" en tant que premier élément de la breadcrumb
     const items: BreadcrumbItemType[] = [
         {
-            label: 'Accueil',
-            href: '/',
-            icon: <HomeIcon className="h-5 w-5" aria-hidden="true" />, // Adjust icon size as needed
+            label: 'Tableau de bord',
+            href: `dashboard`, // Redirection selon la route actuelle
+            icon: <HomeIcon className="h-5 w-5" aria-hidden="true" />, // Ajustement de la taille de l'icône si nécessaire
         },
         ...breadcrumbItems,
     ];
@@ -41,7 +43,7 @@ const MyHeader: React.FC<MyHeaderProps> = ({
         <div className="overflow-y-hidden py-0">
             <div className="mx-auto w-full">
                 <div className="overflow-hidden">
-                    <div className="p-6 text-gray-900 border-b">
+                    <div className="border-b p-6 text-gray-900">
                         <div className="flex flex-row items-center justify-between">
                             {/* Breadcrumb Component */}
                             <Breadcrumb>
@@ -51,9 +53,11 @@ const MyHeader: React.FC<MyHeaderProps> = ({
                                             <BreadcrumbItem>
                                                 {item.href ? (
                                                     <BreadcrumbLink
-                                                        className="cursor-pointer text-gray-500 hover:underline flex items-center"
+                                                        className="flex cursor-pointer items-center text-gray-500 hover:underline"
                                                         onClick={() => {
-                                                            router.get(item.href);
+                                                            router.get(
+                                                                item.href,
+                                                            );
                                                         }}
                                                     >
                                                         {item.icon && (

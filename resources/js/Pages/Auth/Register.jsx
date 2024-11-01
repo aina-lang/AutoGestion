@@ -1,12 +1,11 @@
-import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { AddCircle } from '@mui/icons-material';
-import { TextField } from '@mui/material';
+import { Box, TextField, Typography } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import { useState } from 'react';
-import banner from '../../../assets/images/bgbanner.jpg';
+import banner from '../../../assets/images/2.jpg';
 
 export default function Register() {
     const { data, setData, post, processing, errors } = useForm({
@@ -42,17 +41,17 @@ export default function Register() {
         <GuestLayout>
             <Head title="Register" />
 
-            <div className="flex min-h-screen">
+            <div className="flex min-h-screen pt-10">
                 {/* Left Section: Form */}
                 <div className="flex flex-1 items-center justify-center p-8">
                     <div className="w-full">
                         <form
                             onSubmit={submit}
-                            className="grid grid-cols-1 gap-4 rounded-md bg-white p-8 shadow-md md:grid-cols-2" // Grid layout
+                            className="p-8 md:grid-cols-2 grid grid-cols-1 gap-4 rounded-md" // Grid layout
                         >
                             <div>
-                                <InputLabel htmlFor="nom" value="Nom Complet" />
                                 <TextField
+                                    label={'Nom Complet'}
                                     id="nom"
                                     name="nom"
                                     value={data.nom}
@@ -69,11 +68,11 @@ export default function Register() {
                             </div>
 
                             <div>
-                                <InputLabel htmlFor="email" value="Email" />
                                 <TextField
                                     id="email"
                                     type="email"
                                     name="email"
+                                    label={'Email'}
                                     value={data.email}
                                     className="mt-1 block w-full"
                                     autoComplete="username"
@@ -87,14 +86,11 @@ export default function Register() {
                             </div>
 
                             <div>
-                                <InputLabel
-                                    htmlFor="password"
-                                    value="Password"
-                                />
                                 <TextField
                                     id="password"
                                     type="password"
                                     name="password"
+                                    label={'Mot de passe'}
                                     value={data.password}
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
@@ -108,14 +104,11 @@ export default function Register() {
                             </div>
 
                             <div>
-                                <InputLabel
-                                    htmlFor="password_confirmation"
-                                    value="Confirm Password"
-                                />
                                 <TextField
                                     id="password_confirmation"
                                     type="password"
                                     name="password_confirmation"
+                                    label={'Confirmer mot de passe'}
                                     value={data.password_confirmation}
                                     className="mt-1 block w-full"
                                     autoComplete="new-password"
@@ -133,18 +126,17 @@ export default function Register() {
 
                             {/* Phone Numbers Section */}
                             <div className="col-span-2">
-                                <InputLabel value="Numéros de téléphone" />
-                                <div className="mt-2 flex items-center relative">
+                                <div className="relative mt-2 flex items-center">
                                     <TextField
                                         value={phoneInput}
                                         onChange={(e) =>
                                             setPhoneInput(e.target.value)
                                         }
                                         className="mt-1 block w-full"
-                                        placeholder="Ajouter un numéro de téléphone"
+                                        label="Ajouter un numéro de téléphone"
                                     />
                                     <button
-                                        className="ml-2 absolute right-3"
+                                        className="absolute right-3 ml-2"
                                         onClick={addPhoneNumber}
                                         type="button"
                                         // Ajoutez l'icône ici
@@ -192,12 +184,27 @@ export default function Register() {
                 </div>
 
                 {/* Right Section: Image */}
-                <div className="hidden flex-1 items-center justify-center bg-gray-100 lg:flex">
+                <div className="relative hidden flex-1 items-center justify-center lg:flex">
                     <img
-                        src={banner} // Change this to the path of your image
-                        alt="Registration Illustration"
-                        className="h-full w-full object-cover"
+                        src={banner}
+                        alt="Login Illustration"
+                        className="h-[80%] w-[90%] rounded-xl object-cover" // Added rounded-xl class
+                        style={{ filter: 'brightness(0.5)' }}
                     />
+                    <Box
+                        position="absolute"
+                        color="white"
+                        textAlign="center"
+                        px={2}
+                    >
+                        <Typography variant="h4" gutterBottom>
+                            Bienvenue sur notre plateforme
+                        </Typography>
+                        <Typography variant="body1">
+                            Connectez-vous pour découvrir toutes nos
+                            fonctionnalités.
+                        </Typography>
+                    </Box>
                 </div>
             </div>
         </GuestLayout>

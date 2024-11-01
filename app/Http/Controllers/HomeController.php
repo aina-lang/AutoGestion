@@ -16,7 +16,7 @@ class HomeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $currentDate = now(); // Récupérer la date actuelle
 
@@ -75,13 +75,17 @@ class HomeController extends Controller
         });
 
         $categories = Categorie::all();
+
+
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
             'laravelVersion' => Application::VERSION,
             'phpVersion' => PHP_VERSION,
             'latestVehicles' => $latestVehicles,
-            'categories' => $categories
+            'categories' => $categories,
+            'scrollTo' => $request->input('scrollTo'),
+            'tay' => $request->input('tay'),
         ]);
     }
 
@@ -96,7 +100,7 @@ class HomeController extends Controller
         $date_retour = $request->input('search.date_retour', '');
         $categorie = $request->input('search.categorie', '');
 
-        
+
         // Build the query
         $query = Vehicule::with('categorie'); // Eager load categorie relationship
 
