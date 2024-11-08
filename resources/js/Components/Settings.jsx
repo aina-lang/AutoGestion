@@ -14,7 +14,7 @@ import { useThemeContext } from '@/contexts/ThemeContext';
 import { Moon, SettingsIcon, Sun } from 'lucide-react';
 import SecondaryButton from './SecondaryButton';
 
-export default function Settings() {
+export default function Settings({ isGuest, isSticky }) {
     const { changePalette, paletteName } = useThemeContext();
     const [isDrawerOpen, setDrawerOpen] = useState(false);
 
@@ -56,19 +56,27 @@ export default function Settings() {
         <>
             <IconButton
                 onClick={toggleDrawer}
-                sx={{
-                    position: 'fixed',
-                    right: 16,
-                    bottom: 16,
-                    backgroundColor: palette[paletteName][500],
-                    color: 'white',
-                    '&:hover': {
-                        backgroundColor: palette[paletteName][600],
-                    },
-                    boxShadow: 3,
-                    borderRadius: '50%',
-                    padding: 1.5,
-                }}
+                sx={
+                    !isGuest
+                        ? {
+                              position: 'fixed',
+                              right: 16,
+                              bottom: 16,
+                              backgroundColor: palette[paletteName][500],
+                              color: 'white',
+                              '&:hover': {
+                                  backgroundColor: palette[paletteName][600],
+                              },
+                              boxShadow: 3,
+                              borderRadius: '50%',
+                              padding: 1.5,
+                          }
+                        : {
+                              color: !isSticky
+                                  ? 'white'
+                                  : palette["gray"][600],
+                          }
+                }
             >
                 <SettingsIcon />
             </IconButton>

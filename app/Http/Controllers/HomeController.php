@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categorie;
+use App\Models\Prestation;
 use App\Models\Reservation;
+use App\Models\ServiceType;
 use App\Models\Vehicule;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
@@ -16,6 +18,7 @@ class HomeController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index(Request $request)
     {
         $currentDate = now(); // Récupérer la date actuelle
@@ -76,7 +79,7 @@ class HomeController extends Controller
 
         $categories = Categorie::all();
 
-
+        $serviceTypes = ServiceType::all();
         return Inertia::render('Welcome', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
@@ -85,45 +88,67 @@ class HomeController extends Controller
             'latestVehicles' => $latestVehicles,
             'categories' => $categories,
             'scrollTo' => $request->input('scrollTo'),
-            'tay' => $request->input('tay'),
+            'serviceTypes' => $serviceTypes,
         ]);
     }
 
-
-    public  function  all(Request $request)
+    private function jaccardSimilarity(array $a, array $b)
     {
-        $userId = Auth::id(); // Récupérer l'ID de l'utilisateur authentifié
+        $intersection = count(array_intersect($a, $b));
+        $union = count(array_merge($a, $b));
+
+        return $union === 0 ? 0 : $intersection / $union;
+    }
+
+
+    public function all(Request $request)
+    {
+        $userId = Auth::id(); // Get the authenticated user's ID
 
         // Fetch query parameters for filtering
         $marque = $request->input('search.marque', '');
+        $modele = $request->input('search.modele', '');
         $date_depart = $request->input('search.date_depart', '');
         $date_retour = $request->input('search.date_retour', '');
         $categorie = $request->input('search.categorie', '');
 
+        // Build the query for vehicles with eager loading of the categorie relationship
+        $query = Vehicule::with('categorie');
 
-        // Build the query
-        $query = Vehicule::with('categorie'); // Eager load categorie relationship
+        // Filtering by marque or modele with Jaccard similarity
+        if ($marque || $modele) {
+            $searchTerms = array_filter(explode(' ', strtolower($marque . ' ' . $modele)));
 
-        // Apply filters based on input
-        if ($marque) {
-            $query->where('marque', 'like', '%' . $marque . '%');
+            // Use a whereRaw or custom logic to filter by similarity in the query
+            // Example: You can filter by a custom condition here
+            $query->where(function ($q) use ($searchTerms) {
+                $q->whereHas('categorie', function ($query) use ($searchTerms) {
+                    foreach ($searchTerms as $term) {
+                        // Example of searching for each term in the marque or modele
+                        $query->where('marque', 'like', '%' . $term . '%')
+                            ->orWhere('modele', 'like', '%' . $term . '%');
+                    }
+                });
+            });
         }
 
-        if ($request->filled('date_depart') && $request->filled('date_retour')) {
-            $query->whereDoesntHave('reservations', function ($q) use ($request) {
-                $q->where(function ($query) use ($request) {
-                    $query->whereBetween('date_depart', [$request->date_depart, $request->date_retour])
-                        ->orWhereBetween('date_retour', [$request->date_depart, $request->date_retour])
-                        ->orWhere(function ($query) use ($request) {
-                            $query->where('date_depart', '<=', $request->date_depart)
-                                ->where('date_retour', '>=', $request->date_retour);
+        // Apply date filters if provided
+        if ($date_depart && $date_retour) {
+            $query->whereDoesntHave('reservations', function ($q) use ($date_depart, $date_retour) {
+                $q->where(function ($query) use ($date_depart, $date_retour) {
+                    $query->whereBetween('date_depart', [$date_depart, $date_retour])
+                        ->orWhereBetween('date_retour', [$date_depart, $date_retour])
+                        ->orWhere(function ($query) use ($date_depart, $date_retour) {
+                            $query->where('date_depart', '<=', $date_depart)
+                                ->where('date_retour', '>=', $date_retour);
                         });
                 });
             });
         }
 
+        // Apply category filter if provided
         if ($categorie) {
-            $query->where('categorie', $categorie);
+            $query->where('categorie_id', $categorie);
         }
 
         // Paginate the results, 20 items per page
@@ -131,21 +156,19 @@ class HomeController extends Controller
             // Decode the JSON images
             $vehicle->images = json_decode($vehicle->images);
 
-            // Vérifier si le véhicule est réservé par l'utilisateur
-            // $vehicle->isReservedByUser = Reservation::where('user_id', $userId)
-            //     ->where('vehicule_id', $vehicle->id)
-            //     ->exists();
+            // Check if the vehicle is reserved by the user
             $reservation = Reservation::where('user_id', $userId)
                 ->where('vehicule_id', $vehicle->id)
                 ->first();
 
-            // Ajouter le statut de réservation
+            // Add reservation status
             $vehicle->isReservedByUser = (bool)$reservation;
             $vehicle->reservationStatus = $reservation ? $reservation->status : null;
 
             return $vehicle;
         });
 
+        // Get all categories
         $categories = Categorie::all();
 
         return Inertia::render('welcome/allCars', [
@@ -157,10 +180,24 @@ class HomeController extends Controller
             'categories' => $categories,
             'search' => [
                 'marque' => $marque,
+                'modele' => $modele,
                 'date_depart' => $date_depart,
                 'date_retour' => $date_retour,
                 'categorie' => $categorie,
             ], // Pass the search filters to the view
+        ]);
+    }
+
+
+    public function showServices()
+    {
+        $categories = ServiceType::all(); // Get all categories
+        $services = Prestation::all(); // Get all services
+
+        return Inertia::render('welcome/services', [
+            'categories' => $categories,
+            'services' => $services,
+            'serviceTypes' =>$categories,
         ]);
     }
 }

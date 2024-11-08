@@ -7,7 +7,13 @@ import Sidebar, { SidebarItem } from '@/Components/MySidebar';
 import Settings from '@/Components/Settings';
 import UserDropdown from '@/Components/UserDropdown';
 import { router, useForm, usePage } from '@inertiajs/react';
-import { Add, CarRental, Category, List } from '@mui/icons-material';
+import {
+    Add,
+    CarRental,
+    Category,
+    List,
+    RoomService,
+} from '@mui/icons-material';
 import { Alert, Snackbar } from '@mui/material';
 import { GridAddIcon } from '@mui/x-data-grid';
 import {
@@ -110,13 +116,14 @@ export default function AdminLayout({ header, children }) {
     };
 
     return (
-        <div className="flex h-screen overflow-y-hidden bg-gray-100 transition-colors duration-300 dark:bg-gray-900 ">
+        <div className="flex h-screen overflow-y-hidden bg-gray-100 transition-colors duration-300 dark:bg-gray-900">
             <Sidebar auth={auth}>
                 <SidebarItem
                     icon={<LayoutDashboard size={20} />}
                     text="Tableau de bord"
-                    link="/admin/dashboard" // Add link prop for navigation
+                    link="/admin/dashboard" // Lien vers le tableau de bord
                 />
+
                 <SidebarItem icon={<CarIcon size={20} />} text="Véhicules">
                     <SidebarItem
                         icon={<List size={20} />}
@@ -130,13 +137,12 @@ export default function AdminLayout({ header, children }) {
                     />
                     <SidebarItem
                         icon={<Add size={20} />}
-                        text="ajout"
+                        text="Ajouter véhicule"
                         link="/admin/vehicules/create"
                     />
-
                     <SidebarItem
                         icon={<Add size={20} />}
-                        text="ajout categorie"
+                        text="Ajouter catégorie"
                         link="/admin/categories/create"
                     />
                 </SidebarItem>
@@ -144,15 +150,16 @@ export default function AdminLayout({ header, children }) {
                 <SidebarItem icon={<Users2 size={20} />} text="Clients">
                     <SidebarItem
                         icon={<List size={20} />}
-                        text="Toutes"
+                        text="Tous les clients"
                         link="/admin/clients"
                     />
                     <SidebarItem
                         icon={<Add size={20} />}
-                        text="ajout"
+                        text="Ajouter client"
                         link="/admin/clients/create"
                     />
                 </SidebarItem>
+
                 <SidebarItem
                     icon={<CarRental size={20} />}
                     text="Réservations"
@@ -163,15 +170,43 @@ export default function AdminLayout({ header, children }) {
                     text="Archives"
                     link="/admin/reservations/archived"
                 />
+
                 <hr className="my-3" />
+                {/* Section pour les Prestations */}
+                <SidebarItem
+                    icon={<RoomService size={20} />}
+                    text="Prestations"
+                >
+                    <SidebarItem
+                        icon={<List size={20} />}
+                        text="Toutes les prestations"
+                        link="/admin/prestations"
+                    />
+
+                    <SidebarItem
+                        icon={<Category size={20} />}
+                        text="Catégories de prestations"
+                        link="/admin/serviceTypes"
+                    />
+                    <SidebarItem
+                        icon={<Add size={20} />}
+                        text="Ajouter prestation"
+                        link="/admin/prestations/create"
+                    />
+                    <SidebarItem
+                        icon={<Add size={20} />}
+                        text="Ajouter categories"
+                        link="/admin/serviceTypes/create"
+                    />
+                </SidebarItem>
                 <SidebarItem
                     icon={<Settings2 size={20} />}
-                    text="Settings"
+                    text="Paramètres"
                     // link="/settings"
                 />
                 <SidebarItem
                     icon={<LifeBuoy size={20} />}
-                    text="Help"
+                    text="Aide"
                     // link="/help"
                 />
             </Sidebar>

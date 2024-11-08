@@ -3,20 +3,21 @@ import ConfirmModal from '@/Components/ConfirmModal';
 import PrimaryButton from '@/Components/PrimaryButton';
 import { ScrollToTopButton } from '@/Components/ScrollToTopButton';
 import SecondaryButton from '@/Components/SecondaryButton';
+import Settings from '@/Components/Settings';
 import UserDropdown from '@/Components/UserDropdown';
 import { palette } from '@/constants/palette';
 import { useThemeContext } from '@/contexts/ThemeContext';
 import { router, useForm, usePage } from '@inertiajs/react';
 import { Alert, Menu, MenuItem, Snackbar } from '@mui/material';
 import { motion } from 'framer-motion';
-import { ChevronDown, ChevronUp, Fullscreen, Sun } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const GuestLayout = ({ children, auth }) => {
+const GuestLayout = ({ children, auth,footerShown }) => {
     const [isSticky, setSticky] = useState(false);
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
-    const { flash } = usePage().props;
+    const { flash, serviceTypes } = usePage().props;
     const [open, setOpen] = useState(false);
     const [message, setMessage] = useState('');
     const [confirmModal, setConfirmModal] = useState(false);
@@ -24,8 +25,13 @@ const GuestLayout = ({ children, auth }) => {
     const [activeLink, setActiveLink] = useState('home');
     const { post } = useForm();
     const { paletteName } = useThemeContext();
-
+    console.log(serviceTypes);
     const currentPalette = palette[paletteName];
+    const [isSidebarOpen, setSidebarOpen] = useState(false); // State for controlling sidebar visibility
+
+    const toggleSidebar = () => {
+        setSidebarOpen((prev) => !prev);
+    };
 
     useEffect(() => {
         const currentURL = window.location.href;
@@ -41,9 +47,12 @@ const GuestLayout = ({ children, auth }) => {
         const handleScroll = () => {
             const currentURL = route().current('home');
 
-            console.log(currentURL);
+            console.log(route().current());
+
             if (currentURL) {
                 setSticky(window.scrollY > 50);
+            } else if (route().current('prestations')) {
+                setActiveLink('prestations');
             } else {
                 setSticky(true);
             }
@@ -181,10 +190,10 @@ const GuestLayout = ({ children, auth }) => {
                         <div>
                             <button
                                 onClick={handleOpenMenu}
-                                className={`flex items-center px-4 py-2 transition-all duration-300 ${activeLink === '#' ? 'font-bold' : isSticky ? 'text-gray-600' : 'text-white'}`}
+                                className={`flex items-center px-4 py-2 transition-all duration-300 ${activeLink === 'prestations' ? 'font-bold' : isSticky ? 'text-gray-600' : 'text-white'}`}
                                 style={{
                                     color:
-                                        activeLink === '#'
+                                        activeLink === 'prestations'
                                             ? currentPalette[500]
                                             : isSticky
                                               ? palette['gray'][600]
@@ -222,21 +231,19 @@ const GuestLayout = ({ children, auth }) => {
                                 }}
                                 className="mt-2 w-full"
                             >
-                                <MenuItem
-                                    onClick={() => scrollToSection('service1')}
-                                >
-                                    Service 1
-                                </MenuItem>
-                                <MenuItem
-                                    onClick={() => scrollToSection('service2')}
-                                >
-                                    Service 2
-                                </MenuItem>
-                                <MenuItem
-                                    onClick={() => scrollToSection('service3')}
-                                >
-                                    Service 3
-                                </MenuItem>
+                                {serviceTypes?.map((service, index) => (
+                                    <MenuItem
+                                        key={index}
+                                        onClick={() => {
+                                            router.visit('/prestations', {
+                                                data: { scrollTo: service.id }, // Pass the service ID to the new page
+                                                preserveScroll: false,
+                                            });
+                                        }}
+                                    >
+                                        {service.nom}
+                                    </MenuItem>
+                                ))}
                             </Menu>
                         </div>
                     </nav>
@@ -263,14 +270,25 @@ const GuestLayout = ({ children, auth }) => {
                     </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                    <button className="rounded-full p-2 focus:outline-none">
+                    {/* <button className="rounded-full p-2 focus:outline-none">
                         <Sun className="h-5 w-5 text-yellow-500" />
                     </button>
                     <button className="hidden rounded-full p-2 focus:outline-none md:flex">
                         <Fullscreen
                             className={`h-5 w-5 ${isSticky ? 'text-gray-600' : 'text-white'}`}
                         />
-                    </button>
+                    </button> */}
+                    {/* <button
+                        onClick={toggleSidebar}
+                        className="rounded-full p-2 focus:outline-none"
+                    >
+                        <Settings className={`h-5 w-5 ${ isSticky? 'text-gray-600':'text-white'} `} />
+                         
+
+
+                    </button> */}
+
+                    <Settings isGuest isSticky={isSticky} />
                     {!auth?.user ? (
                         <>
                             <PrimaryButton
@@ -324,6 +342,106 @@ const GuestLayout = ({ children, auth }) => {
                     setConfirmModal(false);
                 }}
             />
+
+          {footerShown&&  <footer className="text-surface flex flex-col items-center bg-zinc-100 text-center dark:bg-neutral-700 dark:text-white lg:text-left">
+                <div className="container p-6">
+                    <div className="grid place-items-center gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        {/* Contact Information */}
+                        <div className="mb-6">
+                            <h5 className="mb-2.5 font-bold uppercase">
+                                Contact
+                            </h5>
+                            <ul className="mb-0 list-none">
+                                <li>
+                                    <span>Email: </span>
+                                    <a href="mailto:contact@aynalbr.com">
+                                        contact@aynalbr.com
+                                    </a>
+                                </li>
+                                <li>
+                                    <span>Phone: </span>
+                                    <a href="tel:+123456789">+123 456 789</a>
+                                </li>
+                                <li>
+                                    <span>Address: </span>
+                                    <p>123 Ayna Street, City, Country</p>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Social Media Links */}
+                        <div className="mb-6">
+                            <h5 className="mb-2.5 font-bold uppercase">
+                                Follow Us
+                            </h5>
+                            <ul className="mb-0 list-none">
+                                <li>
+                                    <a
+                                        href="https://www.facebook.com/aynalbr"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Facebook
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="https://www.twitter.com/aynalbr"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Twitter
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="https://www.instagram.com/aynalbr"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Instagram
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="https://www.linkedin.com/company/aynalbr"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        LinkedIn
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        {/* Quick Links */}
+                        <div className="mb-6">
+                            <h5 className="mb-2.5 font-bold uppercase">
+                                Quick Links
+                            </h5>
+                            <ul className="mb-0 list-none">
+                                <li>
+                                    <a href="#home">Home</a>
+                                </li>
+                                <li>
+                                    <a href="#about">About Us</a>
+                                </li>
+                                <li>
+                                    <a href="#services">Services</a>
+                                </li>
+                                <li>
+                                    <a href="#contact">Contact</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="w-full bg-black/5 p-4 text-center">
+                    &copy; {new Date().getFullYear()} Ayna lbr. Tous droits
+                    réservés.
+                </div>
+            </footer>}
         </div>
     );
 };

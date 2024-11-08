@@ -48,7 +48,6 @@ export default function Dashboard({
             <div className="flex-grow p-4 text-gray-500">
                 {/* Section des Cartes */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-                  
                     <Card
                         title="Total de Voitures"
                         value={totalCars}
@@ -88,15 +87,9 @@ export default function Dashboard({
                                     accessorKey: 'user.nom',
                                     header: 'Client',
                                     cell: (props) => (
-                                        <Link
-                                            href={route(
-                                                'clients.show',
-                                                props.row.original.id,
-                                            )}
-                                            className="text-blue-600 hover:underline"
-                                        >
-                                            {props.getValue()}
-                                        </Link>
+                                        <UserTooltip
+                                            user={props.row.original.user}
+                                        />
                                     ),
                                 },
                                 {

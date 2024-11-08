@@ -10,11 +10,16 @@ class ContactFormController extends Controller
 {
     public function submit(Request $request)
     {
-
         $nom = $request->input("nom");
         $email = $request->input("email");
         $message = $request->input("message");
-        Mail::to('karen@gmail.com')->send(new ContactMail(['nom' => $nom, 'email' => $email, 'messsage' => $message]));
-        return back()->with('success', 'thaank you for contacting us');
+    
+        try {
+            Mail::to('karen@gmail.com')->send(new ContactMail(['nom' => $nom, 'email' => $email, 'message' => $message]));
+            return back()->with('success', 'Merci de nous avoir contactés.');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Une erreur est survenue lors de l\'envoi de votre message. Veuillez réessayer plus tard.');
+        }
     }
+    
 }

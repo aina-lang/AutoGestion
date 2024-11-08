@@ -7,8 +7,10 @@ use App\Http\Controllers\ContratController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\PrestationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ServiceTypeController;
 use App\Http\Controllers\VehiculeController;
 use App\Models\Categorie;
 use App\Models\Vehicule;
@@ -26,7 +28,7 @@ Route::get('/allcars', [HomeController::class, "all"])->name("cars.all");
 Route::get('/search-cars', [VehiculeController::class, 'search'])->name('cars.filter');
 Route::get('vehicules/{vehicule}/show', [VehiculeController::class, "showall"])->name('cars.show');
 Route::post('contact', [ContactFormController::class, 'submit'])->name('contact.submit');
-
+Route::get('/prestations', [HomeController::class, 'showServices'])->name('prestations');
 
 Route::middleware('auth', 'verified')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -63,6 +65,8 @@ Route::middleware('auth', 'verified')->group(function () {
             Route::resource('contrats', ContratController::class);
             Route::resource('categories', CategorieController::class);
             Route::resource('clients', ClientController::class);
+            Route::resource('prestations', PrestationController::class);
+            Route::resource('serviceTypes', ServiceTypeController::class);
         });
     });
 

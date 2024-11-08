@@ -53,7 +53,7 @@ function Showvehicule({ vehicule, auth }) {
     };
 
     return (
-        <GuestLayout auth={auth}>
+        <GuestLayout auth={auth} footerShown={false}>
             <Head title={`Véhicule ${vehicule.marque} ${vehicule.modele}`} />
             <ReservationModal
                 open={reservationModalOpen}

@@ -31,24 +31,40 @@ export default function Welcome({
     const { paletteName } = useThemeContext();
 
     const currentPalette = palette[paletteName];
-    // useEffect(() => {
-    //     // Récupérer tous les <span> dans le <h2>
-    //     const spans = document.querySelectorAll('h2 span');
-
-    //     // Ajouter dynamiquement la classe highlight avec la couleur actuelle
-    //     spans.forEach((span) => {
-    //         span.classList.add(
-    //             `highlight`,
-    //             `highlight-[${currentPalette[500]}]`,
-    //         );
-    //     });
-    // }, [currentPalette]);
-
     const { data, setData, post, processing, errors } = useForm({
         nom: auth?.user ? auth?.user?.nom : '',
         email: auth?.user ? auth?.user?.email : '',
-        message: '', // Initialize an array for phone numbers
+        message: '',
     });
+
+    const [query, setQuery] = useState({
+        marque: '',
+        date_depart: '',
+        date_retour: '',
+        categorie: '',
+    });
+
+    const handleChange = (field, value) => {
+        setQuery((prev) => ({ ...prev, [field]: value }));
+        setData(field, value); // Also update form data for other purposes
+    };
+    // Handle vehicle search form submission
+    const handleVehicleSearchSubmit = (e) => {
+        router.get(
+            route('cars.all'),
+            { search: query },
+            { preserveState: true },
+        );
+    };
+
+    // Handle contact form submission
+    const handleContactSubmit = (e) => {
+        e.preventDefault();
+        post(route('contact.submit'), {
+            onSuccess: () => console.log('Contact form submitted!'),
+        });
+    };
+
     const { scrollTo } = usePage().props; // Access the passed data
 
     useEffect(() => {
@@ -59,11 +75,6 @@ export default function Welcome({
             }
         }
     }, [scrollTo]);
-
-    const submit = (e) => {
-        e.preventDefault();
-        post(route('contact.submit'));
-    };
 
     const handleOpenModal = (car) => {
         setSelectedCar(car);
@@ -77,7 +88,7 @@ export default function Welcome({
 
     const handleCancelReservation = async (car) => {};
     return (
-        <GuestLayout auth={auth}>
+        <GuestLayout auth={auth} footerShown={true}>
             <Head title="Vezo Tours - Unlock Your Travel Experience" />
             <div className="overflow-x-hidden bg-gray-100 text-gray-800">
                 {/* Hero Section with ReactTyped */}
@@ -135,7 +146,6 @@ export default function Welcome({
                             <form>
                                 <Grid className="grid grid-cols-4 justify-center gap-4">
                                     <div className="flex">
-                                        {' '}
                                         <Grid item xs={12} md={3}>
                                             <TextField
                                                 fullWidth
@@ -151,13 +161,19 @@ export default function Welcome({
                                                         outline: 'none',
                                                     },
                                                 }}
-                                                className="text-gray-800" // Additional class for text color
+                                                className="text-gray-800"
+                                                value={query.date_depart}
+                                                onChange={(e) =>
+                                                    handleChange(
+                                                        'date_depart',
+                                                        e.target.value,
+                                                    )
+                                                }
                                             />
                                         </Grid>
-                                        <div className="mx-5 hidden border-l border-gray-300 md:block" />{' '}
+                                        <div className="mx-5 hidden border-l border-gray-300 md:block" />
                                     </div>
                                     <div className="flex">
-                                        {/* Separator */}
                                         <Grid item xs={12} md={3}>
                                             <TextField
                                                 fullWidth
@@ -174,11 +190,17 @@ export default function Welcome({
                                                     },
                                                 }}
                                                 className="text-gray-800"
+                                                value={query.date_retour}
+                                                onChange={(e) =>
+                                                    handleChange(
+                                                        'date_retour',
+                                                        e.target.value,
+                                                    )
+                                                }
                                             />
                                         </Grid>
-                                        <div className="mx-5 hidden border-l border-gray-300 md:block" />{' '}
-                                    </div>{' '}
-                                    {/* Separator */}
+                                        <div className="mx-5 hidden border-l border-gray-300 md:block" />
+                                    </div>
                                     <Grid item xs={12} md={4}>
                                         <TextField
                                             fullWidth
@@ -195,26 +217,34 @@ export default function Welcome({
                                                 },
                                             }}
                                             className="text-gray-800"
+                                            value={query.categorie}
+                                            onChange={(e) =>
+                                                handleChange(
+                                                    'categorie',
+                                                    e.target.value,
+                                                )
+                                            }
                                         >
                                             {categories.map((option, index) => (
                                                 <MenuItem
-                                                    key={index}
-                                                    selected={index == 0}
-                                                    value={option.value}
+                                                    key={option.id}
+                                                    value={option.id}
                                                 >
                                                     {option.nom}
                                                 </MenuItem>
                                             ))}
                                         </TextField>
                                     </Grid>
-                                    {/* Separator */}
                                     <Grid
                                         item
                                         xs={12}
                                         md={2}
                                         className="flex items-center justify-center"
                                     >
-                                        <PrimaryButton className="mt-4 h-full md:mt-0">
+                                        <PrimaryButton
+                                            onClick={handleVehicleSearchSubmit}
+                                            className="mt-4 h-full md:mt-0"
+                                        >
                                             Rechercher
                                         </PrimaryButton>
                                     </Grid>
@@ -508,18 +538,21 @@ export default function Welcome({
                                             {auth?.user?.type !== 'admin' && (
                                                 <PrimaryButton
                                                     onClick={() => {
-                                                        if (
-                                                            car.reservationStatus ===
-                                                            'en attente'
-                                                        ) {
-                                                            handleCancelReservation(
-                                                                car,
-                                                            );
-                                                        } else {
-                                                            handleOpenModal(
-                                                                car,
-                                                            );
-                                                        }
+                                                        // if (
+                                                        //     car.reservationStatus ===
+                                                        //     'en attente'
+                                                        // ) {
+                                                        //     handleCancelReservation(
+                                                        //         car,
+                                                        //     );
+                                                        // } else {
+                                                        //     handleOpenModal(
+                                                        //         car,
+                                                        //     );
+                                                        // }
+                                                        handleOpenModal(
+                                                            car,
+                                                        );
                                                     }}
                                                     // disabled={
                                                     //     car.isReservedByUser &&
@@ -565,7 +598,7 @@ export default function Welcome({
                             }}
                             isSticky={true}
                         >
-                            <ReloadIcon className='mr-2' />
+                            <ReloadIcon className="mr-2" />
                             Voir plus
                         </SecondaryButton>
                     </div>
@@ -587,7 +620,7 @@ export default function Welcome({
                         <div className="mt-2 flex flex-col items-center md:flex-row">
                             <form
                                 className="mx-auto mt-6 w-full rounded-lg bg-white p-8 shadow-lg dark:bg-gray-900 md:w-1/2"
-                                onSubmit={submit}
+                                onSubmit={handleContactSubmit}
                             >
                                 <TextField
                                     fullWidth
@@ -654,107 +687,7 @@ export default function Welcome({
                         isAuthenticated={auth.user ? true : false}
                     />
                 )}
-                <footer className="text-surface flex flex-col items-center bg-zinc-100 text-center dark:bg-neutral-700 dark:text-white lg:text-left">
-                    <div className="container p-6">
-                        <div className="grid place-items-center gap-6 md:grid-cols-2 lg:grid-cols-3">
-                            {/* Contact Information */}
-                            <div className="mb-6">
-                                <h5 className="mb-2.5 font-bold uppercase">
-                                    Contact
-                                </h5>
-                                <ul className="mb-0 list-none">
-                                    <li>
-                                        <span>Email: </span>
-                                        <a href="mailto:contact@aynalbr.com">
-                                            contact@aynalbr.com
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <span>Phone: </span>
-                                        <a href="tel:+123456789">
-                                            +123 456 789
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <span>Address: </span>
-                                        <p>123 Ayna Street, City, Country</p>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            {/* Social Media Links */}
-                            <div className="mb-6">
-                                <h5 className="mb-2.5 font-bold uppercase">
-                                    Follow Us
-                                </h5>
-                                <ul className="mb-0 list-none">
-                                    <li>
-                                        <a
-                                            href="https://www.facebook.com/aynalbr"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            Facebook
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a
-                                            href="https://www.twitter.com/aynalbr"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            Twitter
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a
-                                            href="https://www.instagram.com/aynalbr"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            Instagram
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a
-                                            href="https://www.linkedin.com/company/aynalbr"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                        >
-                                            LinkedIn
-                                        </a>
-                                    </li>
-                                </ul>
-                            </div>
-
-                            {/* Quick Links */}
-                            <div className="mb-6">
-                                <h5 className="mb-2.5 font-bold uppercase">
-                                    Quick Links
-                                </h5>
-                                <ul className="mb-0 list-none">
-                                    <li>
-                                        <a href="#home">Home</a>
-                                    </li>
-                                    <li>
-                                        <a href="#about">About Us</a>
-                                    </li>
-                                    <li>
-                                        <a href="#services">Services</a>
-                                    </li>
-                                    <li>
-                                        <a href="#contact">Contact</a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="w-full bg-black/5 p-4 text-center">
-                        &copy; {new Date().getFullYear()} Ayna lbr. Tous droits
-                        réservés.
-                    </div>
-                </footer>
+             
             </div>
         </GuestLayout>
     );

@@ -2,7 +2,7 @@ import MyHeader from '@/Components/Header';
 import PrimaryButton from '@/Components/PrimaryButton';
 import StyledDataGrid from '@/Components/StyledDataGrid'; // Importation de la table générique
 import { Input } from '@/components/ui/input';
-import AdminLayout from '@/Layouts/AdminLayout';
+import ClientLayout from '@/Layouts/ClientLayout';
 import { Head, router } from '@inertiajs/react';
 import { MoreHorizSharp, TableView } from '@mui/icons-material';
 import { Grid } from '@mui/material';
@@ -19,7 +19,7 @@ const index = ({ archivedReservations }) => {
     };
 
     return (
-        <AdminLayout
+        <ClientLayout
             header={
                 <MyHeader
                     title="Véhicules"
@@ -123,7 +123,7 @@ const index = ({ archivedReservations }) => {
                 ) : (
                     <StyledDataGrid
                         columns={[
-                            { accessorKey: 'user.nom', header: 'Client' },
+                           
                             {
                                 accessorKey: 'vehicule.marque',
                                 header: 'Voiture',
@@ -174,7 +174,7 @@ const index = ({ archivedReservations }) => {
                     />
                 )}
             </div>
-        </AdminLayout>
+        </ClientLayout>
     );
 };
 

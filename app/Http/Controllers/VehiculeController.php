@@ -18,6 +18,14 @@ class VehiculeController extends Controller
      */
 
 
+    private function jaccardSimilarity($setA, $setB)
+    {
+        $intersection = count(array_intersect($setA, $setB));
+        $union = count(array_unique(array_merge($setA, $setB)));
+
+        return $union > 0 ? $intersection / $union : 0;
+    }
+
     public function index(Request $request)
     {
         // Retrieve all categories for the dropdown filter
@@ -27,16 +35,28 @@ class VehiculeController extends Controller
         $query = Vehicule::with('categorie');
 
         // Check if there are search parameters
-        if ($request->filled('marque') || $request->filled('categorie') || $request->filled('date_depart') || $request->filled('date_retour')) {
+        if ($request->filled('search') || $request->filled('categorie') || $request->filled('date_depart') || $request->filled('date_retour')) {
 
-            // Filter by marque
-            if ($request->filled('marque')) {
-                $query->where('marque', 'like', '%' . $request->marque . '%');
+            // Filter by marque or modele with Jaccard similarity
+            if ($request->filled('search')) {
+                // Ensure the search term is split and in lowercase
+                $searchTerms = explode(' ', strtolower($request->search));
+
+                // Use a whereHas to filter by marque or modele
+                $query->where(function ($q) use ($searchTerms) {
+                    $q->whereHas('categorie', function ($query) use ($searchTerms) {
+                        foreach ($searchTerms as $term) {
+                            // Searching for each term in marque or modele using LIKE
+                            $query->where('marque', 'like', '%' . $term . '%')
+                                ->orWhere('modele', 'like', '%' . $term . '%');
+                        }
+                    });
+                });
             }
 
             // Filter by category
             if ($request->filled('categorie')) {
-                $query->where('categorie_id', $request->categorie); // Use the correct foreign key for the category
+                $query->where('categorie_id', $request->categorie);
             }
 
             // Filter by date range for availability
@@ -68,11 +88,10 @@ class VehiculeController extends Controller
                 });
             }
 
-            // Retrieve the filtered vehicles with their categories
-            $vehicles = $query->with('categorie')->paginate(5);
-            // Debugging output to see the filtered vehicles
-            // dd($vehicles);
+            // Paginate the filtered results
+            $vehicles = $query->paginate(5);
 
+            // Return based on user type
             if (Auth::user()->type == "admin") {
                 return inertia('admin/vehicules/index', [
                     'vehicules' => $vehicles,
@@ -80,7 +99,6 @@ class VehiculeController extends Controller
                 ]);
             }
 
-            // Return the filtered results
             return inertia('welcome/allCars', [
                 'latestVehicles' => $vehicles,
                 'categories' => $categories, // Include categories for the dropdown filter
@@ -90,12 +108,14 @@ class VehiculeController extends Controller
         // If no search parameters are provided, return all vehicles with pagination
         $vehicules = Vehicule::with('categorie')->paginate(5);
 
-        // Return the view with all vehicle data and categories for filtering
         return inertia('admin/vehicules/index', [
             'vehicules' => $vehicules,
             'categories' => $categories, // Include categories for the dropdown filter
         ]);
     }
+
+
+
 
 
 
@@ -191,18 +211,24 @@ class VehiculeController extends Controller
     {
         // Eager load the category with the vehicle
         $vehicule = Vehicule::with('categorie')->findOrFail($id);
-
-        $vehicule->unavailableDates = Reservation::where("id", $vehicule->id)->get()->map(function ($reservation) {
-            return [
-                'start' => $reservation->date_depart,
-                'end' => $reservation->date_retour,
-            ];
-        })->toArray();
-
+    
+        // Get the unavailable dates based on reservations with 'confirmed' status
+        $vehicule->unavailableDates = Reservation::where('vehicule_id', $vehicule->id)
+            ->where('status', 'confirmée') // Make sure to check for confirmed status
+            ->get()
+            ->map(function ($reservation) {
+                return [
+                    'start' => $reservation->date_depart,
+                    'end' => $reservation->date_retour,
+                ];
+            })
+            ->toArray();
+    
         return Inertia::render('welcome/showCar', [
             'vehicule' => $vehicule,
         ]);
     }
+    
 
     /**
      * Show the form for editing the specified resource.
@@ -225,7 +251,7 @@ class VehiculeController extends Controller
     public function update(Request $request, $id)
     {
         $vehicule = Vehicule::findOrFail($id);
-    
+
         // dd($request->all());
         // Validation des données
         $validator = Validator::make($request->all(), [
@@ -237,11 +263,11 @@ class VehiculeController extends Controller
             'description' => 'required|string|max:500',
             'new_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:30720',
         ]);
-    
+
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
-    
+
         try {
             // Suppression des images sélectionnées
             $imagePaths = json_decode($vehicule->images, true) ?: [];
@@ -253,7 +279,7 @@ class VehiculeController extends Controller
                     $imagePaths = array_diff($imagePaths, [$image]);
                 }
             }
-    
+
             // Gestion du stockage des nouvelles images
             if ($request->hasFile('new_images')) {
                 foreach ($request->file('new_images') as $image) {
@@ -261,7 +287,7 @@ class VehiculeController extends Controller
                     $imagePaths[] = $path;
                 }
             }
-    
+
             // Mise à jour des données du véhicule
             $vehicule->update([
                 'marque' => $request->marque,
@@ -272,7 +298,7 @@ class VehiculeController extends Controller
                 'description' => $request->description,
                 'images' => json_encode(array_values($imagePaths)), // Stocker les chemins d'image au format JSON
             ]);
-    
+
             session()->flash('success', 'Véhicule mis à jour avec succès.');
             return redirect()->route('admin.vehicules.index');
         } catch (\Exception $e) {
@@ -280,7 +306,7 @@ class VehiculeController extends Controller
             return redirect()->back()->withInput();
         }
     }
-    
+
 
 
 

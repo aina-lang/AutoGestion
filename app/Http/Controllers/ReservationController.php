@@ -61,7 +61,12 @@ class ReservationController extends Controller
                 ->where('date_retour', '<', now())
                 ->paginate(5);
 
-            return Inertia::render('admin/reservations/archived', [
+            if(Auth::user()->type=="admin"){
+                return Inertia::render('admin/reservations/archived', [
+                    'archivedReservations' => $archivedReservations,
+                ]);
+            }
+            return Inertia::render('client/reservations/archived', [
                 'archivedReservations' => $archivedReservations,
             ]);
         } catch (Exception $e) {

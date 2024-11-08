@@ -91,7 +91,7 @@ export default function AllCars({ auth, latestVehicles, categories }) {
     };
 
     return (
-        <GuestLayout auth={auth}>
+        <GuestLayout auth={auth} footerShown={false}>
             <Head title="Ayna lbr - Unlock Your Travel Experience" />
 
             <div className="flex h-screen justify-start overflow-hidden bg-gray-100 text-gray-800">
@@ -170,10 +170,7 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                                     className="text-gray-800"
                                 >
                                     {categories.map((option, index) => (
-                                        <MenuItem
-                                            key={index}
-                                            value={option.value}
-                                        >
+                                        <MenuItem key={index} value={option.id}>
                                             {option.nom}
                                         </MenuItem>
                                     ))}
@@ -327,6 +324,7 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                                                     );
                                                 }}
                                                 className="flex-1"
+                                                isSticky
                                             >
                                                 Voir plus
                                             </SecondaryButton>

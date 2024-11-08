@@ -1,48 +1,47 @@
-// resources/js/Pages/Dashboard.jsx
-
 import MyHeader from '@/Components/Header';
-import PrimaryButton from '@/Components/PrimaryButton';
+import StyledDataGrid from '@/Components/StyledDataGridForDashboard';
+import UserTooltip from '@/Components/UserTooltip';
 import ClientLayout from '@/Layouts/ClientLayout';
-import { Head, router } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import {
-    AdminPanelSettingsOutlined,
+   AdminPanelSettingsOutlined,
     CarRentalSharp,
-    Money,
 } from '@mui/icons-material';
-import { BarChart, PieChart } from '@mui/x-charts';
-import { GridAddIcon } from '@mui/x-data-grid';
+import { Link } from '@mui/material';
+import { BarChart } from '@mui/x-charts';
 import { CarIcon } from 'lucide-react';
+
+const chartSetting = {
+    yAxis: [
+        {
+            label: 'rainfall (mm)',
+        },
+    ],
+    width: 400,
+    height: 300,
+    // sx: {
+    //     [`.${axisClasses.left} .${axisClasses.label}`]: {
+    //         transform: 'translate(-20px, 0)',
+    //     },
+    // },
+};
+
+const valueFormatter = (value) => `${value} unités`;
 
 export default function Dashboard({
     totalCars,
     totalReservations,
     totalUsers,
-    totalRevenue,
+    rentedCarsPercentage,
+    availableCarsPercentage,
     monthlyData,
+    mostRentedCars,
+    upcomingReservations, // Ajout de la propriété pour les réservations à venir
 }) {
-    const handleAddProject = () => {
-        router.get('/projects/add');
-    };
-
+    console.log(route(route().current()));
     return (
         <ClientLayout
-            header={
-                <MyHeader
-                    title="Tableau de Bord"
-                    breadcrumbItems={[
-                        { label: 'Accueil', href: '/' },
-                        { label: 'Projets' },
-                    ]}
-                    right={
-                        <div className="flex space-x-4">
-                            <PrimaryButton onClick={handleAddProject}>
-                                <GridAddIcon />
-                                Nouveau Projet
-                            </PrimaryButton>
-                        </div>
-                    }
-                />
-            }
+            header={<MyHeader title="Tableau de Bord" breadcrumbItems={[]} />}
         >
             <Head title="Tableau de Bord" />
 
@@ -52,92 +51,114 @@ export default function Dashboard({
                     <Card
                         title="Total de Voitures"
                         value={totalCars}
-                        icon={<CarIcon className="text-blue-500" />}
-                        color="bg-blue-200"
+                        icon={<CarIcon className="text-white" />}
+                        color="bg-gradient-to-tr from-blue-500 to-blue-300 shadow-blue-200 shadow-lg dark:shadow-black/30"
                     />
                     <Card
                         title="Réservations"
                         value={totalReservations}
-                        icon={<CarRentalSharp className="text-green-500" />}
-                        color="bg-green-200"
+                        icon={<CarRentalSharp className="text-white" />}
+                        color="bg-gradient-to-tr from-green-500 to-green-300 shadow-green-200 shadow-lg dark:shadow-black/30"
                     />
                     <Card
-                        title="Users"
+                        title="Utilisateurs"
                         value={totalUsers}
                         icon={
-                            <AdminPanelSettingsOutlined className="text-orange-500" />
+                            <AdminPanelSettingsOutlined className="text-white" />
                         }
-                        color="bg-orange-200"
+                        color="bg-gradient-to-tr from-orange-500 to-orange-300 shadow-orange-200 shadow-lg dark:shadow-black/30"
                     />
                     <Card
-                        title="Revenus"
-                        value={`$${totalRevenue}`}
-                        icon={<Money className="text-purple-500" />}
-                        color="bg-purple-200"
+                        title="Voitures Louées (%)"
+                        icon={<CarRentalSharp className="text-white" />}
+                        color="bg-gradient-to-tr from-pink-500 to-pink-300 shadow-pink-200 shadow-lg dark:shadow-black/30"
                     />
                 </div>
 
-                {/* Section des Graphiques */}
-                <div className="mt-16 flex space-x-4">
-                    <ChartCard
-                        title="Réservations par Mois"
-                        chart={
-                            <BarChart
-                                series={[{ data: monthlyData }]}
-                                height={290}
-                                xAxis={[
-                                    {
-                                        data: [
-                                            'Jan',
-                                            'Fév',
-                                            'Mar',
-                                            'Avr',
-                                            'Mai',
-                                            'Juin',
-                                            'Juil',
-                                            'Aoû',
-                                            'Sep',
-                                            'Oct',
-                                            'Nov',
-                                            'Déc',
-                                        ],
-                                        scaleType: 'band',
-                                    },
-                                ]}
-                                margin={{
-                                    top: 10,
-                                    bottom: 30,
-                                    left: 40,
-                                    right: 10,
-                                }}
-                                colors={[
-                                    '#1976D2',
-                                    '#388E3C',
-                                    '#FF9800',
-                                    '#9C27B0',
-                                ]} // Couleurs personnalisées pour les barres
-                            />
-                        }
-                    />
-                    <ChartCard
-                        title="Distribution des Voitures"
-                        chart={
-                            <PieChart
-                                series={[
-                                    {
-                                        data: [
-                                            { id: 0, value: 10, label: 'Voiture A' },
-                                            { id: 1, value: 15, label: 'Voiture B' },
-                                            { id: 2, value: 20, label: 'Voiture C' },
-                                        ],
-                                    },
-                                ]}
-                                width={400}
-                                height={200}
-                                colors={['#FF6384', '#36A2EB', '#FFCE56']} // Couleurs personnalisées pour le graphique circulaire
-                            />
-                        }
-                    />
+                <div className="mt-16 flex w-full space-x-4">
+                    {/* Section des Réservations à Venir */}
+                    <div className="w-3/5 rounded-lg bg-white p-4 shadow">
+                        <h2 className="mb-4 text-xl font-semibold">
+                            Réservations à Venir
+                        </h2>
+                        <StyledDataGrid
+                            columns={[
+                                {
+                                    accessorKey: 'user.nom',
+                                    header: 'Client',
+                                    cell: (props) => (
+                                        <UserTooltip
+                                            user={props.row.original.user}
+                                        />
+                                    ),
+                                },
+                                {
+                                    accessorKey: 'vehicule.marque',
+                                    header: 'Voiture',
+                                    cell: (props) => (
+                                        <Link
+                                            href={route(
+                                                'admin.reservations.show',
+                                                props.row.original.id,
+                                            )}
+                                            className="text-blue-600 hover:underline"
+                                        >
+                                            {props.getValue()}
+                                        </Link>
+                                    ),
+                                },
+                                {
+                                    accessorKey: 'date_depart',
+                                    header: 'Date de Départ',
+                                },
+                                {
+                                    accessorKey: 'date_retour',
+                                    header: 'Date de Retour',
+                                },
+                                {
+                                    accessorKey: 'status',
+                                    header: 'Statut',
+                                    cell: (props) => (
+                                        <span
+                                            className={`me-2 rounded px-2.5 py-0.5 text-xs font-medium ${
+                                                props.getValue() === 'confirmée'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : 'bg-yellow-100 text-yellow-800'
+                                            }`}
+                                        >
+                                            {props.getValue()}
+                                        </span>
+                                    ),
+                                },
+                            ]}
+                            data={upcomingReservations} // Passer les données des réservations à venir ici
+                        />
+                    </div>
+
+                    {/* Section pour le graphique */}
+                    <div className="min-h-full flex-grow rounded-lg bg-white p-4 shadow">
+                        <h2 className="mb-4 text-xl font-semibold">
+                            Distribution des Voitures
+                        </h2>
+                        <BarChart
+                            dataset={monthlyData.map((value, index) => ({
+                                id: index, // Assignation d'un id basé sur l'index
+                                value, // Utilisation de la valeur de monthlyData
+                                label: new Intl.DateTimeFormat('fr-FR', {
+                                    month: 'long',
+                                }).format(new Date(0, index)), // Formatage du mois
+                            }))}
+                            xAxis={[{ scaleType: 'band', dataKey: 'label' }]} // Utilisez 'label' comme dataKey pour l'axe X
+                            series={[
+                                {
+                                    dataKey: 'value', // Assurez-vous que dataKey correspond à la valeur dans votre dataset
+                                    label: 'Valeur mensuelle', // Titre de la série
+                                    valueFormatter, // Utilisation du formatteur de valeur
+                                },
+                            ]}
+                            {...chartSetting}
+                        />
+                    </div>
                 </div>
             </div>
         </ClientLayout>
@@ -146,17 +167,17 @@ export default function Dashboard({
 
 const Card = ({ title, value, icon, color }) => (
     <div
-        className={`space-x-4 rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800`}
+        className={`relative space-x-4 rounded-lg bg-white p-4 py-8 pt-2 shadow-lg dark:bg-gray-800`}
     >
+        <div
+            className={`-top-5 h-16 w-16 ${color} absolute flex items-center justify-center rounded-xl`}
+        >
+            {icon}
+        </div>
         <div className="flex justify-between text-3xl">
-            <div
-                className={`h-10 w-10 ${color} flex items-center justify-center rounded-full`}
-            >
-                {icon}
-            </div>
             <div className="flex-grow text-right">
                 <h6 className="text-lg font-semibold">{title}</h6>
-                <p className="text-3xl font-bold">{value}</p>
+                <p className="text-3xl font-bold text-gray-600">{value}</p>
             </div>
         </div>
     </div>
