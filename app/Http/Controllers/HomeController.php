@@ -23,7 +23,7 @@ class HomeController extends Controller
     {
         $currentDate = now(); // Récupérer la date actuelle
 
-        $latestVehicles = Vehicule::latest()->take(6)->get()->map(function ($vehicle) use ($currentDate) {
+        $latestVehicles = Vehicule::with("avis.user")->latest()->take(6)->get()->map(function ($vehicle) use ($currentDate) {
             // Decode the JSON images
             $vehicle->images = json_decode($vehicle->images);
 
@@ -103,36 +103,33 @@ class HomeController extends Controller
 
     public function all(Request $request)
     {
-        $userId = Auth::id(); // Get the authenticated user's ID
+        $userId = Auth::id(); // Récupérer l'ID de l'utilisateur authentifié
 
-        // Fetch query parameters for filtering
-        $marque = $request->input('search.marque', '');
-        $modele = $request->input('search.modele', '');
-        $date_depart = $request->input('search.date_depart', '');
-        $date_retour = $request->input('search.date_retour', '');
-        $categorie = $request->input('search.categorie', '');
+        // Récupérer les paramètres de filtrage
+        $search = $request->input('search', []);
+        $marque = $search['marque'] ?? '';
+        $modele = $search['modele'] ?? '';
+        $date_depart = $search['date_depart'] ?? '';
+        $date_retour = $search['date_retour'] ?? '';
+        $categorie = $search['categorie'] ?? '';
 
-        // Build the query for vehicles with eager loading of the categorie relationship
-        $query = Vehicule::with('categorie');
+        // Construire la requête pour les véhicules avec les relations 'categorie' et 'avis.user' en eager loading
+        $query = Vehicule::with(['categorie', 'avis.user']);
 
-        // Filtering by marque or modele with Jaccard similarity
+        // Filtrage par marque ou modele
         if ($marque || $modele) {
             $searchTerms = array_filter(explode(' ', strtolower($marque . ' ' . $modele)));
 
-            // Use a whereRaw or custom logic to filter by similarity in the query
-            // Example: You can filter by a custom condition here
             $query->where(function ($q) use ($searchTerms) {
-                $q->whereHas('categorie', function ($query) use ($searchTerms) {
-                    foreach ($searchTerms as $term) {
-                        // Example of searching for each term in the marque or modele
-                        $query->where('marque', 'like', '%' . $term . '%')
-                            ->orWhere('modele', 'like', '%' . $term . '%');
-                    }
-                });
+                foreach ($searchTerms as $term) {
+                    // Appliquer le filtrage sur marque et modele
+                    $q->where('marque', 'like', '%' . $term . '%')
+                        ->orWhere('modele', 'like', '%' . $term . '%');
+                }
             });
         }
 
-        // Apply date filters if provided
+        // Filtrage par dates si fournies
         if ($date_depart && $date_retour) {
             $query->whereDoesntHave('reservations', function ($q) use ($date_depart, $date_retour) {
                 $q->where(function ($query) use ($date_depart, $date_retour) {
@@ -146,29 +143,33 @@ class HomeController extends Controller
             });
         }
 
-        // Apply category filter if provided
+        // Filtrage par catégorie si fourni
         if ($categorie) {
             $query->where('categorie_id', $categorie);
         }
 
-        // Paginate the results, 20 items per page
-        $latestVehicles = $query->paginate(20)->withQueryString()->map(function ($vehicle) use ($userId) {
-            // Decode the JSON images
-            $vehicle->images = json_decode($vehicle->images);
+        // Paginer les résultats (20 items par page) avec conservation des paramètres de filtrage dans l'URL
+        // $latestVehicles = $query->paginate(5)->withQueryString()->map(function ($vehicle) use ($userId) {
 
-            // Check if the vehicle is reserved by the user
-            $reservation = Reservation::where('user_id', $userId)
-                ->where('vehicule_id', $vehicle->id)
-                ->first();
 
-            // Add reservation status
-            $vehicle->isReservedByUser = (bool)$reservation;
-            $vehicle->reservationStatus = $reservation ? $reservation->status : null;
+        //     // Décoder les images JSON
+        //     $vehicle->images = json_decode($vehicle->images);
 
-            return $vehicle;
-        });
+        // // Vérifier si le véhicule est réservé par l'utilisateur
+        // $reservation = Reservation::where('user_id', $userId)
+        //     ->where('vehicule_id', $vehicle->id)
+        //     ->first();
 
-        // Get all categories
+        // // Ajouter le statut de réservation
+        // $vehicle->isReservedByUser = (bool)$reservation;
+        // $vehicle->reservationStatus = $reservation ? $reservation->status : null;
+
+        // return $vehicle;
+        // });
+
+        $latestVehicles = $query->paginate(5);
+        // dd($latestVehicles);
+        // Récupérer toutes les catégories
         $categories = Categorie::all();
 
         return Inertia::render('welcome/allCars', [
@@ -178,15 +179,10 @@ class HomeController extends Controller
             'phpVersion' => PHP_VERSION,
             'latestVehicles' => $latestVehicles,
             'categories' => $categories,
-            'search' => [
-                'marque' => $marque,
-                'modele' => $modele,
-                'date_depart' => $date_depart,
-                'date_retour' => $date_retour,
-                'categorie' => $categorie,
-            ], // Pass the search filters to the view
+            'search' => $search, // Passer les filtres de recherche à la vue
         ]);
     }
+
 
 
     public function showServices()
@@ -197,7 +193,7 @@ class HomeController extends Controller
         return Inertia::render('welcome/services', [
             'categories' => $categories,
             'services' => $services,
-            'serviceTypes' =>$categories,
+            'serviceTypes' => $categories,
         ]);
     }
 }

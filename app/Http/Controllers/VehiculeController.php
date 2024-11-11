@@ -210,8 +210,8 @@ class VehiculeController extends Controller
     public function showAll(string $id)
     {
         // Eager load the category with the vehicle
-        $vehicule = Vehicule::with('categorie')->findOrFail($id);
-    
+        $vehicule = Vehicule::with(['categorie', "avis.user"])->findOrFail($id);
+        // dd($vehicule);
         // Get the unavailable dates based on reservations with 'confirmed' status
         $vehicule->unavailableDates = Reservation::where('vehicule_id', $vehicule->id)
             ->where('status', 'confirmée') // Make sure to check for confirmed status
@@ -223,12 +223,12 @@ class VehiculeController extends Controller
                 ];
             })
             ->toArray();
-    
+
         return Inertia::render('welcome/showCar', [
             'vehicule' => $vehicule,
         ]);
     }
-    
+
 
     /**
      * Show the form for editing the specified resource.

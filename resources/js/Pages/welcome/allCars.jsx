@@ -1,20 +1,11 @@
 import PrimaryButton from '@/Components/PrimaryButton';
 import ReservationModal from '@/Components/ReservationModal';
-import SecondaryButton from '@/Components/SecondaryButton';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, router, useForm } from '@inertiajs/react';
 import SearchIcon from '@mui/icons-material/Search';
-import {
-    Button,
-    Grid,
-    MenuItem,
-    Paper,
-    TextField,
-    Typography,
-} from '@mui/material';
+import { Grid, MenuItem, Paper, TextField, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
-import _ from 'lodash';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 export default function AllCars({ auth, latestVehicles, categories }) {
     const [modalOpen, setModalOpen] = useState(false);
@@ -26,8 +17,13 @@ export default function AllCars({ auth, latestVehicles, categories }) {
         date_retour: '',
         categorie: '',
     });
-
-    // Initialize form state with useForm
+    // console.log(latestVehicles);
+    // State for pagination (current page and loading status)
+    const [loading, setLoading] = useState(false);
+    const [cars, setCars] = useState(latestVehicles.data);
+    const [page, setPage] = useState(0);
+    const listRef = useRef(null);
+    // Form state for filters
     const { setData } = useForm({
         marque: '',
         date_depart: '',
@@ -35,29 +31,13 @@ export default function AllCars({ auth, latestVehicles, categories }) {
         categorie: '',
     });
 
+    const loader = useRef(null);
+
+    // Handle form field changes
     const handleChange = (field, value) => {
         setQuery((prev) => ({ ...prev, [field]: value }));
         setData(field, value); // Also update form data for other purposes
     };
-
-    useEffect(() => {
-        const debounceSearch = _.debounce(() => {
-            router.get(
-                route(route().current()),
-                { search: query },
-                {
-                    preserveState: true,
-                    replace: true,
-                },
-            );
-        }, 500); // Debounce time
-
-        debounceSearch();
-
-        return () => {
-            debounceSearch.cancel(); // Clean up on component unmount
-        };
-    }, [query]);
 
     const handleOpenModal = (car) => {
         setSelectedCar(car);
@@ -70,31 +50,72 @@ export default function AllCars({ auth, latestVehicles, categories }) {
     };
 
     const resetFilters = () => {
-        // Reset the query state to initial values
         setQuery({
             marque: '',
             date_depart: '',
             date_retour: '',
             categorie: '',
         });
+        setCars(latestVehicles.data);
+        setPage(1); // Reset to the first page
     };
 
-    const handlePageChange = (url) => {
+    const [totalPages, setTotalPages] = useState(latestVehicles.last_page);
+
+    // Fonction pour charger plus de voitures
+    const loadMoreCars = () => {
+        if (loading || page >= totalPages) return; // Ne rien faire si on est déjà en train de charger ou si on est sur la dernière page
+        setLoading(true);
+
         router.get(
-            url,
-            {},
+            route(route().current()),
+            {
+                page: page + 1,
+                search: query,
+            },
             {
                 preserveState: true,
                 replace: true,
+                onSuccess: (data) => {
+                    setCars((prevCars) => [
+                        ...prevCars,
+                        ...data.props.latestVehicles.data,
+                    ]);
+                    setPage(data.props.latestVehicles.current_page); // Mettre à jour la page actuelle
+                    setTotalPages(data.props.latestVehicles.last_page); // Mettre à jour le nombre total de pages
+                    setLoading(false);
+                },
             },
         );
     };
+
+    // Gérer l'événement de scroll sur l'élément spécifique
+    const handleScroll = () => {
+        const scrollPosition =
+            listRef.current.scrollTop + listRef.current.clientHeight;
+        const bottomPosition = listRef.current.scrollHeight;
+
+        // Si on est proche du bas de l'élément et que ce n'est pas encore en train de charger, on charge plus de données
+        if (scrollPosition >= bottomPosition - 50 && !loading) {
+            loadMoreCars();
+        }
+    };
+
+    // Écouter le scroll de l'élément spécifique
+    useEffect(() => {
+        const listElement = listRef.current;
+        listElement.addEventListener('scroll', handleScroll);
+
+        return () => {
+            listElement.removeEventListener('scroll', handleScroll);
+        };
+    }, [loading, page, totalPages]);
 
     return (
         <GuestLayout auth={auth} footerShown={false}>
             <Head title="Ayna lbr - Unlock Your Travel Experience" />
 
-            <div className="flex h-screen justify-start overflow-hidden bg-gray-100 text-gray-800">
+            <div className="flex h-screen justify-start overflow-hidden bg-gray-50 text-gray-800">
                 <section className="left-0 right-0 top-0 z-30 mx-auto min-h-screen w-64">
                     <Paper
                         elevation={5}
@@ -191,16 +212,19 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                 </section>
 
                 {/* Display filtered cars */}
-                <section className="mt-12 min-h-screen w-full flex-grow overflow-auto px-12 pb-32">
+                <section
+                    className="mt-12 min-h-screen w-full flex-grow overflow-auto px-12 pb-32"
+                    ref={listRef}
+                >
                     <div>
                         <h3 className="my-14 text-3xl font-bold">
-                            Derniers Véhicules Disponibles
+                            Derniers Véhicules
                         </h3>
                         <Grid container spacing={3}>
-                            {latestVehicles.map((car, index) => (
-                                <Grid item xs={12} sm={6} md={4} key={index}>
+                            {cars.map((car, index) => (
+                                <Grid item xs={12} sm={6} md={6} key={index}>
                                     <motion.div
-                                        className="flex h-full flex-col rounded-lg border border-gray-300 bg-white p-4 shadow-md transition-shadow duration-200 hover:shadow-lg"
+                                        className="flex h-full items-center rounded-lg border border-gray-300 bg-white p-4 shadow-md transition-shadow duration-200 hover:shadow-lg"
                                         initial={{ opacity: 0, x: -50 }}
                                         whileInView={{ opacity: 1, x: 0 }}
                                         viewport={{ once: false, amount: 0.5 }}
@@ -208,163 +232,81 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                                             duration: 0.2 * index,
                                         }}
                                     >
-                                        <div className="relative mb-4">
-                                            {/* Display image */}
-                                            <div className="relative h-48 overflow-hidden rounded-md">
-                                                <img
-                                                    src={
-                                                        '/storage/' +
-                                                        car.images[0]
-                                                    }
-                                                    alt={car.modele}
-                                                    className="h-48 w-full rounded-lg object-cover"
-                                                />
-                                                {/* Centered marque & modele */}
-                                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 p-2 text-lg font-semibold text-white">
-                                                    {car.marque}
-                                                </div>
-                                            </div>
-
-                                            <span
-                                                className={`absolute right-2 top-2 rounded-full bg-yellow-200 px-3 py-1 text-sm font-medium text-yellow-700 dark:bg-yellow-800 dark:text-yellow-300`}
-                                            >
-                                                {car.kilometrage} km/h
-                                            </span>
-                                            {/* Disponibilité Badge */}
-                                            {/* <span
-                                                className={`absolute right-2 top-2 rounded-full px-3 py-1 text-sm font-medium ${
-                                                    car.disponible
-                                                        ? 'bg-green-600 text-white'
-                                                        : 'bg-red-600 text-white'
-                                                }`}
-                                            >
-                                                {car.disponible
-                                                    ? 'Disponible de suite'
-                                                    : 'Non disponible'}
-                                            </span> */}
+                                        {/* Image on the left */}
+                                        <div className="relative mr-4 h-48 w-48 overflow-hidden rounded-md">
+                                            <img
+                                                src={
+                                                    '/storage/' +
+                                                    JSON.parse(car.images)[0]
+                                                }
+                                                alt={car.modele}
+                                                className="h-full w-full object-cover"
+                                            />
                                         </div>
 
-                                        <Typography
-                                            variant=""
-                                            className="mb-2 flex-grow font-bold text-gray-700"
-                                        >
-                                            {car.modele}
-                                        </Typography>
-
-                                        <Typography
-                                            variant="body2"
-                                            className="mb-2 flex-grow text-gray-700"
-                                        >
-                                            {car.description}
-                                        </Typography>
-
-                                        {/* Unavailable Dates */}
-                                        {/* {car.unavailableDates.length > 0 && (
-                                            <div className="my-2 rounded border border-red-300 bg-red-100 p-2">
-                                                <span className="font-semibold text-red-600">
-                                                    Non disponible du :
-                                                </span>
-                                                <ul className="list-disc pl-5">
-                                                    {car.unavailableDates.map(
-                                                        (dateRange, idx) => (
-                                                            <li key={idx}>
-                                                                {
-                                                                    dateRange.start
-                                                                }{' '}
-                                                                à{' '}
-                                                                {dateRange.end}
-                                                            </li>
-                                                        ),
-                                                    )}
-                                                </ul>
-                                            </div>
-                                        )} */}
-
-                                        <div className="mt-4 flex w-full items-center justify-between space-x-4">
-                                            {auth?.user?.type !== 'admin' && (
-                                                <PrimaryButton
-                                                    onClick={() => {
-                                                        if (
-                                                            car.reservationStatus ===
-                                                            'en attente'
-                                                        ) {
-                                                            handleCancelReservation(
-                                                                car,
-                                                            );
-                                                        } else {
-                                                            handleOpenModal(
-                                                                car,
-                                                            );
-                                                        }
-                                                    }}
-                                                    // disabled={
-                                                    //     car.isReservedByUser &&
-                                                    //     car.reservationStatus !==
-                                                    //         'en attente'
-                                                    // }
-                                                    className="flex-1"
-                                                >
-                                                    {/* {car.isReservedByUser
-                                                        ? car.reservationStatus ===
-                                                          'confirmée'
-                                                            ? 'Déjà réservé'
-                                                            : 'Annuler la réservation'
-                                                        : 'Réserver'} */}
-                                                    Reserver
-                                                </PrimaryButton>
-                                            )}
-
-                                            <SecondaryButton
-                                                onClick={() => {
-                                                    router.visit(
-                                                        route(
-                                                            'cars.show',
-                                                            car.id,
-                                                        ),
-                                                    );
-                                                }}
-                                                className="flex-1"
-                                                isSticky
+                                        {/* Car details on the right */}
+                                        <div className="flex h-full flex-grow flex-col justify-between">
+                                            <Typography
+                                                variant="h6"
+                                                className="mb-2 flex justify-between font-bold text-gray-700"
                                             >
-                                                Voir plus
-                                            </SecondaryButton>
+                                                <span className="text-gray-800">
+                                                    {car.marque}{' '}
+                                                </span>{' '}
+                                                {car.modele}
+                                            </Typography>
+
+                                            <Typography
+                                                variant="body2"
+                                                className="mb-2 text-gray-700"
+                                            >
+                                                {car.description}
+                                            </Typography>
+
+                                            <div className="mt-4 flex w-full items-center justify-between space-x-4">
+                                                {auth?.user?.type !==
+                                                    'admin' && (
+                                                    <PrimaryButton
+                                                        onClick={() => {
+                                                            if (
+                                                                car.reservationStatus ===
+                                                                'en attente'
+                                                            ) {
+                                                                handleCancelReservation(
+                                                                    car,
+                                                                );
+                                                            } else {
+                                                                handleOpenModal(
+                                                                    car,
+                                                                );
+                                                            }
+                                                        }}
+                                                        className="flex-1"
+                                                    >
+                                                        {car.reservationStatus ===
+                                                        'en attente'
+                                                            ? 'Réservation Annulée'
+                                                            : 'Réserver'}
+                                                    </PrimaryButton>
+                                                )}
+                                            </div>
                                         </div>
                                     </motion.div>
                                 </Grid>
                             ))}
                         </Grid>
-                        {/* Pagination controls */}
-                        <div className="mt-6 flex justify-center">
-                            {latestVehicles.prev_page_url && (
-                                <Button
-                                    variant="contained"
-                                    onClick={() =>
-                                        handlePageChange(
-                                            latestVehicles.prev_page_url,
-                                        )
-                                    }
-                                >
-                                    Précédent
-                                </Button>
-                            )}
-                            {latestVehicles.next_page_url && (
-                                <Button
-                                    variant="contained"
-                                    onClick={() =>
-                                        handlePageChange(
-                                            latestVehicles.next_page_url,
-                                        )
-                                    }
-                                    className="ml-4"
-                                >
-                                    Suivant
-                                </Button>
-                            )}
 
-                            {/* {latestVehicles.links()} */}
-                        </div>
+                        {/* Infinite scroll loading indicator */}
+                        {loading && (
+                            <div className="my-8 text-center">
+                                <Typography variant="h6">
+                                    Chargement des véhicules...
+                                </Typography>
+                            </div>
+                        )}
                     </div>
                 </section>
+                <div ref={loader} className="h-32"></div>
             </div>
 
             {selectedCar && (
@@ -375,6 +317,7 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                     isAuthenticated={auth.user ? true : false}
                 />
             )}
+            {/* Loader trigger */}
         </GuestLayout>
     );
 }

@@ -90,4 +90,9 @@ class User extends Authenticatable implements MustVerifyEmail
         $this->phones = array_filter($phones, fn($p) => $p !== $phone); // Filtrer le tableau pour enlever le numéro
         $this->save(); // Enregistrer les modifications
     }
+
+    public function avis()
+    {
+        return $this->hasMany(Avis::class, 'user_id');
+    }
 }

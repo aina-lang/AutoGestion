@@ -140,9 +140,8 @@ export default function Welcome({
                             </PrimaryButton>
                         </motion.div>
                     </div>
-
                     <section className="absolute -bottom-12 left-0 right-0 mx-auto hidden w-full justify-center md:flex">
-                        <div className="flex items-center justify-center rounded-md bg-white px-6 py-5 pr-0 shadow-xl">
+                        <div className="flex items-center justify-center rounded-md bg-white px-6 py-5 pr-0 shadow-xl dark:bg-gray-800">
                             <form>
                                 <Grid className="grid grid-cols-4 justify-center gap-4">
                                     <div className="flex">
@@ -161,7 +160,7 @@ export default function Welcome({
                                                         outline: 'none',
                                                     },
                                                 }}
-                                                className="text-gray-800"
+                                                className="text-white"
                                                 value={query.date_depart}
                                                 onChange={(e) =>
                                                     handleChange(
@@ -171,7 +170,7 @@ export default function Welcome({
                                                 }
                                             />
                                         </Grid>
-                                        <div className="mx-5 hidden border-l border-gray-300 md:block" />
+                                        <div className="mx-5 hidden border-l border-gray-700 md:block" />
                                     </div>
                                     <div className="flex">
                                         <Grid item xs={12} md={3}>
@@ -189,7 +188,7 @@ export default function Welcome({
                                                         outline: 'none',
                                                     },
                                                 }}
-                                                className="text-gray-800"
+                                                className="text-white"
                                                 value={query.date_retour}
                                                 onChange={(e) =>
                                                     handleChange(
@@ -199,7 +198,7 @@ export default function Welcome({
                                                 }
                                             />
                                         </Grid>
-                                        <div className="mx-5 hidden border-l border-gray-300 md:block" />
+                                        <div className="mx-5 hidden border-l border-gray-700 md:block" />
                                     </div>
                                     <Grid item xs={12} md={4}>
                                         <TextField
@@ -216,7 +215,7 @@ export default function Welcome({
                                                     outline: 'none',
                                                 },
                                             }}
-                                            className="text-gray-800"
+                                            className="text-white"
                                             value={query.categorie}
                                             onChange={(e) =>
                                                 handleChange(
@@ -253,14 +252,13 @@ export default function Welcome({
                         </div>
                     </section>
                 </main>
-                {/* Section des Services */}
                 <section
                     id="service"
-                    className="flex min-h-screen items-center bg-gray-100 px-6 py-10"
+                    className="flex min-h-screen items-center px-6 py-10 dark:bg-gray-900"
                 >
                     <div className="h-full p-6">
                         <div className="mb-8 text-center">
-                            <h2 className="mb-2 mt-24 text-3xl font-bold text-gray-700">
+                            <h2 className="mb-2 mt-24 text-3xl font-bold text-gray-700 dark:text-white">
                                 NOS MEILLEURS SERVICES
                             </h2>
                             <span className="text-gray-600">
@@ -269,17 +267,14 @@ export default function Welcome({
                             </span>
                         </div>
 
-                        <div
-                            className="grid h-full items-center justify-center gap-6 rounded-3xl p-8 py-10 md:grid-cols-3"
-                            // style={{ backgroundC}}
-                        >
+                        <div className="grid h-full items-center justify-center gap-6 rounded-3xl p-8 py-10 md:grid-cols-3">
                             {[
                                 {
                                     name: 'RÉSERVATION EN LIGNE',
                                     icon: (
                                         <BookOnlineTwoTone
                                             fontSize="large"
-                                            className="text-yellow-600"
+                                            className="text-yellow-400"
                                         />
                                     ),
                                     description:
@@ -290,7 +285,7 @@ export default function Welcome({
                                     icon: (
                                         <TravelExplore
                                             fontSize="large"
-                                            className="text-green-600"
+                                            className="text-green-400"
                                         />
                                     ),
                                     description:
@@ -301,7 +296,7 @@ export default function Welcome({
                                     icon: (
                                         <EventRounded
                                             fontSize="large"
-                                            className="text-purple-600"
+                                            className="text-purple-400"
                                         />
                                     ),
                                     description:
@@ -310,7 +305,7 @@ export default function Welcome({
                             ].map((service, index) => (
                                 <motion.div
                                     key={index}
-                                    className="[border border-gray-300] h-full rounded-lg bg-white p-6 text-center shadow-lg transition-shadow duration-300 hover:shadow-xl"
+                                    className="[border border-gray-700] h-full rounded-lg bg-white p-6 text-center shadow-lg transition-shadow duration-300 hover:shadow-xl dark:bg-gray-800"
                                     initial={{ opacity: 0, x: -50 }}
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: false, amount: 0.5 }}
@@ -322,26 +317,19 @@ export default function Welcome({
                                     <div className="mx-auto mb-4 flex w-full items-center justify-center text-center text-5xl">
                                         {service.icon}
                                     </div>
-                                    <h3
-                                        className="mb-2 text-2xl font-semibold text-gray-700"
-                                        // style={{ color: currentPalette[900] }}
-                                    >
+                                    <h3 className="mb-2 text-2xl font-semibold text-gray-700 dark:text-white">
                                         {service.name}
                                     </h3>
-                                    <p className="mb-4 text-gray-600">
+                                    <p className="mb-4 text-gray-400">
                                         {service.description}
                                     </p>
-                                    {/* Uncomment if needed */}
-                                    {/* <PrimaryButton>
-                                Voir plus
-                            </PrimaryButton> */}
                                 </motion.div>
                             ))}
                         </div>
                     </div>
                 </section>
-                {/* About Section */}
 
+                {/* About Section */}
                 <section
                     id="about"
                     className="min-h-screen bg-gray-50 p-5 dark:bg-gray-800"
@@ -355,7 +343,9 @@ export default function Welcome({
                             voitures
                         </span>
                     </div>
-                    <div className="flex w-full">
+
+                    <div className="flex w-full flex-col-reverse md:flex-row">
+                        {/* Left Section */}
                         <div className="p-5 py-10 text-center md:w-1/2 md:text-left">
                             <p className="mb-4 text-gray-700">
                                 Fondée en 2020,{' '}
@@ -388,14 +378,12 @@ export default function Welcome({
                             <ul className="ml-4 space-y-4">
                                 <li className="flex items-center">
                                     <CarIcon className="mr-2 text-blue-500" />{' '}
-                                    {/* Remplacez par l'icône appropriée */}
                                     <span>
                                         Véhicules fiables et bien entretenus
                                     </span>
                                 </li>
                                 <li className="flex items-center">
                                     <CarIcon className="mr-2 text-blue-500" />{' '}
-                                    {/* Remplacez par l'icône appropriée */}
                                     <span>
                                         Assurance complète pour votre
                                         tranquillité d'esprit
@@ -403,31 +391,28 @@ export default function Welcome({
                                 </li>
                                 <li className="flex items-center">
                                     <CarIcon className="mr-2 text-blue-500" />{' '}
-                                    {/* Remplacez par l'icône appropriée */}
                                     <span>
                                         Service client exceptionnel 24/7
                                     </span>
                                 </li>
                                 <li className="flex items-center">
                                     <CarIcon className="mr-2 text-blue-500" />{' '}
-                                    {/* Remplacez par l'icône appropriée */}
                                     <span>
                                         Réservation facile et rapide en ligne
                                     </span>
                                 </li>
                             </ul>
                         </div>
+
+                        {/* Right Section (Image) */}
                         <motion.div
                             initial={{ opacity: 0, x: 50 }}
                             whileInView={{ opacity: 1, x: 0 }}
-                            transition={{
-                                duration: 0.8,
-                                delay: 0.5,
-                            }}
+                            transition={{ duration: 0.8, delay: 0.5 }}
                             className="hidden w-1/2 p-5 md:flex"
                         >
                             <img
-                                src={banner} // Remplacez par l'URL de votre image
+                                src={banner} // Replace with your image URL
                                 alt="À propos de nous"
                                 className="h-auto w-full rounded-lg shadow-md"
                             />
@@ -437,15 +422,15 @@ export default function Welcome({
 
                 {/* Available Cars Section */}
                 <section
-                    className="min-h-screen bg-gray-50 px-12 py-10"
+                    className="min-h-screen bg-gray-50 px-12 py-10 dark:bg-gray-900"
                     id="cars"
                 >
                     <div>
                         <div className="mb-12 text-center">
-                            <h2 className="mb-2 mt-24 text-center text-3xl font-bold text-gray-700">
+                            <h2 className="mb-2 mt-24 text-center text-3xl font-bold text-gray-700 dark:text-gray-200">
                                 NOS VOITURES RÉCENTES
                             </h2>
-                            <span className="text-gray-600">
+                            <span className="text-gray-600 dark:text-gray-300">
                                 Découvrez notre flotte moderne et bien
                                 entretenue
                             </span>
@@ -455,7 +440,7 @@ export default function Welcome({
                             {latestVehicles.map((car, index) => (
                                 <Grid item xs={12} sm={6} md={3} key={index}>
                                     <motion.div
-                                        className="flex h-full flex-col rounded-lg bg-white p-4 shadow-md transition-shadow duration-200 hover:shadow-lg"
+                                        className="flex h-full flex-col rounded-lg bg-white p-4 shadow-md transition-shadow duration-200 hover:shadow-lg dark:bg-gray-800"
                                         initial={{ opacity: 0, x: -50 }}
                                         whileInView={{ opacity: 1, x: 0 }}
                                         viewport={{ once: false, amount: 0.5 }}
@@ -484,89 +469,30 @@ export default function Welcome({
                                             >
                                                 {car.kilometrage} km/h
                                             </span>
-                                            {/* Disponibilité Badge */}
-                                            {/* <span
-                                                className={`absolute right-2 top-2 rounded-full px-3 py-1 text-sm font-medium ${
-                                                    car.disponible
-                                                        ? 'bg-green-600 text-white'
-                                                        : 'bg-red-600 text-white'
-                                                }`}
-                                            >
-                                                {car.disponible
-                                                    ? 'Disponible de suite'
-                                                    : 'Non disponible'}
-                                            </span> */}
                                         </div>
 
                                         <Typography
                                             variant=""
-                                            className="mb-2 flex-grow font-bold text-gray-700"
+                                            className="mb-2 flex-grow font-bold text-gray-700 dark:text-gray-300"
                                         >
                                             {car.modele}
                                         </Typography>
 
                                         <Typography
                                             variant="body2"
-                                            className="mb-2 flex-grow text-gray-700"
+                                            className="mb-2 flex-grow text-gray-700 dark:text-gray-400"
                                         >
                                             {car.description}
                                         </Typography>
-
-                                        {/* Unavailable Dates */}
-                                        {/* {car.unavailableDates.length > 0 && (
-                                            <div className="my-2 rounded border border-red-300 bg-red-100 p-2">
-                                                <span className="font-semibold text-red-600">
-                                                    Non disponible du :
-                                                </span>
-                                                <ul className="list-disc pl-5">
-                                                    {car.unavailableDates.map(
-                                                        (dateRange, idx) => (
-                                                            <li key={idx}>
-                                                                {
-                                                                    dateRange.start
-                                                                }{' '}
-                                                                à{' '}
-                                                                {dateRange.end}
-                                                            </li>
-                                                        ),
-                                                    )}
-                                                </ul>
-                                            </div>
-                                        )} */}
 
                                         <div className="mt-4 flex w-full items-center justify-between space-x-4">
                                             {auth?.user?.type !== 'admin' && (
                                                 <PrimaryButton
                                                     onClick={() => {
-                                                        // if (
-                                                        //     car.reservationStatus ===
-                                                        //     'en attente'
-                                                        // ) {
-                                                        //     handleCancelReservation(
-                                                        //         car,
-                                                        //     );
-                                                        // } else {
-                                                        //     handleOpenModal(
-                                                        //         car,
-                                                        //     );
-                                                        // }
-                                                        handleOpenModal(
-                                                            car,
-                                                        );
+                                                        handleOpenModal(car);
                                                     }}
-                                                    // disabled={
-                                                    //     car.isReservedByUser &&
-                                                    //     car.reservationStatus !==
-                                                    //         'en attente'
-                                                    // }
                                                     className="flex-1"
                                                 >
-                                                    {/* {car.isReservedByUser
-                                                        ? car.reservationStatus ===
-                                                          'confirmée'
-                                                            ? 'Déjà réservé'
-                                                            : 'Annuler la réservation'
-                                                        : 'Réserver'} */}
                                                     Réserver
                                                 </PrimaryButton>
                                             )}
@@ -603,13 +529,14 @@ export default function Welcome({
                         </SecondaryButton>
                     </div>
                 </section>
+
                 {/* Contact Section */}
                 <section
                     id="contact"
-                    className="flex min-h-screen items-center justify-center bg-gray-50 px-10 py-10 dark:bg-gray-800"
+                    className="flex min-h-screen items-center justify-center bg-gray-50 px-10 py-10 dark:bg-gray-900"
                 >
                     <div className="w-full">
-                        <h2 className="mb-2 text-center text-3xl font-bold text-gray-700 dark:text-white">
+                        <h2 className="mb-2 text-center text-3xl font-bold text-gray-700 dark:text-gray-200">
                             CONTACTEZ-NOUS
                         </h2>
                         <p className="mb-4 text-center text-gray-700 dark:text-gray-300">
@@ -619,7 +546,7 @@ export default function Welcome({
                         </p>
                         <div className="mt-2 flex flex-col items-center md:flex-row">
                             <form
-                                className="mx-auto mt-6 w-full rounded-lg bg-white p-8 shadow-lg dark:bg-gray-900 md:w-1/2"
+                                className="mx-auto mt-6 w-full rounded-lg bg-white p-8 shadow-lg dark:bg-gray-800 md:w-1/2"
                                 onSubmit={handleContactSubmit}
                             >
                                 <TextField
@@ -631,6 +558,9 @@ export default function Welcome({
                                     onChange={(e) =>
                                         setData('nom', e.target.value)
                                     }
+                                    InputLabelProps={{
+                                        className: 'dark:text-gray-400',
+                                    }}
                                 />
                                 <TextField
                                     fullWidth
@@ -642,6 +572,9 @@ export default function Welcome({
                                     onChange={(e) =>
                                         setData('email', e.target.value)
                                     }
+                                    InputLabelProps={{
+                                        className: 'dark:text-gray-400',
+                                    }}
                                 />
                                 <TextField
                                     fullWidth
@@ -654,31 +587,27 @@ export default function Welcome({
                                     onChange={(e) =>
                                         setData('message', e.target.value)
                                     }
+                                    InputLabelProps={{
+                                        className: 'dark:text-gray-400',
+                                    }}
                                 />
                                 <PrimaryButton
                                     type="submit"
-                                    className="w-full"
+                                    className="w-full bg-gray-600 dark:bg-gray-700 dark:text-gray-200"
                                     disabled={auth?.user?.type == 'admin'}
                                 >
                                     {auth?.user?.type == 'admin'
-                                        ? "vous etes l'administrateur "
+                                        ? "Vous êtes l'administrateur "
                                         : ' Envoyer'}
                                 </PrimaryButton>
                             </form>
                             <div className="mt-6 w-full md:ml-6 md:mt-0 md:w-1/2">
-                                {/* <iframe
-                                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3151.835434509849!2d144.95373631531612!3d-37.81720997975141!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x6ad642af0f0d4993%3A0x5045675218ceed30!2sYour%20Location!5e0!3m2!1sen!2sus!4v1614682410000!5m2!1sen!2sus" // Replace with your Google Maps iframe URL
-                                    width="100%"
-                                    height="350"
-                                    className="rounded-lg shadow-md"
-                                    allowFullScreen=""
-                                    loading="lazy"
-                                    title="Google Maps Location"
-                                ></iframe> */}
+                                {/* Map iframe can go here */}
                             </div>
                         </div>
                     </div>
                 </section>
+
                 {selectedCar && (
                     <ReservationModal
                         open={modalOpen}
@@ -687,7 +616,6 @@ export default function Welcome({
                         isAuthenticated={auth.user ? true : false}
                     />
                 )}
-             
             </div>
         </GuestLayout>
     );

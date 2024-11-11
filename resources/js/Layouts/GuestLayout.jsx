@@ -8,12 +8,21 @@ import UserDropdown from '@/Components/UserDropdown';
 import { palette } from '@/constants/palette';
 import { useThemeContext } from '@/contexts/ThemeContext';
 import { router, useForm, usePage } from '@inertiajs/react';
+import {
+    Email,
+    Facebook,
+    Instagram,
+    LinkedIn,
+    LocationOn,
+    Phone,
+    Twitter,
+} from '@mui/icons-material';
 import { Alert, Menu, MenuItem, Snackbar } from '@mui/material';
 import { motion } from 'framer-motion';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const GuestLayout = ({ children, auth,footerShown }) => {
+const GuestLayout = ({ children, auth, footerShown }) => {
     const [isSticky, setSticky] = useState(false);
     const [isMenuOpen, setMenuOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState(null);
@@ -139,21 +148,22 @@ const GuestLayout = ({ children, auth,footerShown }) => {
                 animate={{ y: isSticky ? 0 : -10 }}
                 transition={{ type: 'tween', duration: 0.5 }}
                 className={`fixed top-0 z-50 flex w-full items-center justify-center ${
-                    isSticky ? 'bg-white shadow-md' : 'bg-transparent'
-                } px-6 py-4`}
+                    isSticky
+                        ? 'bg-white shadow-md dark:bg-gray-900'
+                        : 'bg-transparent'
+                } px-6 py-4 dark:text-white`}
             >
                 <ApplicationLogo
                     className="mr-8 hidden md:flex"
                     isSticky={isSticky}
                 />
-
                 <div className="flex w-full items-center">
                     <nav className="mx-auto hidden md:flex">
                         {links.map((link) => (
                             <button
                                 key={link.href}
                                 onClick={() => scrollToSection(link.href)}
-                                className={`relative px-4 py-2 transition-all duration-300 ${activeLink === link.href ? 'font-bold' : isSticky ? 'text-gray-600' : 'text-white'}`}
+                                className={`relative px-4 py-2 transition-all duration-300 ${activeLink === link.href ? 'font-bold' : isSticky ? 'text-gray-600' : 'text-white'} dark:text-white dark:hover:text-gray-300`}
                                 style={{
                                     color:
                                         activeLink === link.href
@@ -187,65 +197,70 @@ const GuestLayout = ({ children, auth,footerShown }) => {
                                 ></span>
                             </button>
                         ))}
-                        <div>
-                            <button
-                                onClick={handleOpenMenu}
-                                className={`flex items-center px-4 py-2 transition-all duration-300 ${activeLink === 'prestations' ? 'font-bold' : isSticky ? 'text-gray-600' : 'text-white'}`}
-                                style={{
-                                    color:
-                                        activeLink === 'prestations'
-                                            ? currentPalette[500]
-                                            : isSticky
-                                              ? palette['gray'][600]
-                                              : 'white',
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.target.style.color = currentPalette[400]; // Change to desired hover color
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.target.style.color =
-                                        activeLink === '#'
-                                            ? currentPalette[500]
-                                            : isSticky
-                                              ? palette['gray'][600]
-                                              : 'white';
-                                }}
-                            >
-                                Prestations de services
-                                {isMenuOpen ? (
-                                    <ChevronUp className="ml-2" />
-                                ) : (
-                                    <ChevronDown className="ml-2" />
-                                )}
-                            </button>
 
-                            <Menu
-                                anchorEl={anchorEl}
-                                open={isMenuOpen}
-                                onClose={handleCloseMenu}
-                                PaperProps={{
-                                    style: {
-                                        boxShadow: 'none',
-                                        border: 'none',
-                                    },
-                                }}
-                                className="mt-2 w-full"
-                            >
-                                {serviceTypes?.map((service, index) => (
-                                    <MenuItem
-                                        key={index}
-                                        onClick={() => {
-                                            router.visit('/prestations', {
-                                                data: { scrollTo: service.id }, // Pass the service ID to the new page
-                                                preserveScroll: false,
-                                            });
-                                        }}
-                                    >
-                                        {service.nom}
-                                    </MenuItem>
-                                ))}
-                            </Menu>
-                        </div>
+                        {serviceTypes?.length > 0 && (
+                            <div>
+                                <button
+                                    onClick={handleOpenMenu}
+                                    className={`flex items-center px-4 py-2 transition-all duration-300 ${activeLink === 'prestations' ? 'font-bold' : isSticky ? 'text-gray-600' : 'text-white'} dark:text-white dark:hover:text-gray-300`}
+                                    style={{
+                                        color:
+                                            activeLink === 'prestations'
+                                                ? currentPalette[500]
+                                                : isSticky
+                                                  ? palette['gray'][600]
+                                                  : 'white',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.color =
+                                            currentPalette[400]; // Change to desired hover color
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.color =
+                                            activeLink === '#'
+                                                ? currentPalette[500]
+                                                : isSticky
+                                                  ? palette['gray'][600]
+                                                  : 'white';
+                                    }}
+                                >
+                                    Prestations de services
+                                    {isMenuOpen ? (
+                                        <ChevronUp className="ml-2" />
+                                    ) : (
+                                        <ChevronDown className="ml-2" />
+                                    )}
+                                </button>
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    open={isMenuOpen}
+                                    onClose={handleCloseMenu}
+                                    PaperProps={{
+                                        style: {
+                                            boxShadow: 'none',
+                                            border: 'none',
+                                        },
+                                    }}
+                                    className="mt-2 w-full"
+                                >
+                                    {serviceTypes?.map((service, index) => (
+                                        <MenuItem
+                                            key={index}
+                                            onClick={() => {
+                                                router.visit('/prestations', {
+                                                    data: {
+                                                        scrollTo: service.id,
+                                                    }, // Pass the service ID to the new page
+                                                    preserveScroll: false,
+                                                });
+                                            }}
+                                        >
+                                            {service.nom}
+                                        </MenuItem>
+                                    ))}
+                                </Menu>
+                            </div>
+                        )}
                     </nav>
                     <div className="md:hidden">
                         <button
@@ -253,7 +268,7 @@ const GuestLayout = ({ children, auth,footerShown }) => {
                             className="focus:outline-none"
                         >
                             <svg
-                                className="h-6 w-6"
+                                className="h-6 w-6 text-white dark:text-white"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -270,35 +285,19 @@ const GuestLayout = ({ children, auth,footerShown }) => {
                     </div>
                 </div>
                 <div className="flex items-center space-x-2">
-                    {/* <button className="rounded-full p-2 focus:outline-none">
-                        <Sun className="h-5 w-5 text-yellow-500" />
-                    </button>
-                    <button className="hidden rounded-full p-2 focus:outline-none md:flex">
-                        <Fullscreen
-                            className={`h-5 w-5 ${isSticky ? 'text-gray-600' : 'text-white'}`}
-                        />
-                    </button> */}
-                    {/* <button
-                        onClick={toggleSidebar}
-                        className="rounded-full p-2 focus:outline-none"
-                    >
-                        <Settings className={`h-5 w-5 ${ isSticky? 'text-gray-600':'text-white'} `} />
-                         
-
-
-                    </button> */}
-
                     <Settings isGuest isSticky={isSticky} />
                     {!auth?.user ? (
                         <>
                             <PrimaryButton
                                 onClick={() => router.visit('/login')}
+                                className="bg-gray-800 dark:bg-gray-900 dark:text-white"
                             >
                                 Se connecter
                             </PrimaryButton>
                             <SecondaryButton
                                 onClick={() => router.visit('/register')}
                                 isSticky={isSticky}
+                                className="bg-gray-800 dark:bg-gray-900 dark:text-white"
                             >
                                 S'inscrire
                             </SecondaryButton>
@@ -308,9 +307,27 @@ const GuestLayout = ({ children, auth,footerShown }) => {
                             auth={auth}
                             handleLogout={handleLogout}
                             menuItems={[
-                                { label: 'Profil', action: () => {} },
-                                { label: 'Paramètres', action: () => {} },
-                                { label: 'Aide', action: () => {} },
+                                {
+                                    label: 'Tableau de bord',
+                                    action: () =>
+                                        router.visit(
+                                            auth.user.type == 'admin'
+                                                ? '/admin/dashboard'
+                                                : '/client/dashboard',
+                                        ),
+                                },
+                                {
+                                    label: 'Profil',
+                                    action: () => router.visit('/profil'),
+                                },
+                                {
+                                    label: 'Paramètres',
+                                    action: () => router.visit('/parametres'),
+                                },
+                                {
+                                    label: 'Aide',
+                                    action: () => router.visit('/aide'),
+                                },
                             ]}
                         />
                     )}
@@ -336,112 +353,155 @@ const GuestLayout = ({ children, auth,footerShown }) => {
                 open={confirmModal}
                 onClose={() => setConfirmModal(false)}
                 title="Déconnexion"
-                message="Êtes-vous sûr de vouloir vous déconnecter ?"
+                content="Êtes-vous sûr de vouloir vous déconnecter ?"
                 onConfirm={() => {
                     post(route('logout'));
                     setConfirmModal(false);
                 }}
             />
 
-          {footerShown&&  <footer className="text-surface flex flex-col items-center bg-zinc-100 text-center dark:bg-neutral-700 dark:text-white lg:text-left">
-                <div className="container p-6">
-                    <div className="grid place-items-center gap-6 md:grid-cols-2 lg:grid-cols-3">
-                        {/* Contact Information */}
-                        <div className="mb-6">
-                            <h5 className="mb-2.5 font-bold uppercase">
-                                Contact
-                            </h5>
-                            <ul className="mb-0 list-none">
-                                <li>
-                                    <span>Email: </span>
-                                    <a href="mailto:contact@aynalbr.com">
-                                        contact@aynalbr.com
-                                    </a>
-                                </li>
-                                <li>
-                                    <span>Phone: </span>
-                                    <a href="tel:+123456789">+123 456 789</a>
-                                </li>
-                                <li>
-                                    <span>Address: </span>
-                                    <p>123 Ayna Street, City, Country</p>
-                                </li>
-                            </ul>
-                        </div>
+            {footerShown && (
+                <footer className="flex flex-col items-center bg-gray-100 text-center text-gray-800 dark:bg-gray-700 dark:text-gray-300 lg:text-left">
+                    <div className="container p-6">
+                        <div className="grid place-items-center gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {/* Informations de Contact */}
+                            <div className="mb-6">
+                                <h5 className="mb-2.5 font-bold uppercase text-gray-900 dark:text-gray-200">
+                                    Contact
+                                </h5>
+                                <ul className="mb-0 list-none">
+                                    <li className="flex items-center space-x-2">
+                                        <Email />
+                                        <span>Email :</span>
+                                        <a
+                                            href="mailto:contact@aynalbr.com"
+                                            className="text-blue-700 dark:text-blue-300"
+                                        >
+                                            contact@aynalbr.com
+                                        </a>
+                                    </li>
+                                    <li className="flex items-center space-x-2">
+                                        <Phone />
+                                        <span>Téléphone :</span>
+                                        <a
+                                            href="tel:+123456789"
+                                            className="text-blue-700 dark:text-blue-300"
+                                        >
+                                            +123 456 789
+                                        </a>
+                                    </li>
+                                    <li className="flex items-center space-x-2">
+                                        <LocationOn />
+                                        <span>Adresse :</span>
+                                        <p>123 Rue Ayna, Ville, Pays</p>
+                                    </li>
+                                </ul>
+                            </div>
 
-                        {/* Social Media Links */}
-                        <div className="mb-6">
-                            <h5 className="mb-2.5 font-bold uppercase">
-                                Follow Us
-                            </h5>
-                            <ul className="mb-0 list-none">
-                                <li>
-                                    <a
-                                        href="https://www.facebook.com/aynalbr"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        Facebook
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="https://www.twitter.com/aynalbr"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        Twitter
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="https://www.instagram.com/aynalbr"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        Instagram
-                                    </a>
-                                </li>
-                                <li>
-                                    <a
-                                        href="https://www.linkedin.com/company/aynalbr"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                    >
-                                        LinkedIn
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+                            {/* Liens des réseaux sociaux */}
+                            <div className="mb-6">
+                                <h5 className="mb-2.5 font-bold uppercase text-gray-900 dark:text-gray-200">
+                                    Suivez-nous
+                                </h5>
+                                <ul className="mb-0 list-none space-y-2">
+                                    <li className="flex items-center space-x-2">
+                                        <Facebook />
+                                        <a
+                                            href="https://www.facebook.com/aynalbr"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-700 dark:text-blue-300"
+                                        >
+                                            Facebook
+                                        </a>
+                                    </li>
+                                    <li className="flex items-center space-x-2">
+                                        <Twitter />
+                                        <a
+                                            href="https://www.twitter.com/aynalbr"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-700 dark:text-blue-300"
+                                        >
+                                            Twitter
+                                        </a>
+                                    </li>
+                                    <li className="flex items-center space-x-2">
+                                        <Instagram />
+                                        <a
+                                            href="https://www.instagram.com/aynalbr"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-700 dark:text-blue-300"
+                                        >
+                                            Instagram
+                                        </a>
+                                    </li>
+                                    <li className="flex items-center space-x-2">
+                                        <LinkedIn />
+                                        <a
+                                            href="https://www.linkedin.com/company/aynalbr"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-700 dark:text-blue-300"
+                                        >
+                                            LinkedIn
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
 
-                        {/* Quick Links */}
-                        <div className="mb-6">
-                            <h5 className="mb-2.5 font-bold uppercase">
-                                Quick Links
-                            </h5>
-                            <ul className="mb-0 list-none">
-                                <li>
-                                    <a href="#home">Home</a>
-                                </li>
-                                <li>
-                                    <a href="#about">About Us</a>
-                                </li>
-                                <li>
-                                    <a href="#services">Services</a>
-                                </li>
-                                <li>
-                                    <a href="#contact">Contact</a>
-                                </li>
-                            </ul>
+                            {/* Liens Rapides */}
+                            <div className="mb-6">
+                                <h5 className="mb-2.5 font-bold uppercase text-gray-900 dark:text-gray-200">
+                                    Liens rapides
+                                </h5>
+                                <ul className="mb-0 list-none space-y-2">
+                                    <li>
+                                        <a
+                                            href="#home"
+                                            className="text-blue-700 dark:text-blue-300"
+                                        >
+                                            Accueil
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            href="#about"
+                                            className="text-blue-700 dark:text-blue-300"
+                                        >
+                                            À Propos
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            href="#services"
+                                            className="text-blue-700 dark:text-blue-300"
+                                        >
+                                            Services
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a
+                                            href="#contact"
+                                            className="text-blue-700 dark:text-blue-300"
+                                        >
+                                            Contact
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="w-full bg-black/5 p-4 text-center">
-                    &copy; {new Date().getFullYear()} Ayna lbr. Tous droits
-                    réservés.
-                </div>
-            </footer>}
+                    <div className="w-full bg-black/5 p-4 text-center">
+                        &copy; {new Date().getFullYear()} Ayna lbr. Tous droits
+                        réservés.
+                    </div>
+                </footer>
+            )}
+
+            {/* <CookieConsent /> */}
         </div>
     );
 };

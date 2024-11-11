@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AvisController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ContactFormController;
@@ -37,6 +38,8 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::get('/vehicule/{vehicule}/pdf', [PdfController::class, 'vehicule'])->name('vehicule.pdf');
     Route::get('/reservation/{reservation}/pdf', [PdfController::class, 'reservation'])->name('reservation.pdf');
 
+
+
     Route::middleware('user-access:admin|user')->group(function () {
         Route::prefix('admin')->as("admin.")->group(function () {
             Route::get('reservations/archived', [ReservationController::class, 'archived'])->name('archived');
@@ -69,9 +72,19 @@ Route::middleware('auth', 'verified')->group(function () {
             Route::resource('serviceTypes', ServiceTypeController::class);
         });
     });
-
     // Routes accessibles aux utilisateurs
-    Route::middleware('user-access:user')->group(function () {});
+    Route::middleware('user-access:user')->group(function () {
+        Route::resource('vehicules.avis', AvisController::class)
+            ->names([
+                'index' => 'avis.index',
+                'store' => 'avis.store',
+                'show' => 'avis.show',
+                'update' => 'avis.update',
+                'destroy' => 'avis.destroy',
+            ])
+
+        ;
+    });
 });
 
 require __DIR__ . '/auth.php';

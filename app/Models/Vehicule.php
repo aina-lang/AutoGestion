@@ -34,5 +34,8 @@ class Vehicule extends Model
         return $this->hasMany(Reservation::class);
     }
 
-    
+    public function avis()
+    {
+        return $this->hasMany(Avis::class);  // Relation 1 à plusieurs avec Avis
+    }
 }
