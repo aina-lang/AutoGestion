@@ -13,7 +13,7 @@ use Exception;
 
 class AvisController extends Controller
 {
-   
+
     // Ajouter un nouvel avis
     public function store(Request $request, $vehiculeId)
     {
@@ -23,17 +23,21 @@ class AvisController extends Controller
                 'commentaire' => 'required|string|max:1000',
             ]);
 
-            $vehicule = Vehicule::findOrFail($vehiculeId);
 
-            Avis::create([
-                'vehicule_id' => $vehicule->id,
-                'user_id' => Auth::id(),
-                'note' => $request->note,
-                'commentaire' => $request->commentaire,
-            ]);
+            if (!Avis::userHasReviewForVehicle(Auth::id(), $vehiculeId)) {
+                $vehicule = Vehicule::findOrFail($vehiculeId);
+                Avis::create([
+                    'vehicule_id' => $vehicule->id,
+                    'user_id' => Auth::id(),
+                    'note' => $request->note,
+                    'commentaire' => $request->commentaire,
+                ]);
+                // Rediriger vers la page du véhicule avec un message de succès
+                return redirect()->back()->with('success', 'Avis ajouté avec succès');
+            }
 
             // Rediriger vers la page du véhicule avec un message de succès
-            return redirect()->back()->with('success', 'Avis ajouté avec succès');
+            return redirect()->back()->with('error', 'Vous avez le droit qu\'un seul avis pour un véhicule');
         } catch (Exception $e) {
             // Gérer l'exception et renvoyer un message d'erreur via Inertia
             return Inertia::render('Avis/Create', [

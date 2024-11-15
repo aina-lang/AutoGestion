@@ -27,10 +27,18 @@ function AddVehicule({ categories, errors }) {
     const [imagePreviews, setImagePreviews] = useState([]);
 
     const handleImageChange = (e) => {
-        const files = Array.from(e.target.files);
-        setData('images', files);
-        const previews = files.map((file) => URL.createObjectURL(file));
-        setImagePreviews(previews);
+        const newFiles = Array.from(e.target.files);
+
+        // Mettre à jour les fichiers existants avec les nouveaux fichiers
+        setData((prevData) => ({
+            ...prevData, // Conservez toutes les autres valeurs de data
+            images: [...prevData.images, ...newFiles], // Ajoutez les nouvelles images sans toucher aux autres valeurs
+        }));
+        
+
+        // Mettre à jour les aperçus d'images
+        const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
+        setImagePreviews((prevPreviews) => [...prevPreviews, ...newPreviews]);
     };
 
     const handleSubmit = (e) => {
@@ -40,6 +48,9 @@ function AddVehicule({ categories, errors }) {
 
     const handleRemoveImage = (index) => {
         setImagePreviews((prevImages) =>
+            prevImages.filter((_, i) => i !== index),
+        );
+        setData('images', (prevImages) =>
             prevImages.filter((_, i) => i !== index),
         );
     };
@@ -79,7 +90,7 @@ function AddVehicule({ categories, errors }) {
             <div className="mx-auto space-y-5 p-6 pt-0">
                 <form
                     onSubmit={handleSubmit}
-                    className="grid grid-cols-2 gap-4"
+                    className="grid grid-cols-1 gap-4"
                 >
                     <div className="mb-4 h-full rounded-md bg-white p-5 shadow-lg">
                         <div className="mb-4 grid grid-cols-2 gap-4">
@@ -175,7 +186,7 @@ function AddVehicule({ categories, errors }) {
                         />
                     </div>
                     <div className="flex h-full flex-col rounded-md bg-white p-5 shadow-lg">
-                        <div className="mt-4 flex-grow">
+                        <div className="my-4 flex-grow">
                             <label className="block text-sm font-medium text-gray-700">
                                 Images du Véhicule
                             </label>
@@ -229,7 +240,7 @@ function AddVehicule({ categories, errors }) {
                             </div>
                             <InputLabel>{errors.images}</InputLabel>
                             {imagePreviews.length > 0 && (
-                                <div className="mt-4 grid grid-cols-6 gap-4">
+                                <div className="mt-4 grid grid-cols-8 gap-4">
                                     {imagePreviews.map((src, index) => (
                                         <div
                                             key={index}
@@ -258,7 +269,7 @@ function AddVehicule({ categories, errors }) {
                         <PrimaryButton
                             type="submit"
                             disabled={processing}
-                            className=""
+                            className="mt-4"
                         >
                             Ajouter le Véhicule
                         </PrimaryButton>

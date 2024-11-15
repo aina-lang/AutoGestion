@@ -22,38 +22,41 @@ export default function ConfirmPassword() {
         <GuestLayout>
             <Head title="Confirmer le Mot de Passe" />
 
-            <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
-                C'est une zone sécurisée de l'application. Veuillez confirmer
-                votre mot de passe avant de continuer.
+            <div className="w-full h-screen flex items-center justify-center">
+                <div className="w-full max-w-md p-6 bg-white dark:bg-gray-800 shadow-md rounded-lg">
+                    <div className="mb-4 text-sm text-gray-600 dark:text-gray-400 text-center">
+                        C'est une zone sécurisée de l'application. Veuillez confirmer
+                        votre mot de passe avant de continuer.
+                    </div>
+
+                    <form onSubmit={submit}>
+                        <div className="mt-4">
+                            <InputLabel htmlFor="password" value="Mot de Passe" />
+
+                            <TextInput
+                                id="password"
+                                type="password"
+                                name="password"
+                                value={data.password}
+                                className="mt-1 block w-full"
+                                onChange={(e) => setData('password', e.target.value)}
+                            />
+
+                            <InputError message={errors.password} className="mt-2" />
+                        </div>
+
+                        <div className="mt-6 flex items-center justify-center">
+                            <PrimaryButton
+                                className="px-6 py-2"
+                                disabled={processing}
+                                type="submit"
+                            >
+                                Confirmer
+                            </PrimaryButton>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <form onSubmit={submit}>
-                <div className="mt-4">
-                    <InputLabel htmlFor="password" value="Mot de Passe" />
-
-                    <TextInput
-                        id="password"
-                        type="password"
-                        name="password"
-                        value={data.password}
-                        className="mt-1 block w-full"
-                        // isFocused={true}
-                        onChange={(e) => setData('password', e.target.value)}
-                    />
-
-                    <InputError message={errors.password} className="mt-2" />
-                </div>
-
-                <div className="mt-4 flex items-center justify-end">
-                    <PrimaryButton
-                        className="ms-4"
-                        disabled={processing}
-                        type={'submit'}
-                    >
-                        Confirmer
-                    </PrimaryButton>
-                </div>
-            </form>
         </GuestLayout>
     );
 }

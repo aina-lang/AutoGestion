@@ -21,7 +21,9 @@ export default function PrimaryButton({
             sx={{
                 background: disabled
                     ? palette['gray'][200]
-                    : `linear-gradient(to right ,${currentPalette[500]},${currentPalette[400]})`, // Main color from palette
+                    : currentPalette[500],
+
+                // `linear-gradient(to right ,${currentPalette[500]},${currentPalette[400]})`, // Main color from palette
                 color: '#fff', // Text color
                 border: 'none', // No border for MUI style
                 fontSize: '0.875rem', // Smaller font size (14px)

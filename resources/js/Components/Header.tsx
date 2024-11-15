@@ -43,7 +43,7 @@ const MyHeader: React.FC<MyHeaderProps> = ({
         <div className="overflow-y-hidden py-0">
             <div className="mx-auto w-full">
                 <div className="overflow-hidden">
-                    <div className="border-b p-6 text-gray-900">
+                    <div className=" p-6 text-gray-900">
                         <div className="flex flex-row items-center justify-between">
                             {/* Breadcrumb Component */}
                             <Breadcrumb>

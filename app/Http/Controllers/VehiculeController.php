@@ -32,7 +32,7 @@ class VehiculeController extends Controller
         $categories = Categorie::all();
 
         // Start the query with the relation to 'categorie'
-        $query = Vehicule::with('categorie');
+        $query = Vehicule::with(['categorie', 'avis.user']);
 
         // Check if there are search parameters
         if ($request->filled('search') || $request->filled('categorie') || $request->filled('date_depart') || $request->filled('date_retour')) {
@@ -137,25 +137,28 @@ class VehiculeController extends Controller
      */
     public function store(Request $request)
     {
+
+        // dd($request->all());
         // Validation des données
         $validator = Validator::make($request->all(), [
             'marque' => 'required|string|max:255',
             'modele' => 'required|string|max:255',
             'immatriculation' => 'required|string|max:50|unique:vehicules',
             'categorie' => 'required|exists:categories,id',
-            // 'prix_journalier' => 'required|numeric',
             'kilometrage' => 'required|numeric',
             'description' => 'required|string|max:500',
-            'images.*' => 'image|mimes:jpeg,png,jpg,gif|max:30720', // Validation des images (optionnel)
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:30720', // Validation des images
         ]);
 
         if ($validator->fails()) {
+            // Redirect back with validation errors
+            // dd($validator);
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
         try {
             // Gestion du stockage des images
-            $imagePaths = []; // Initialiser le tableau pour les chemins d'images
+            $imagePaths = [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
                     // Déplacer l'image vers le dossier de stockage
@@ -170,20 +173,21 @@ class VehiculeController extends Controller
                 'modele' => $request->modele,
                 'immatriculation' => $request->immatriculation,
                 'categorie_id' => $request->categorie,
-                // 'prix_journalier' => $request->prix_journalier,
-                // 'disponible' => 1,   
                 'kilometrage' => $request->kilometrage,
                 'description' => $request->description,
                 'images' => json_encode($imagePaths), // Stocker les chemins d'image au format JSON, même si vide
             ]);
 
+            // Success message
             session()->flash('success', 'Véhicule ajouté avec succès.');
             return redirect()->back();
         } catch (\Exception $e) {
+            // Error message in case of exception
             session()->flash('error', 'Erreur lors de l\'ajout du véhicule : ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
     }
+
 
 
 

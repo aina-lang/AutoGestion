@@ -14,12 +14,13 @@ import {
     Instagram,
     LinkedIn,
     LocationOn,
+    LoginRounded,
     Phone,
     Twitter,
 } from '@mui/icons-material';
 import { Alert, Menu, MenuItem, Snackbar } from '@mui/material';
 import { motion } from 'framer-motion';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, LogIn, LogInIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const GuestLayout = ({ children, auth, footerShown }) => {
@@ -147,7 +148,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                 initial={{ y: -50 }}
                 animate={{ y: isSticky ? 0 : -10 }}
                 transition={{ type: 'tween', duration: 0.5 }}
-                className={`fixed top-0 z-50 flex w-full items-center justify-center ${
+                className={`fixed top-0 z-50 flex w-full items-center justify-between ${
                     isSticky
                         ? 'bg-white shadow-md dark:bg-gray-900'
                         : 'bg-transparent'
@@ -157,7 +158,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                     className="mr-8 hidden md:flex"
                     isSticky={isSticky}
                 />
-                <div className="flex w-full items-center">
+                <div className="flex  items-center">
                     <nav className="mx-auto hidden md:flex">
                         {links.map((link) => (
                             <button
@@ -284,7 +285,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                         </button>
                     </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 ">
                     <Settings isGuest isSticky={isSticky} />
                     {!auth?.user ? (
                         <>
@@ -292,7 +293,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                                 onClick={() => router.visit('/login')}
                                 className="bg-gray-800 dark:bg-gray-900 dark:text-white"
                             >
-                                Se connecter
+                             <LoginRounded className='mr-2 h-2'/>   Se connecter
                             </PrimaryButton>
                             <SecondaryButton
                                 onClick={() => router.visit('/register')}

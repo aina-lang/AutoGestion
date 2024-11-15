@@ -54,7 +54,7 @@ export default function Login({ status, canResetPassword }) {
                             />
 
                             <TextField
-                                label="Password"
+                                label="Mot de passe"
                                 id="password"
                                 type="password"
                                 name="password"
@@ -102,7 +102,7 @@ export default function Login({ status, canResetPassword }) {
                                     disabled={processing}
                                     type="submit"
                                 >
-                                    S'identifier
+                                    Se connecter
                                 </PrimaryButton>
                             </div>
                         </form>

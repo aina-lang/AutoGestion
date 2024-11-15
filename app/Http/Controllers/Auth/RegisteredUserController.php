@@ -64,7 +64,7 @@ class RegisteredUserController extends Controller
             // $admins = User::where('type', 'admin')->get();
             // Notification::send($admins, new NewRegistrationNotification($user));
             // event(new Registered($user));
-
+            Auth::login($user);
             Session::flash('success', 'Votre compte a été créé avec succès !');
 
             return redirect(route('client.dashboard', absolute: false));

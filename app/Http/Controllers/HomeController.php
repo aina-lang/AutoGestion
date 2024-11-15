@@ -107,8 +107,7 @@ class HomeController extends Controller
 
         // Récupérer les paramètres de filtrage
         $search = $request->input('search', []);
-        $marque = $search['marque'] ?? '';
-        $modele = $search['modele'] ?? '';
+
         $date_depart = $search['date_depart'] ?? '';
         $date_retour = $search['date_retour'] ?? '';
         $categorie = $search['categorie'] ?? '';
@@ -117,17 +116,16 @@ class HomeController extends Controller
         $query = Vehicule::with(['categorie', 'avis.user']);
 
         // Filtrage par marque ou modele
-        if ($marque || $modele) {
-            $searchTerms = array_filter(explode(' ', strtolower($marque . ' ' . $modele)));
-
-            $query->where(function ($q) use ($searchTerms) {
-                foreach ($searchTerms as $term) {
-                    // Appliquer le filtrage sur marque et modele
-                    $q->where('marque', 'like', '%' . $term . '%')
-                        ->orWhere('modele', 'like', '%' . $term . '%');
-                }
+        if (isset($search["search"]) && $search["search"]) {
+            // dd($search["search"]);
+            $query->where(function ($q) use ($search) {
+                $searchTerm = $search["search"]; // Extract the search term
+                $q->where('marque', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('modele', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('immatriculation', 'like', '%' . $searchTerm . '%');
             });
         }
+
 
         // Filtrage par dates si fournies
         if ($date_depart && $date_retour) {
@@ -148,28 +146,11 @@ class HomeController extends Controller
             $query->where('categorie_id', $categorie);
         }
 
-        // Paginer les résultats (20 items par page) avec conservation des paramètres de filtrage dans l'URL
-        // $latestVehicles = $query->paginate(5)->withQueryString()->map(function ($vehicle) use ($userId) {
 
-
-        //     // Décoder les images JSON
-        //     $vehicle->images = json_decode($vehicle->images);
-
-        // // Vérifier si le véhicule est réservé par l'utilisateur
-        // $reservation = Reservation::where('user_id', $userId)
-        //     ->where('vehicule_id', $vehicle->id)
-        //     ->first();
-
-        // // Ajouter le statut de réservation
-        // $vehicle->isReservedByUser = (bool)$reservation;
-        // $vehicle->reservationStatus = $reservation ? $reservation->status : null;
-
-        // return $vehicle;
-        // });
 
         $latestVehicles = $query->paginate(5);
+
         // dd($latestVehicles);
-        // Récupérer toutes les catégories
         $categories = Categorie::all();
 
         return Inertia::render('welcome/allCars', [

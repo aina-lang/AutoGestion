@@ -22,4 +22,9 @@ class Avis extends Model
     {
         return $this->belongsTo(User::class);  // Relation avec l'utilisateur
     }
+
+    public static function userHasReviewForVehicle($user_id, $vehicle_id)
+    {
+        return Avis::where('user_id', $user_id)->where('vehicule_id', $vehicle_id)->exists();
+    }
 }

@@ -145,7 +145,7 @@ function EditVehicule({ vehicule, categories }) {
             <div className="mx-auto space-y-5 p-6 pt-0">
                 <form
                     onSubmit={handleSubmit}
-                    className="grid grid-cols-2 gap-4"
+                    className="grid grid-cols-1 gap-4"
                 >
                     <div className="mb-4 h-full rounded-md bg-white p-5 shadow-lg">
                         <div className="mb-4 grid grid-cols-2 gap-4">
@@ -295,7 +295,7 @@ function EditVehicule({ vehicule, categories }) {
                             </div>
 
                             {imagePreviews.length > 0 && (
-                                <div className="mt-4 grid grid-cols-3 gap-2">
+                                <div className="mt-4 grid grid-cols-8 gap-2">
                                     {imagePreviews.map((image, index) => (
                                         <div
                                             key={index}

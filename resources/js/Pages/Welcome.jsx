@@ -9,6 +9,7 @@ import { Head, router, useForm, usePage } from '@inertiajs/react';
 import {
     BookOnlineTwoTone,
     CarRentalOutlined,
+    CarRentalRounded,
     EventRounded,
     TravelExplore,
 } from '@mui/icons-material';
@@ -87,6 +88,17 @@ export default function Welcome({
     };
 
     const handleCancelReservation = async (car) => {};
+
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Check if the screen size is mobile (for example, smaller than 768px)
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth <= 768);
+        window.addEventListener('resize', handleResize);
+        handleResize(); // Initial check
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     return (
         <GuestLayout auth={auth} footerShown={true}>
             <Head title="Vezo Tours - Unlock Your Travel Experience" />
@@ -344,7 +356,7 @@ export default function Welcome({
                         </span>
                     </div>
 
-                    <div className="flex w-full flex-col-reverse md:flex-row">
+                    <div className="flex w-full flex-col-reverse p-10 md:flex-row">
                         {/* Left Section */}
                         <div className="p-5 py-10 text-center md:w-1/2 md:text-left">
                             <p className="mb-4 text-gray-700">
@@ -426,7 +438,7 @@ export default function Welcome({
                     id="cars"
                 >
                     <div>
-                        <div className="mb-12 text-center">
+                        <div className="mb-20 text-center">
                             <h2 className="mb-2 mt-24 text-center text-3xl font-bold text-gray-700 dark:text-gray-200">
                                 NOS VOITURES RÉCENTES
                             </h2>
@@ -440,77 +452,136 @@ export default function Welcome({
                             {latestVehicles.map((car, index) => (
                                 <Grid item xs={12} sm={6} md={3} key={index}>
                                     <motion.div
-                                        className="flex h-full flex-col rounded-lg bg-white p-4 shadow-md transition-shadow duration-200 hover:shadow-lg dark:bg-gray-800"
-                                        initial={{ opacity: 0, x: -50 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: false, amount: 0.5 }}
-                                        transition={{
-                                            duration: 0.2 * index,
+                                        initial={{ opacity: 0, y: 20 }}
+                                        whileInView={{ opacity: 1, y: 0 }}
+                                        viewport={{
+                                            once: false,
+                                            amount: 0.5,
                                         }}
+                                        transition={{
+                                            duration: 0.3,
+                                            delay: 0.1 * index,
+                                        }}
+                                        className="group flex h-full flex-col rounded-lg bg-white shadow-md transition-shadow duration-200 hover:shadow-lg dark:bg-gray-800"
                                     >
-                                        <div className="relative mb-4">
-                                            {/* Display image */}
-                                            <div className="relative h-48 overflow-hidden rounded-md">
-                                                <img
-                                                    src={
-                                                        '/storage/' +
-                                                        car.images[0]
-                                                    }
-                                                    alt={car.modele}
-                                                    className="h-48 w-full rounded-lg object-cover"
-                                                />
-                                                {/* Centered marque & modele */}
-                                                <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-60 p-2 text-lg font-semibold text-white">
-                                                    {car.marque}
-                                                </div>
-                                            </div>
-                                            <span
-                                                className={`absolute left-0 top-0 rounded-full px-3 py-1 text-sm font-medium text-white dark:bg-yellow-800 dark:text-yellow-300`}
-                                            >
+                                        {/* Image with overlay */}
+                                        <div className="relative mb-2 overflow-hidden rounded-t-lg">
+                                            <img
+                                                src={
+                                                    '/storage/' + car.images[0]
+                                                }
+                                                alt={car.modele}
+                                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                            />
+                                            {/* <div className="absolute -bottom-10 inset-0 flex h-full items-center justify-center rounded-lg p-3 text-lg font-semibold text-gray-500 opacity-0 transition-all duration-300 group-hover:opacity-100">
+                                                <button className="rounded-full p-2 border border-white text-white font-thin">
+                                                   
+                                                </button>
+                                            </div> */}
+                                            <span className="absolute left-2 top-2 rounded-full bg-yellow-500 px-3 py-1 text-xs font-medium text-white">
                                                 {car.kilometrage} km/h
                                             </span>
                                         </div>
 
-                                        <Typography
-                                            variant=""
-                                            className="mb-2 flex-grow font-bold text-gray-700 dark:text-gray-300"
-                                        >
-                                            {car.modele}
-                                        </Typography>
-
-                                        <Typography
-                                            variant="body2"
-                                            className="mb-2 flex-grow text-gray-700 dark:text-gray-400"
-                                        >
-                                            {car.description}
-                                        </Typography>
-
-                                        <div className="mt-4 flex w-full items-center justify-between space-x-4">
-                                            {auth?.user?.type !== 'admin' && (
-                                                <PrimaryButton
-                                                    onClick={() => {
-                                                        handleOpenModal(car);
-                                                    }}
-                                                    className="flex-1"
-                                                >
-                                                    Réserver
-                                                </PrimaryButton>
-                                            )}
-
-                                            <SecondaryButton
-                                                onClick={() => {
-                                                    router.visit(
-                                                        route(
-                                                            'cars.show',
-                                                            car.id,
-                                                        ),
-                                                    );
-                                                }}
-                                                className="flex-1"
-                                                isSticky={true}
+                                        <div className="flex flex-grow flex-col p-4">
+                                            {/* Model */}
+                                            <Typography
+                                                variant="h6"
+                                                className="mb-2 font-bold text-gray-800 dark:text-gray-200"
                                             >
-                                                Voir plus
-                                            </SecondaryButton>
+                                                {car.marque}/ {car.modele}
+                                            </Typography>
+
+                                            {/* Description */}
+                                            <Typography
+                                                variant="body2"
+                                                className="mb-2 text-gray-600 dark:text-gray-400"
+                                            >
+                                                {car.description.length > 80
+                                                    ? `${car.description.slice(0, 80)}...`
+                                                    : car.description}
+                                            </Typography>
+
+                                            {/* Ratings */}
+                                            <div className="mb-2 flex items-center text-yellow-500">
+                                                {car.avis.length > 0 &&
+                                                    (() => {
+                                                        const totalRating =
+                                                            car.avis.reduce(
+                                                                (
+                                                                    acc,
+                                                                    avisItem,
+                                                                ) =>
+                                                                    acc +
+                                                                    avisItem.note,
+                                                                0,
+                                                            );
+                                                        const averageRating =
+                                                            totalRating /
+                                                            car.avis.length;
+                                                        const roundedRating =
+                                                            averageRating.toFixed(
+                                                                1,
+                                                            );
+                                                        const fullStars =
+                                                            Math.floor(
+                                                                roundedRating,
+                                                            );
+                                                        const emptyStars =
+                                                            5 - fullStars;
+                                                        return (
+                                                            <span className="flex items-center">
+                                                                {'★'.repeat(
+                                                                    fullStars,
+                                                                )}
+                                                                {'☆'.repeat(
+                                                                    emptyStars,
+                                                                )}
+                                                                <span className="ml-1 text-gray-500 dark:text-gray-400">
+                                                                    (
+                                                                    {
+                                                                        roundedRating
+                                                                    }
+                                                                    )
+                                                                </span>
+                                                            </span>
+                                                        );
+                                                    })()}
+                                            </div>
+
+                                            {/* Spacer to push buttons to the bottom */}
+                                            <div className="flex-grow" />
+
+                                            {/* Buttons */}
+                                            <div className="mt-4 flex space-x-3">
+                                                {auth?.user?.type !==
+                                                    'admin' && (
+                                                    <PrimaryButton
+                                                        onClick={() =>
+                                                            handleOpenModal(car)
+                                                        }
+                                                        className="h-10 flex-1 items-center space-x-2 rounded-lg bg-yellow-500 px-4 py-2 text-white transition duration-200 ease-in-out hover:bg-yellow-600"
+                                                    >
+                                                        <CarRentalRounded />{' '}
+                                                        Réserver
+                                                    </PrimaryButton>
+                                                )}
+
+                                                <SecondaryButton
+                                                    onClick={() =>
+                                                        router.visit(
+                                                            route(
+                                                                'cars.show',
+                                                                car.id,
+                                                            ),
+                                                        )
+                                                    }
+                                                    isSticky
+                                                    className="h-10 flex-1 rounded-lg border border-gray-300 px-4 py-2 transition duration-200 ease-in-out  hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
+                                                >
+                                                    Voir plus
+                                                </SecondaryButton>
+                                            </div>
                                         </div>
                                     </motion.div>
                                 </Grid>

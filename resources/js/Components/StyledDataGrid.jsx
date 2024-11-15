@@ -32,7 +32,6 @@ import {
     Delete as DeleteIcon,
     Edit as EditIcon,
     Ellipsis,
-    FilterIcon,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import ConfirmModal from './ConfirmModal';
@@ -335,81 +334,70 @@ const StyledDataGrid = ({
     };
 
     return (
-        <div className="w-full overflow-hidden rounded-sm p-2">
+        <div className="w-full overflow-hidden rounded-lg bg-white p-4 shadow-lg">
             {/* Filter bar */}
-            <div className="flex items-center justify-between space-x-4 rounded-sm bg-white p-2 py-3 pt-5">
+            <div className="flex items-center justify-between space-x-4 rounded-lg bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 p-3 shadow-md">
                 {/* Column visibility dropdown */}
-                <div className="flex items-center space-x-2">
-                    {' '}
-                    <DropdownMenu className="ml-auto border shadow-md">
-                        <DropdownMenuTrigger asChild>
-                            <button className="flex items-center rounded-sm border border-gray-200 bg-white p-2 py-1 text-gray-500 dark:border-none dark:bg-gray-800">
-                                Colonnes{' '}
-                                <ChevronDown className="ml-5 h-4 w-4" />
-                            </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-56 rounded-md bg-white p-2 text-gray-500 shadow-md">
-                            <button
-                                onClick={handleResetVisibility}
-                                className="mb-2 flex w-full justify-start text-gray-700 hover:bg-gray-200"
-                            >
-                                Reinitialiser
-                            </button>
-                            {table
-                                .getAllColumns()
-                                .filter((column) => column.getCanHide())
-                                .map((column) => (
-                                    <DropdownMenuCheckboxItem
-                                        key={column.id}
-                                        className="flex w-full space-x-4 capitalize text-gray-700"
-                                        checked={column.getIsVisible()}
-                                        onCheckedChange={(value, e) => {
-                                            // e.preventDefault()
-                                            setColumnVisibility((prev) => ({
-                                                ...prev,
-                                                [column.id]: value,
-                                            }));
-                                            column.toggleVisibility(value);
-                                        }}
-                                    >
-                                        <span className="flex-grow p-1">
-                                            {column.id}
-                                        </span>
-                                    </DropdownMenuCheckboxItem>
-                                ))}
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                    {/* Export CSV button */}
-                    <DropdownMenu className="ml-auto border shadow-md">
-                        <DropdownMenuTrigger asChild>
-                            <button className="flex items-center rounded-sm border border-gray-200 bg-white p-2 py-1 text-gray-500 dark:border-none dark:bg-gray-800">
-                                Export <Download className="ml-5 h-4 w-4" />
-                            </button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent
-                            align="end"
-                            className="min-w-52 rounded-md bg-white p-2 text-gray-500 shadow-md"
+                <DropdownMenu className="ml-auto rounded-md border shadow-lg">
+                    <DropdownMenuTrigger asChild>
+                        <button className="flex transform items-center space-x-2 rounded-md bg-white p-2 px-3 text-gray-700 transition-transform duration-300 hover:scale-105 dark:bg-gray-800 dark:text-gray-200">
+                            <span>Colonnes</span>
+                            <ChevronDown className="h-4 w-4 text-gray-600" />
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-56 rounded-md bg-white p-3 text-gray-700 shadow-lg">
+                        <button
+                            onClick={handleResetVisibility}
+                            className="flex w-full items-center px-3 py-2 text-left hover:bg-gray-200 dark:hover:bg-gray-600"
                         >
-                            <DropdownMenuItem
-                                onClick={handleExportCSV}
-                                className="flex cursor-pointer items-center"
-                            >
-                                <Download className="mr-2" /> Exporter vers CSV
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
-                {FilterComponent && (
-                    <div className="flex flex-grow items-center justify-end space-x-4">
-                        <FilterIcon className="text-gray-500" />
-                        <FilterComponent className="flex-grow" />
-                    </div>
-                )}
+                            Réinitialiser
+                        </button>
+                        {table
+                            .getAllColumns()
+                            .filter((column) => column.getCanHide())
+                            .map((column) => (
+                                <DropdownMenuCheckboxItem
+                                    key={column.id}
+                                    className="flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-gray-200"
+                                    checked={column.getIsVisible()}
+                                    onCheckedChange={(value) => {
+                                        setColumnVisibility((prev) => ({
+                                            ...prev,
+                                            [column.id]: value,
+                                        }));
+                                        column.toggleVisibility(value);
+                                    }}
+                                >
+                                    <span className="text-sm">{column.id}</span>
+                                </DropdownMenuCheckboxItem>
+                            ))}
+                    </DropdownMenuContent>
+                </DropdownMenu>
+                {/* Export CSV button */}
+                <DropdownMenu className="ml-4 rounded-md border shadow-lg">
+                    <DropdownMenuTrigger asChild>
+                        <button className="flex transform items-center space-x-2 rounded-md bg-white p-2 px-3 text-gray-700 transition-transform duration-300 hover:scale-105 dark:bg-gray-800 dark:text-gray-200">
+                            <span>Export</span>
+                            <Download className="h-4 w-4 text-gray-600" />
+                        </button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent
+                        align="end"
+                        className="w-56 rounded-md bg-white p-3 text-gray-700 shadow-lg"
+                    >
+                        <DropdownMenuItem
+                            onClick={handleExportCSV}
+                            className="flex items-center p-2 hover:bg-gray-200 dark:hover:bg-gray-600"
+                        >
+                            <Download className="mr-2" /> Exporter vers CSV
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
 
             {/* Table */}
-            <div className="rounded-sm bg-white p-2 pb-0.5 shadow-lg">
-                <div className="mb-4 min-h-56 overflow-x-auto overflow-y-hidden rounded-sm border border-gray-200 bg-white dark:border-none dark:bg-gray-800">
+            <div className="rounded-lg bg-white p-4 shadow-lg">
+                <div className="overflow-x-auto rounded-lg bg-gray-50 shadow-md">
                     <table className="min-w-full">
                         <thead>
                             {table.getHeaderGroups().map((headerGroup) => (
@@ -417,9 +405,8 @@ const StyledDataGrid = ({
                                     {headerGroup.headers.map((header) => (
                                         <th
                                             key={header.id}
-                                            className="  bg-gray-200 p-3 text-left text-sm font-semibold text-gray-600" // Ajoutez une couleur de fond et une bordure
+                                            className="border-b bg-gray-200 p-4 text-left text-sm font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-200"
                                         >
-                                            {/* Sortable header */}
                                             <div
                                                 {...{
                                                     className:
@@ -437,15 +424,16 @@ const StyledDataGrid = ({
                                                               .columnDef.header,
                                                           header.getContext(),
                                                       )}
-                                                {/* Sorting indicator */}
-                                                {header.column.getIsSorted() ? (
-                                                    header.column.getIsSorted() ===
-                                                    'asc' ? (
-                                                        <ChevronUp className="ml-2 h-4 w-4 text-gray-500" />
-                                                    ) : (
-                                                        <ChevronDown className="ml-2 h-4 w-4 text-gray-500" />
-                                                    )
-                                                ) : null}
+                                                {header.column.getIsSorted() && (
+                                                    <span className="ml-2">
+                                                        {header.column.getIsSorted() ===
+                                                        'asc' ? (
+                                                            <ChevronUp className="h-4 w-4 text-gray-500" />
+                                                        ) : (
+                                                            <ChevronDown className="h-4 w-4 text-gray-500" />
+                                                        )}
+                                                    </span>
+                                                )}
                                             </div>
                                         </th>
                                     ))}
@@ -458,12 +446,12 @@ const StyledDataGrid = ({
                                 table.getRowModel().rows.map((row) => (
                                     <tr
                                         key={row.id}
-                                        className={`w-full hover:bg-gray-100 dark:hover:bg-gray-50/10 ${row.getIsSelected() ? 'bg-gray-200 dark:bg-gray-500/10' : ''}`}
+                                        className={`w-full hover:bg-gray-100 ${row.getIsSelected() ? 'bg-blue-100' : ''}`}
                                     >
                                         {row.getVisibleCells().map((cell) => (
                                             <td
                                                 key={cell.id}
-                                                className="border-t border-gray-200 p-3 text-sm text-gray-700 dark:border-gray-900"
+                                                className="border-t border-gray-200 p-4 text-sm text-gray-700 dark:text-gray-300"
                                             >
                                                 {flexRender(
                                                     cell.column.columnDef.cell,
@@ -479,7 +467,7 @@ const StyledDataGrid = ({
                                         colSpan={columns.length}
                                         className="h-24 text-center text-gray-400"
                                     >
-                                        No results.
+                                        Aucun résultat trouvé.
                                     </td>
                                 </tr>
                             )}
@@ -489,52 +477,47 @@ const StyledDataGrid = ({
             </div>
 
             {/* Data from Laravel */}
-            <div className="mb-5 flex items-center justify-between rounded-sm p-4 dark:border-none dark:bg-gray-800">
+            <div className="mb-5 flex items-center justify-between rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800">
                 {selectedRows.length > 0 && (
-                    <div
-                        sx={{ borderRadius: '8px' }}
-                        className="flex items-center justify-between"
-                    >
-                        <DropdownMenu className="border border-gray-400">
-                            <DropdownMenuTrigger className="rounded border px-4 py-2 text-gray-500 dark:border-none dark:border-gray-500">
+                    <DropdownMenu className="rounded-md border border-gray-400 shadow-lg">
+                        <DropdownMenuTrigger className="rounded-md border bg-white p-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
+                            Actions en masse
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56 bg-white p-3 text-gray-700 dark:bg-gray-800">
+                            <DropdownMenuLabel className="font-bold text-gray-900 dark:text-gray-200">
                                 Actions en masse
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-48 border-none bg-white shadow-lg">
-                                <DropdownMenuLabel className="font-bold text-gray-900">
-                                    Actions en masse
-                                </DropdownMenuLabel>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                    onClick={() => handleBulkAction('edit')}
-                                    className="flex items-center bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                >
-                                    <EditIcon className="mr-2 text-blue-500" />
-                                    Modifier
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => handleBulkAction('delete')}
-                                    className="flex items-center bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                >
-                                    <DeleteIcon className="mr-2 text-red-500" />
-                                    Supprimer
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => handleBulkAction('approve')}
-                                    className="flex items-center bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                >
-                                    <CheckCircleOutline className="mr-2 text-green-500" />
-                                    Approuver
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                    onClick={() => handleBulkAction('pdf')}
-                                    className="flex items-center bg-white px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                                >
-                                    <PictureAsPdf className="mr-2 text-gray-500" />
-                                    Générer PDF
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    </div>
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                                onClick={() => handleBulkAction('edit')}
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
+                            >
+                                <EditIcon className="mr-2 text-blue-500" />{' '}
+                                Modifier
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => handleBulkAction('delete')}
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
+                            >
+                                <DeleteIcon className="mr-2 text-red-500" />{' '}
+                                Supprimer
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => handleBulkAction('approve')}
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
+                            >
+                                <CheckCircleOutline className="mr-2 text-green-500" />{' '}
+                                Approuver
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => handleBulkAction('pdf')}
+                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
+                            >
+                                <PictureAsPdf className="mr-2 text-gray-500" />{' '}
+                                Générer PDF
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 )}
 
                 <div className="flex items-center space-x-2">
@@ -542,18 +525,13 @@ const StyledDataGrid = ({
                     <button
                         disabled={data.current_page === 1}
                         onClick={() => handlePageChange(data.current_page - 1)}
-                        className="flex items-center justify-center rounded-full bg-gray-200 px-2 py-2 text-gray-600 transition-colors duration-200 hover:bg-gray-300 disabled:opacity-50"
+                        className="rounded-full bg-gray-200 px-3 py-2 text-gray-600 hover:bg-gray-300 disabled:opacity-50"
                     >
-                        <ChevronLeft className="h-2 w-2" />
+                        <ChevronLeft className="h-4 w-4" />
                     </button>
 
                     {/* Current Page Indicator */}
-                    <button
-                        style={{
-                            background: `linear-gradient(to right, ${currentPalette[600]}, ${currentPalette[500]})`,
-                        }}
-                        className="rounded-full px-4 py-2 text-white shadow-lg transition-shadow duration-200"
-                    >
+                    <button className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-white shadow-lg">
                         {data.current_page}
                     </button>
 
@@ -561,9 +539,9 @@ const StyledDataGrid = ({
                     <button
                         disabled={data.current_page === data.last_page}
                         onClick={() => handlePageChange(data.current_page + 1)}
-                        className="flex items-center justify-center rounded-full bg-gray-200 px-2 py-2 text-gray-600 transition-colors duration-200 hover:bg-gray-300 disabled:opacity-50"
+                        className="rounded-full bg-gray-200 px-3 py-2 text-gray-600 hover:bg-gray-300 disabled:opacity-50"
                     >
-                        <ChevronRight className="h-5 w-5" />
+                        <ChevronRight className="h-4 w-4" />
                     </button>
                 </div>
 
