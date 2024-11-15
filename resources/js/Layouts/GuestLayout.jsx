@@ -18,9 +18,9 @@ import {
     Phone,
     Twitter,
 } from '@mui/icons-material';
-import { Alert, Menu, MenuItem, Snackbar } from '@mui/material';
+import { Alert, Drawer, Menu, MenuItem, Snackbar } from '@mui/material';
 import { motion } from 'framer-motion';
-import { ChevronDown, ChevronUp, LogIn, LogInIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 const GuestLayout = ({ children, auth, footerShown }) => {
@@ -142,6 +142,10 @@ const GuestLayout = ({ children, auth, footerShown }) => {
         setMenuOpen(false);
     };
 
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleMenuHumberger = () => setIsOpen(!isOpen);
+
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900 sm:pt-0">
             <motion.header
@@ -150,7 +154,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                 transition={{ type: 'tween', duration: 0.5 }}
                 className={`fixed top-0 z-50 flex w-full items-center justify-between ${
                     isSticky
-                        ? 'bg-white shadow-md dark:bg-gray-900'
+                        ? '/50 bg-white shadow-md backdrop-blur-md dark:bg-gray-900'
                         : 'bg-transparent'
                 } px-6 py-4 dark:text-white`}
             >
@@ -158,7 +162,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                     className="mr-8 hidden md:flex"
                     isSticky={isSticky}
                 />
-                <div className="flex  items-center">
+                <div className="flex items-center">
                     <nav className="mx-auto hidden md:flex">
                         {links.map((link) => (
                             <button
@@ -265,11 +269,11 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                     </nav>
                     <div className="md:hidden">
                         <button
-                            onClick={toggleMenu}
+                            onClick={toggleMenuHumberger}
                             className="focus:outline-none"
                         >
                             <svg
-                                className="h-6 w-6 text-white dark:text-white"
+                                className={`"h-8 dark:text-white" w-6 ${isSticky ? 'text-gray-500' : 'text-white'}`}
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -285,7 +289,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                         </button>
                     </div>
                 </div>
-                <div className="flex items-center space-x-2 ">
+                <div className="flex items-center space-x-2">
                     <Settings isGuest isSticky={isSticky} />
                     {!auth?.user ? (
                         <>
@@ -293,7 +297,8 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                                 onClick={() => router.visit('/login')}
                                 className="bg-gray-800 dark:bg-gray-900 dark:text-white"
                             >
-                             <LoginRounded className='mr-2 h-2'/>   Se connecter
+                                <LoginRounded className="mr-2 h-2" /> Se
+                                connecter
                             </PrimaryButton>
                             <SecondaryButton
                                 onClick={() => router.visit('/register')}
@@ -335,6 +340,61 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                 </div>
             </motion.header>
 
+            <Drawer
+                anchor="left"
+                open={isOpen}
+                onClose={() => setIsOpen(false)}
+                className="bg-white/20 backdrop-blur-md"
+            >
+                {/* Menu Rideau */}
+                <div
+                    className="h-full w-64 space-y-6 p-6"
+                    // style={{ backgroundColor: currentPalette['gray'][800] }}
+                >
+                    <ul className="mb-0 list-none space-y-4">
+                        {links.map((link) => (
+                            <li key={link.href}>
+                                <button
+                                    onClick={() => {
+                                        scrollToSection(link.href);
+                                        setIsOpen(false);
+                                    }}
+                                    className={`w-full rounded-lg px-4 py-2 text-left text-lg transition-colors duration-300`}
+                                    style={{
+                                        color:
+                                            activeLink === link.href
+                                                ? "white" // Actif: couleur de surbrillance
+                                                : palette['gray'][500], // Couleur standard
+                                        backgroundColor:
+                                            activeLink === link.href
+                                                ? currentPalette[500] // Fond clair pour l'élément actif
+                                                : '', // Pas de fond pour les autres éléments
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.target.style.backgroundColor =
+                                            currentPalette[100]; // Fond au survol
+                                        e.target.style.color =
+                                            currentPalette[400]; // Changer la couleur du texte au survol
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.target.style.backgroundColor =
+                                            activeLink === link.href
+                                                ? currentPalette[500]
+                                                : ''; // Réinitialiser l'arrière-plan
+                                        e.target.style.color =
+                                            activeLink === link.href
+                                                ?"white" // Réinitialiser la couleur du texte si actif
+                                                : palette['gray'][500]; // Couleur par défaut
+                                    }}
+                                >
+                                    {link.label}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            </Drawer>
+
             <main>{children}</main>
 
             <ScrollToTopButton />
@@ -362,89 +422,89 @@ const GuestLayout = ({ children, auth, footerShown }) => {
             />
 
             {footerShown && (
-                <footer className="flex flex-col items-center bg-gray-100 text-center text-gray-800 dark:bg-gray-700 dark:text-gray-300 lg:text-left">
+                <footer className="flex flex-col mt-0 items-center bg-gray-100 text-center text-gray-800 dark:bg-gray-700 dark:text-gray-300">
                     <div className="container p-6">
-                        <div className="grid place-items-center gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {/* Informations de Contact */}
-                            <div className="mb-6">
-                                <h5 className="mb-2.5 font-bold uppercase text-gray-900 dark:text-gray-200">
+                            <div className="mb-6 md:text-left">
+                                <h5 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-200">
                                     Contact
                                 </h5>
-                                <ul className="mb-0 list-none">
-                                    <li className="flex items-center space-x-2">
-                                        <Email />
-                                        <span>Email :</span>
+                                <ul className="mb-0 list-none space-y-4">
+                                    <li className="flex items-center justify-center space-x-3 md:justify-start">
+                                        <Email className="text-gray-700 dark:text-gray-300" />
+                                        <span>Email : </span>
                                         <a
-                                            href="mailto:contact@aynalbr.com"
-                                            className="text-blue-700 dark:text-blue-300"
+                                            href="mailto:contact@vezoTours.com"
+                                            className="text-gray-700 dark:text-gray-300"
                                         >
-                                            contact@aynalbr.com
+                                            contact@vezoTours.com
                                         </a>
                                     </li>
-                                    <li className="flex items-center space-x-2">
-                                        <Phone />
-                                        <span>Téléphone :</span>
+                                    <li className="flex items-center justify-center space-x-3 md:justify-start">
+                                        <Phone className="text-gray-700 dark:text-gray-300" />
+                                        <span>Téléphone : </span>
                                         <a
                                             href="tel:+123456789"
-                                            className="text-blue-700 dark:text-blue-300"
+                                            className="text-gray-700 dark:text-gray-300"
                                         >
                                             +123 456 789
                                         </a>
                                     </li>
-                                    <li className="flex items-center space-x-2">
-                                        <LocationOn />
-                                        <span>Adresse :</span>
+                                    <li className="flex items-center justify-center space-x-3 md:justify-start">
+                                        <LocationOn className="text-gray-700 dark:text-gray-300" />
+                                        <span>Adresse : </span>
                                         <p>123 Rue Ayna, Ville, Pays</p>
                                     </li>
                                 </ul>
                             </div>
 
                             {/* Liens des réseaux sociaux */}
-                            <div className="mb-6">
-                                <h5 className="mb-2.5 font-bold uppercase text-gray-900 dark:text-gray-200">
+                            <div className="mb-6 text-center">
+                                <h5 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-200">
                                     Suivez-nous
                                 </h5>
-                                <ul className="mb-0 list-none space-y-2">
-                                    <li className="flex items-center space-x-2">
-                                        <Facebook />
+                                <ul className="mb-0 list-none space-y-4 text-center">
+                                    <li className="flex items-center justify-center space-x-3">
+                                        <Facebook className="text-gray-700 dark:text-gray-300" />
                                         <a
-                                            href="https://www.facebook.com/aynalbr"
+                                            href="https://www.facebook.com/vezoTours"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-blue-700 dark:text-blue-300"
+                                            className="text-gray-700 dark:text-gray-300"
                                         >
                                             Facebook
                                         </a>
                                     </li>
-                                    <li className="flex items-center space-x-2">
-                                        <Twitter />
+                                    <li className="flex items-center justify-center space-x-3">
+                                        <Twitter className="text-gray-700 dark:text-gray-300" />
                                         <a
-                                            href="https://www.twitter.com/aynalbr"
+                                            href="https://www.twitter.com/vezoTours"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-blue-700 dark:text-blue-300"
+                                            className="text-gray-700 dark:text-gray-300"
                                         >
                                             Twitter
                                         </a>
                                     </li>
-                                    <li className="flex items-center space-x-2">
-                                        <Instagram />
+                                    <li className="flex items-center justify-center space-x-3">
+                                        <Instagram className="text-gray-700 dark:text-gray-300" />
                                         <a
-                                            href="https://www.instagram.com/aynalbr"
+                                            href="https://www.instagram.com/vezoTours"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-blue-700 dark:text-blue-300"
+                                            className="text-gray-700 dark:text-gray-300"
                                         >
                                             Instagram
                                         </a>
                                     </li>
-                                    <li className="flex items-center space-x-2">
-                                        <LinkedIn />
+                                    <li className="flex items-center justify-center space-x-3">
+                                        <LinkedIn className="text-gray-700 dark:text-gray-300" />
                                         <a
-                                            href="https://www.linkedin.com/company/aynalbr"
+                                            href="https://www.linkedin.com/company/vezoTours"
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="text-blue-700 dark:text-blue-300"
+                                            className="text-gray-700 dark:text-gray-300"
                                         >
                                             LinkedIn
                                         </a>
@@ -453,51 +513,33 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                             </div>
 
                             {/* Liens Rapides */}
-                            <div className="mb-6">
-                                <h5 className="mb-2.5 font-bold uppercase text-gray-900 dark:text-gray-200">
+                            <div className="mb-6 md:text-right">
+                                <h5 className="mb-4 text-lg font-semibold text-gray-900 dark:text-gray-200">
                                     Liens rapides
                                 </h5>
-                                <ul className="mb-0 list-none space-y-2">
-                                    <li>
-                                        <a
-                                            href="#home"
-                                            className="text-blue-700 dark:text-blue-300"
-                                        >
-                                            Accueil
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a
-                                            href="#about"
-                                            className="text-blue-700 dark:text-blue-300"
-                                        >
-                                            À Propos
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a
-                                            href="#services"
-                                            className="text-blue-700 dark:text-blue-300"
-                                        >
-                                            Services
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a
-                                            href="#contact"
-                                            className="text-blue-700 dark:text-blue-300"
-                                        >
-                                            Contact
-                                        </a>
-                                    </li>
+                                <ul className="mb-0 list-none space-y-4">
+                                    {links.map((link) => (
+                                        <li key={link.href}>
+                                            <button
+                                                onClick={() =>
+                                                    scrollToSection(link.href)
+                                                }
+                                                className="text-gray-700 hover:text-gray-500 dark:text-gray-300"
+                                            >
+                                                {link.label}
+                                            </button>
+                                        </li>
+                                    ))}
                                 </ul>
                             </div>
                         </div>
                     </div>
 
-                    <div className="w-full bg-black/5 p-4 text-center">
-                        &copy; {new Date().getFullYear()} Ayna lbr. Tous droits
-                        réservés.
+                    <div className="w-full bg-gray-200 p-4 text-center dark:bg-gray-800">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            &copy; {new Date().getFullYear()} vezoTours. Tous
+                            droits réservés.
+                        </p>
                     </div>
                 </footer>
             )}

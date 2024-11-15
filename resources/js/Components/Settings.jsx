@@ -1,6 +1,5 @@
 import {
     Box,
-    Button,
     Divider,
     Drawer,
     Grid,
@@ -11,8 +10,8 @@ import React, { useEffect, useState } from 'react';
 
 import { palette } from '@/constants/palette';
 import { useThemeContext } from '@/contexts/ThemeContext';
+import { Palette } from '@mui/icons-material';
 import { Moon, SettingsIcon, Sun } from 'lucide-react';
-import SecondaryButton from './SecondaryButton';
 
 export default function Settings({ isGuest, isSticky }) {
     const { changePalette, paletteName } = useThemeContext();
@@ -72,16 +71,19 @@ export default function Settings({ isGuest, isSticky }) {
                               padding: 1.5,
                           }
                         : {
-                              color: !isSticky
-                                  ? 'white'
-                                  : palette["gray"][600],
+                              color: !isSticky ? 'white' : palette['gray'][600],
                           }
                 }
             >
                 <SettingsIcon />
             </IconButton>
 
-            <Drawer anchor="right" open={isDrawerOpen} onClose={toggleDrawer}>
+            <Drawer
+                anchor="right"
+                open={isDrawerOpen}
+                onClose={toggleDrawer}
+                className="bg-white/50 backdrop-blur-md"
+            >
                 <Box
                     sx={{
                         width: 400, // Adjusted width for more space
@@ -101,27 +103,21 @@ export default function Settings({ isGuest, isSticky }) {
                             </Typography>
                         </Grid>
                         <Grid item xs={12} className="grid grid-cols-2" gap={4}>
-                            <SecondaryButton
+                            <button
                                 onClick={toLightMode}
                                 disabled={!isDarkMode}
-                                className="flex h-24 items-center justify-center border p-10"
+                                className={`flex items-center justify-center rounded-lg border p-6 ${isDarkMode ? 'border-gray-300 bg-white text-gray-900' : 'border-gray-400 bg-gray-200 text-gray-500'} hover:bg-gray-100 focus:ring-2 focus:ring-offset-2 ${!isDarkMode && 'cursor-not-allowed opacity-50'} transition duration-200 ease-in-out`}
                             >
-                                <Sun />
-                            </SecondaryButton>
-                            <SecondaryButton
+                                <Sun className="h-8 w-8" />
+                            </button>
+
+                            <button
                                 onClick={toDarkMode}
                                 disabled={isDarkMode}
-                                className="flex items-center justify-center border p-10"
+                                className={`flex items-center justify-center rounded-lg border p-6 ${isDarkMode ? 'border-gray-500 bg-gray-700 text-gray-100' : 'border-gray-800 bg-black text-white'} hover:bg-gray-800 focus:ring-2 focus:ring-offset-2 ${isDarkMode && 'cursor-not-allowed opacity-50'} transition duration-200 ease-in-out`}
                             >
-                                <Moon />
-                            </SecondaryButton>
-                            {/* <Button
-                                variant="contained"
-                                onClick={toggleDarkMode}
-                                sx={{ width: "100%" }}
-                            >
-                                Basculer entre mode clair/sombre
-                            </Button> */}
+                                <Moon className="h-8 w-8" />
+                            </button>
                         </Grid>
                         <Grid item xs={12}>
                             <Typography variant="body2">
@@ -130,20 +126,30 @@ export default function Settings({ isGuest, isSticky }) {
                         </Grid>
                         {Object.entries(palette).map(([key, value]) => (
                             <Grid item xs={3} key={key}>
-                                <Button
-                                    variant="contained"
-                                    sx={{
-                                        backgroundColor: value[500],
-                                        color: 'white',
-                                        width: '100%',
-                                        '&:hover': {
-                                            backgroundColor: value[600],
-                                        },
-                                    }}
+                                <button
                                     onClick={() => changePalette(key)}
+                                    className="flex w-full flex-col items-center justify-center rounded-md focus:outline-none"
                                 >
-                                    {key.charAt(0).toUpperCase() + key.slice(1)}
-                                </Button>
+                                    <Palette
+                                        className="mr-2"
+                                        sx={{
+                                            color: value[500],
+                                            // color: 'white',
+                                            width: '100%',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            '&:hover': {
+                                                cColor: value[600],
+                                            },
+                                        }}
+                                    />{' '}
+                                    {/* Adjust color here */}
+                                    <span className="font-semibold text-gray-900">
+                                        {key.charAt(0).toUpperCase() +
+                                            key.slice(1)}
+                                    </span>
+                                </button>
                             </Grid>
                         ))}
                     </Grid>

@@ -1,54 +1,85 @@
-import ReservationModal from '@/Components/ReservationModal';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head } from '@inertiajs/react';
 import { CalendarCheckIcon } from 'lucide-react';
-import React, { useState } from 'react';
+import React from 'react';
+import banner from '../../../assets/images/bgbanner.jpg';
 
 function Services({ services, categories, auth }) {
-
-
     return (
         <GuestLayout auth={auth} footerShown={true}>
-            <Head title="Services" />
-            <div className="mx-auto space-y-5 bg-gray-50 p-6 py-24 pt-32 min-h-screen">
-                {categories.map((category) => (
-                    <div
-                        key={category.id}
-                        className="space-y-3 rounded-lg border bg-white p-6 shadow-md hover:shadow-xl transition-shadow duration-300"
-                    >
-                        <div className="flex items-center space-x-3">
-                            {/* Add a category icon */}
-                            <div className="text-3xl text-blue-500">
-                                {category.nom }
-                            </div>
-                            <div className="text-3xl text-blue-500">
-                                {category.description }
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1  gap-4 mt-4">
-                            {services
-                                .filter((service) => service.service_type_id === category.id)
-                                .map((service) => (
-                                    <div
-                                        key={service.id}
-                                        className="flex items-start p-4 bg-gray-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 cursor-pointer"
-                                        onClick={() => handleReserveClick(service)}
-                                    >
-                                        {/* Service Icon */}
-                                        <div className="text-xl text-yellow-500 mr-4">
-                                            <CalendarCheckIcon />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-lg font-medium">{service.nom}</h3>
-                                            <p className="text-sm text-gray-600">{service.description}</p>
-                                        </div>
-                                    </div>
-                                ))}
-                        </div>
-                    </div>
-                ))}
-            </div>
+            <Head title="Nos Services" />
 
+            <div
+                className="mx-auto min-h-screen  bg-cover bg-fixed pt-32 bg-blend-darken pb-0 mb-0 flex"
+                style={{ backgroundImage: `url(${banner})` }}
+            >
+                {/* Introductory Section */}
+                <div className="flex  min-h-full flex-col">
+                    <section className="mb-12 p-10 text-white">
+                        <h1 className="text-4xl font-bold">
+                            Découvrez Nos Prestations de Service
+                        </h1>
+                        <p className="mt-4 text-lg text-gray-700">
+                            Nous vous offrons une gamme complète de services
+                            adaptés à vos besoins. Que vous soyez à la recherche
+                            de soins, de conseils spécialisés, ou de solutions
+                            personnalisées, nous avons ce qu'il vous faut.
+                            Explorez nos catégories et trouvez le service qui
+                            vous convient.
+                        </p>
+                    </section>
+
+                    <div className=" bg-white h-full pb-32">
+                        {/* Service Categories */}
+                        {categories.map((category) => (
+                            <div
+                                key={category.id}
+                                className="space-y-6  bg-white p-6 "
+                            >
+                                <div className="flex items-center space-x-4">
+                                    {/* Category Name */}
+                                    <div className="text-2xl font-semibold text-blue-600">
+                                        {category.nom}
+                                    </div>
+                                </div>
+
+                                {/* Category Description */}
+                                <p className="mt-2 text-sm text-gray-600">
+                                    {category.description}
+                                </p>
+
+                                <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
+                                    {services
+                                        .filter(
+                                            (service) =>
+                                                service.service_type_id ===
+                                                category.id,
+                                        )
+                                        .map((service) => (
+                                            <div
+                                                key={service.id}
+                                                className="flex cursor-pointer items-start rounded-lg border border-gray-300 p-4 transition-all duration-300 hover:border-blue-500"
+                                            >
+                                                {/* Service Icon */}
+                                                <div className="mr-4 text-xl text-yellow-500">
+                                                    <CalendarCheckIcon />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-lg font-medium text-gray-800">
+                                                        {service.nom}
+                                                    </h3>
+                                                    <p className="text-sm text-gray-600">
+                                                        {service.description}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </div>
         </GuestLayout>
     );
 }

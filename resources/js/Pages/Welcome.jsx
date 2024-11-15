@@ -106,7 +106,7 @@ export default function Welcome({
                 {/* Hero Section with ReactTyped */}
                 <main
                     id="home"
-                    className="relative flex min-h-screen items-center bg-cover bg-center md:p-10"
+                    className="relative flex min-h-screen items-center  bg-cover bg-center backdrop-blur-lg md:p-10"
                     style={{ backgroundImage: `url(${banner})` }}
                 >
                     <div className="absolute inset-0 bg-black opacity-50" />
@@ -577,7 +577,7 @@ export default function Welcome({
                                                         )
                                                     }
                                                     isSticky
-                                                    className="h-10 flex-1 rounded-lg border border-gray-300 px-4 py-2 transition duration-200 ease-in-out  hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
+                                                    className="h-10 flex-1 rounded-lg border border-gray-300 px-4 py-2 transition duration-200 ease-in-out hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
                                                 >
                                                     Voir plus
                                                 </SecondaryButton>

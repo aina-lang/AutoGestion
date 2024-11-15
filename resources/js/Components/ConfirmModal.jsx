@@ -1,11 +1,10 @@
-import React from "react";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
-import Button from "@mui/material/Button";
-import { Warning } from "@mui/icons-material";
+import { Warning } from '@mui/icons-material';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import React from 'react';
 
 const ConfirmModal = ({ open, onClose, onConfirm, title, content }) => {
     return (
@@ -14,6 +13,7 @@ const ConfirmModal = ({ open, onClose, onConfirm, title, content }) => {
             onClose={onClose}
             aria-labelledby="custom-confirmation-dialog-title"
             aria-describedby="custom-confirmation-dialog-description"
+            className="bg-white/50 backdrop-blur-md"
         >
             <DialogTitle
                 id="custom-confirmation-dialog-title"
@@ -22,7 +22,7 @@ const ConfirmModal = ({ open, onClose, onConfirm, title, content }) => {
                 {title}
                 <Warning
                     fontSize="large"
-                    className="p-2 bg-gray-200 rounded-full h-8 w-8"
+                    className="h-8 w-8 rounded-full bg-gray-200 p-2"
                 />
             </DialogTitle>
             <DialogContent>
@@ -33,13 +33,13 @@ const ConfirmModal = ({ open, onClose, onConfirm, title, content }) => {
             <DialogActions>
                 <button
                     onClick={onConfirm}
-                    className="inline-flex items-center px-4  text bg-red-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-700 focus:bg-red-700 active:bg-red-900 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150  py-2 mb-2"
+                    className="text mb-2 inline-flex items-center rounded-md border border-transparent bg-red-500 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white transition duration-150 ease-in-out hover:bg-red-700 focus:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 active:bg-red-900"
                 >
                     Confirmer
                 </button>
                 <button
                     onClick={onClose}
-                    className="inline-flex items-center px-4  bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150 py-2 mb-2"
+                    className="mb-2 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-700 shadow-sm transition duration-150 ease-in-out hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 disabled:opacity-25"
                     autoFocus
                 >
                     Annuler
