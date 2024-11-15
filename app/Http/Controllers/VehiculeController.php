@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Categorie;
 use App\Models\Reservation;
 use App\Models\Vehicule; // Assurez-vous que le modèle Vehicule est importé
+use App\Traits\BulkDeletable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +17,7 @@ class VehiculeController extends Controller
     /**
      * Display a listing of the resource.
      */
-
+    use BulkDeletable;
 
     private function jaccardSimilarity($setA, $setB)
     {
@@ -363,6 +364,8 @@ class VehiculeController extends Controller
 
 
 
+
+
     public function addImage(Request $request, $id)
     {
         // Validation de l'image
@@ -417,5 +420,14 @@ class VehiculeController extends Controller
             session()->flash('error', 'Erreur lors de la suppression de l\'image : ' . $e->getMessage());
             return redirect()->back();
         }
+    }
+
+
+
+    public function bulkDelete(Request $request)
+    {
+
+        // dd($request->all());
+        return $this->bulkDeleteMany($request, Vehicule::class);
     }
 }

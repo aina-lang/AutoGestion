@@ -15,12 +15,12 @@ import React, { useEffect, useState } from 'react';
 
 function EditVehicule({ vehicule, categories }) {
     const { data, setData, put, processing, setError, errors } = useForm({
-        marque: vehicule.marque || '',
-        modele: vehicule.modele || '',
-        immatriculation: vehicule.immatriculation || '',
-        categorie: vehicule.categorie.id || '',
-        kilometrage: vehicule.kilometrage || '',
-        description: vehicule.description || '',
+        marque: vehicule.marque,
+        modele: vehicule.modele,
+        immatriculation: vehicule.immatriculation,
+        categorie: vehicule.categorie.id,
+        kilometrage: vehicule.kilometrage,
+        description: vehicule.description,
         new_images: [],
         delete_images: [],
     });
@@ -53,10 +53,20 @@ function EditVehicule({ vehicule, categories }) {
         // Update image previews (URLs)
         const newImages = files.map((file) => URL.createObjectURL(file));
         setImagePreviews((prevImages) => [
-            ...prevImages.filter((_, index) => index < vehicule.images.length), // Keep existing images
+            ...prevImages.filter(
+                (_, index) => index < JSON.parse(vehicule.images).length,
+            ), // Keep existing images
             ...newImages, // Add new images
         ]);
     };
+
+    useEffect(() => {
+        console.log('yes');
+        setData((prevData) => ({
+            ...prevData,
+        }));
+        console.log(data);
+    }, [data.new_images]);
 
     const handleRemoveImage = (index) => {
         setSelectedImageIndex(index);
@@ -70,9 +80,13 @@ function EditVehicule({ vehicule, categories }) {
             );
             setImagePreviews(updatedPreviews);
 
-            const isExistingImage = selectedImageIndex < vehicule.images.length;
+            const isExistingImage =
+                selectedImageIndex < JSON.parse(vehicule.images).length;
             if (isExistingImage) {
-                const deletedImage = vehicule.images[selectedImageIndex];
+                const deletedImage = JSON.parse(vehicule.images)[
+                    selectedImageIndex
+                ];
+                console.log(JSON.parse(vehicule.images), deletedImage);
                 setData((prevData) => ({
                     ...prevData,
                     delete_images: [...prevData.delete_images, deletedImage],
@@ -82,7 +96,9 @@ function EditVehicule({ vehicule, categories }) {
                     ...prevData,
                     new_images: prevData.new_images.filter(
                         (_, i) =>
-                            i !== selectedImageIndex - vehicule.images.length,
+                            i !==
+                            selectedImageIndex -
+                                JSON.parse(vehicule.images).length,
                     ),
                 }));
             }
@@ -94,14 +110,12 @@ function EditVehicule({ vehicule, categories }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // Debugging: Log the data before sending
         console.log('Submitting data:', data);
 
         put(`/admin/vehicules/${vehicule.id}`, {
             data,
             onSuccess: () => {
-                // Redirect or perform other actions on success
+                
             },
             onError: (errors) => {
                 console.error(errors); // Log any errors
@@ -110,13 +124,13 @@ function EditVehicule({ vehicule, categories }) {
     };
 
     // Handle errors for the form
-    useEffect(() => {
-        if (errors) {
-            Object.keys(errors).forEach((field) => {
-                setError(field, { type: 'manual', message: errors[field][0] });
-            });
-        }
-    }, [errors, setError]);
+    // useEffect(() => {
+    //     if (errors) {
+    //         Object.keys(errors).forEach((field) => {
+    //             setError(field, { type: 'manual', message: errors[field][0] });
+    //         });
+    //     }
+    // }, [errors, setError]);
 
     return (
         <AdminLayout
@@ -206,7 +220,8 @@ function EditVehicule({ vehicule, categories }) {
                                 </Select>
                                 {errors.categorie && (
                                     <p className="text-red-600">
-                                        {errors.categorie}
+                                        {errors.categorie?.message}{' '}
+                                        {/* Accédez au message d'erreur */}
                                     </p>
                                 )}
                             </FormControl>

@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categorie;
+use App\Traits\BulkDeletable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class CategorieController extends Controller
 {
+    use BulkDeletable;
     /**
      * Display a listing of the resource.
      */
@@ -129,5 +131,12 @@ class CategorieController extends Controller
             session()->flash('error', 'Erreur lors de la suppression de la catégorie : ' . $e->getMessage()); // Message d'erreur
             return redirect()->back();
         }
+    }
+
+    public function bulkDelete(Request $request)
+    {
+
+        // dd($request->all());
+        return $this->bulkDeleteMany($request, Categorie::class);
     }
 }

@@ -32,6 +32,7 @@ import {
     Delete as DeleteIcon,
     Edit as EditIcon,
     Ellipsis,
+    FilterIcon,
 } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import ConfirmModal from './ConfirmModal';
@@ -54,8 +55,12 @@ const StyledDataGrid = ({
     const [selectedRow, setSelectedRow] = useState();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [currentFocusRow, setCurrentFocusRow] = useState(null);
-    const [dropdownOpen, setDropdownOpen] = useState(false);
-    const { delete: deleteRequest, post } = useForm();
+    const {
+        delete: deleteRequest,
+        post,
+        data: formData,
+        setData,
+    } = useForm({ idsToApprove: [], idsToDelete: [] });
     const { paletteName } = useThemeContext();
     const currentPalette = palette[paletteName];
 
@@ -128,36 +133,80 @@ const StyledDataGrid = ({
         post(route(`${toggleStatusUrl}`, row.original.id));
     };
 
+    const handleConfirmBulkDelete = () => {
+        if (selectedRows.length > 0) {
+            // console.log(idsToDelete);
+            post(
+                `${actionUrl}/bulk-delete`,
+                // { data: { ids: idsToDelete } }, // Objet JSON envoyé au backend
+                {
+                    onSuccess: () => {
+                        console.log(
+                            'Suppression réussie pour les IDs :',
+                            formData.idsToDelete,
+                        );
+                        setDialogOpen(false);
+                        table.toggleAllRowsSelected(false);
+                    },
+                    onError: (errors) => console.error(errors),
+                },
+            );
+        } else {
+            console.error('Aucune ligne sélectionnée pour la suppression.');
+        }
+    };
+
+    const handleApproveMany = () => {
+        const idsToApprove = selectedRows.map((row) => row.original.id);
+
+        post(`${actionUrl}/bulk-approve`, {
+            formData: JSON.stringify({ ids: idsToApprove }),
+
+            onSuccess: () => {
+                console.log(
+                    'Approbation réussie pour les lignes :',
+                    idsToApprove,
+                );
+                table.toggleAllRowsSelected(false);
+                // Optionnel : Rafraîchir les données après l'approbation
+            },
+            onError: (errors) =>
+                console.error("Erreur d'approbation :", errors),
+        });
+    };
+
     const handleBulkAction = (action, row) => {
         console.log(row);
-        // if (selectedRows.length === 1) {
-        // const row = selectedRows[0];
-        switch (action) {
-            case 'edit':
-                handleEdit(row);
-                break;
-            case 'delete':
-                handleDelete(row);
-                break;
-            case 'pdf':
-                handleExportPDF(row);
-                break;
-            case 'approve':
-                handleApprove(row);
-                break;
-            default:
-                console.log('Unknown action');
-        }
-
-        if (selectedRows.length > 1) {
+        if (row) {
+            // const row = selectedRows[0];
+            switch (action) {
+                case 'edit':
+                    handleEdit(row);
+                    break;
+                case 'delete':
+                    handleDelete(row);
+                    break;
+                case 'pdf':
+                    handleExportPDF(row);
+                    break;
+                case 'approve':
+                    handleApprove(row);
+                    break;
+                default:
+                    console.log('Unknown action');
+            }
+        } else if (selectedRows.length > 1) {
             switch (action) {
                 case 'delete':
                     console.log('Deleting rows:', selectedRows);
-                    // Open confirmation modal for bulk delete
-                    setDialogOpen(true); // You may want to modify this for bulk deletion
+
+                    setDialogOpen(true);
                     break;
-                case 'pdf':
+
                     console.log('Generating PDF for rows:', selectedRows);
+                    break;
+                case 'approve':
+                    handleApproveMany();
                     break;
                 default:
                     console.log('Unknown action');
@@ -167,18 +216,6 @@ const StyledDataGrid = ({
         }
     };
 
-    const [anchorEl, setAnchorEl] = useState(null);
-
-    const handleButtonClick = (event) => {
-        setAnchorEl(event.currentTarget); // Définit l'élément déclencheur comme ancre
-        // Autres actions si nécessaires
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null); // Ferme le menu
-    };
-
-    const open = Boolean(anchorEl);
     const selectableColumns = [
         {
             id: 'select',
@@ -308,6 +345,7 @@ const StyledDataGrid = ({
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
         onRowSelectionChange: (newRowSelection) => {
+            console.log(table.getSelectedRowModel().rows);
             setRowSelection(newRowSelection);
             setSelectedRows(table.getSelectedRowModel().rows);
         },
@@ -319,6 +357,17 @@ const StyledDataGrid = ({
             rowSelection,
         },
     });
+
+    useEffect(() => {
+        const selectedRows = table.getSelectedRowModel().rows;
+        setSelectedRows(selectedRows);
+
+        // Mettre à jour les IDs à supprimer avec les lignes sélectionnées
+        const ids = selectedRows.map((row) => row.original.id);
+
+        setData('idsToApprove', ids);
+        setData('idsToDelete', ids);
+    }, [rowSelection]); // Assurez-vous qu
 
     useEffect(() => {
         setCurrentPage(data.current_page);
@@ -334,13 +383,13 @@ const StyledDataGrid = ({
     };
 
     return (
-        <div className="w-full overflow-hidden rounded-lg bg-white p-4 shadow-lg">
+        <div className="w-full overflow-hidden rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800">
             {/* Filter bar */}
-            <div className="flex items-center justify-between space-x-4 rounded-lg bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 p-3 shadow-md">
+            <div className="flex items-center justify-between space-x-4 rounded-lg p-3">
                 {/* Column visibility dropdown */}
                 <DropdownMenu className="ml-auto rounded-md border shadow-lg">
                     <DropdownMenuTrigger asChild>
-                        <button className="flex transform items-center space-x-2 rounded-md bg-white p-2 px-3 text-gray-700 transition-transform duration-300 hover:scale-105 dark:bg-gray-800 dark:text-gray-200">
+                        <button className="flex transform items-center space-x-2 rounded-md bg-white p-2 px-3 text-gray-700 transition-transform duration-300 dark:bg-gray-800 dark:text-gray-200">
                             <span>Colonnes</span>
                             <ChevronDown className="h-4 w-4 text-gray-600" />
                         </button>
@@ -358,9 +407,10 @@ const StyledDataGrid = ({
                             .map((column) => (
                                 <DropdownMenuCheckboxItem
                                     key={column.id}
-                                    className="flex items-center justify-between px-3 py-2 text-gray-700 hover:bg-gray-200"
+                                    className="flex w-full space-x-8 capitalize text-gray-700"
                                     checked={column.getIsVisible()}
-                                    onCheckedChange={(value) => {
+                                    onCheckedChange={(value, e) => {
+                                        // e.preventDefault()
                                         setColumnVisibility((prev) => ({
                                             ...prev,
                                             [column.id]: value,
@@ -368,7 +418,9 @@ const StyledDataGrid = ({
                                         column.toggleVisibility(value);
                                     }}
                                 >
-                                    <span className="text-sm">{column.id}</span>
+                                    <span className="flex-grow p-1">
+                                        {column.id}
+                                    </span>
                                 </DropdownMenuCheckboxItem>
                             ))}
                     </DropdownMenuContent>
@@ -376,7 +428,7 @@ const StyledDataGrid = ({
                 {/* Export CSV button */}
                 <DropdownMenu className="ml-4 rounded-md border shadow-lg">
                     <DropdownMenuTrigger asChild>
-                        <button className="flex transform items-center space-x-2 rounded-md bg-white p-2 px-3 text-gray-700 transition-transform duration-300 hover:scale-105 dark:bg-gray-800 dark:text-gray-200">
+                        <button className="flex transform items-center space-x-2 rounded-md bg-white p-2 px-3 text-gray-700 transition-transform duration-300 dark:bg-gray-800 dark:text-gray-200">
                             <span>Export</span>
                             <Download className="h-4 w-4 text-gray-600" />
                         </button>
@@ -393,11 +445,17 @@ const StyledDataGrid = ({
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+                {FilterComponent && (
+                    <div className="flex flex-grow items-center justify-end space-x-4">
+                        <FilterIcon className="text-gray-500" />
+                        <FilterComponent className="flex-grow" />
+                    </div>
+                )}
             </div>
 
             {/* Table */}
-            <div className="rounded-lg  p-4 ">
-                <div className="overflow-x-auto rounded-lg bg-gray-50 shadow-md">
+            <div className="rounded-lg p-4">
+                <div className="overflow-x-auto">
                     <table className="min-w-full">
                         <thead>
                             {table.getHeaderGroups().map((headerGroup) => (
@@ -477,8 +535,8 @@ const StyledDataGrid = ({
             </div>
 
             {/* Data from Laravel */}
-            <div className="mb-5 flex items-center justify-between rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800">
-                {selectedRows.length > 0 && (
+            <div className="mb-5 flex items-center justify-between rounded-lg dark:bg-gray-800">
+                {selectedRows.length >1 && (
                     <DropdownMenu className="rounded-md border border-gray-400 shadow-lg">
                         <DropdownMenuTrigger className="rounded-md border bg-white p-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
                             Actions en masse
@@ -488,13 +546,13 @@ const StyledDataGrid = ({
                                 Actions en masse
                             </DropdownMenuLabel>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem
+                            {/* <DropdownMenuItem
                                 onClick={() => handleBulkAction('edit')}
                                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
                             >
                                 <EditIcon className="mr-2 text-blue-500" />{' '}
                                 Modifier
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                             <DropdownMenuItem
                                 onClick={() => handleBulkAction('delete')}
                                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
@@ -502,20 +560,22 @@ const StyledDataGrid = ({
                                 <DeleteIcon className="mr-2 text-red-500" />{' '}
                                 Supprimer
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => handleBulkAction('approve')}
-                                className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
-                            >
-                                <CheckCircleOutline className="mr-2 text-green-500" />{' '}
-                                Approuver
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
+                            {approveBtnShow && (
+                                <DropdownMenuItem
+                                    onClick={() => handleBulkAction('approve')}
+                                    className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
+                                >
+                                    <CheckCircleOutline className="mr-2 text-green-500" />{' '}
+                                    Approuver
+                                </DropdownMenuItem>
+                            )}
+                            {/* <DropdownMenuItem
                                 onClick={() => handleBulkAction('pdf')}
                                 className="p-2 hover:bg-gray-100 dark:hover:bg-gray-600"
                             >
                                 <PictureAsPdf className="mr-2 text-gray-500" />{' '}
                                 Générer PDF
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 )}
@@ -531,7 +591,12 @@ const StyledDataGrid = ({
                     </button>
 
                     {/* Current Page Indicator */}
-                    <button className="rounded-full bg-gradient-to-r from-purple-500 to-pink-500 px-4 py-2 text-white shadow-lg">
+                    <button
+                        style={{
+                            background: ` linear-gradient(to right, ${currentPalette[600]}, ${currentPalette[500]})`,
+                        }}
+                        className="rounded-full px-4 py-2 text-white shadow-lg transition-shadow duration-200"
+                    >
                         {data.current_page}
                     </button>
 
@@ -553,7 +618,11 @@ const StyledDataGrid = ({
             <ConfirmModal
                 open={dialogOpen}
                 onClose={() => setDialogOpen(false)}
-                onConfirm={handleConfirmDelete}
+                onConfirm={
+                    selectedRows.length < 1
+                        ? handleConfirmDelete
+                        : handleConfirmBulkDelete
+                }
                 title="Confirmer la suppression"
                 content="Êtes-vous sûr de vouloir supprimer ce véhicule ?"
             />

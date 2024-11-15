@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Traits\BulkDeletable;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
@@ -10,6 +11,8 @@ use Illuminate\Validation\ValidationException;
 
 class ClientController extends Controller
 {
+
+    use BulkDeletable;
     /**
      * Display a listing of the resource.
      */
@@ -170,5 +173,12 @@ class ClientController extends Controller
             dd($e->getMessage());
             return back()->with('error', 'Erreur lors de la suppression du client.');
         }
+    }
+
+    public function bulkDelete(Request $request)
+    {
+
+        // dd($request->all());
+        return $this->bulkDeleteMany($request, User::class);
     }
 }

@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\ServiceType;
+use App\Traits\BulkDeletable;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
 
 class ServiceTypeController extends Controller
 {
+    use BulkDeletable;
     /**
      * Display a listing of the resource.
      */
@@ -128,5 +130,13 @@ class ServiceTypeController extends Controller
             session()->flash('error', 'Erreur lors de la suppression du type de service : ' . $e->getMessage());
             return redirect()->back();
         }
+    }
+
+
+    public function bulkDelete(Request $request)
+    {
+
+        // dd($request->all());
+        return $this->bulkDeleteMany($request, ServiceType::class);
     }
 }

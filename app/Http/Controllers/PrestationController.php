@@ -4,12 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\Prestation;
 use App\Models\ServiceType;
+use App\Traits\BulkDeletable;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
 
 class PrestationController extends Controller
 {
+
+    use BulkDeletable;
     /**
      * Display a listing of the resource.
      */
@@ -141,5 +144,12 @@ class PrestationController extends Controller
             session()->flash('error', 'Erreur lors de la suppression de la prestation : ' . $e->getMessage());
             return redirect()->back();
         }
+    }
+
+    public function bulkDelete(Request $request)
+    {
+
+        // dd($request->all());
+        return $this->bulkDeleteMany($request, Prestation::class);
     }
 }

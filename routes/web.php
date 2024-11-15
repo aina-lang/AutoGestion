@@ -63,6 +63,17 @@ Route::middleware('auth', 'verified')->group(function () {
     // Routes réservées aux administrateurs
     Route::middleware('user-access:admin')->group(function () {
         Route::prefix('admin')->group(function () {
+            Route::post('/reservations/bulk-approve', [ReservationController::class, 'bulkApprove'])->name('reservations.bulk-approve');
+
+            // MANY DELETE
+            Route::post('/reservations/bulk-delete', [ReservationController::class, 'bulkDelete'])->name('reservations.bulk-delete');
+            Route::post('/vehicules/bulk-delete', [VehiculeController::class, 'bulkDelete'])->name('vehicules.bulk-delete');
+            Route::post('/contrats/bulk-delete', [ContratController::class, 'bulkDelete'])->name('contrats.bulk-delete');
+            Route::post('/categories/bulk-delete', [CategorieController::class, 'bulkDelete'])->name('categories.bulk-delete');
+            Route::post('/clients/bulk-delete', [ClientController::class, 'bulkDelete'])->name('clients.bulk-delete');
+            Route::post('/prestations/bulk-delete', [PrestationController::class, 'bulkDelete'])->name('prestations.bulk-delete');
+            Route::post('/serviceTypes/bulk-delete', [ServiceTypeController::class, 'bulkDelete'])->name('serviceTypes.bulk-delete');
+
             // CRUD pour les administrateurs
             Route::resource('vehicules', VehiculeController::class);
             Route::resource('contrats', ContratController::class);

@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Vehicule;
 use App\Notifications\ReservationCreated;
 use App\Notifications\ReservationStatusUpdated;
+use App\Traits\BulkDeletable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -17,6 +18,9 @@ use Illuminate\Support\Facades\Notification;
 
 class ReservationController extends Controller
 {
+
+
+    use BulkDeletable;
     /**
      * Afficher la liste des ressources.
      */
@@ -336,5 +340,12 @@ class ReservationController extends Controller
         }
 
         return redirect()->route('reservations.index');
+    }
+
+    public function bulkDelete(Request $request)
+    {
+
+        // dd($request->all());
+        return $this->bulkDeleteMany($request, Reservation::class);
     }
 }

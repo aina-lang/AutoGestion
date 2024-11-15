@@ -117,5 +117,6 @@ export default {
         forms,
         require('tailwindcss-animate'),
         require('tailwindcss-highlights'),
+        
     ],
 };

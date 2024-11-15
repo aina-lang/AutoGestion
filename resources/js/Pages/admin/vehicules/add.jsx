@@ -34,7 +34,6 @@ function AddVehicule({ categories, errors }) {
             ...prevData, // Conservez toutes les autres valeurs de data
             images: [...prevData.images, ...newFiles], // Ajoutez les nouvelles images sans toucher aux autres valeurs
         }));
-        
 
         // Mettre à jour les aperçus d'images
         const newPreviews = newFiles.map((file) => URL.createObjectURL(file));
@@ -50,9 +49,11 @@ function AddVehicule({ categories, errors }) {
         setImagePreviews((prevImages) =>
             prevImages.filter((_, i) => i !== index),
         );
-        setData('images', (prevImages) =>
-            prevImages.filter((_, i) => i !== index),
-        );
+
+        setData((prevData) => ({
+            ...prevData, // Conservez toutes les autres valeurs de data
+            images: prevData.images.filter((_, i) => i !== index), // Ajoutez les nouvelles images sans toucher aux autres valeurs
+        }));
     };
 
     useEffect(() => {
