@@ -396,7 +396,7 @@ const StyledDataGrid = ({
             </div>
 
             {/* Table */}
-            <div className="rounded-lg bg-white p-4 shadow-lg">
+            <div className="rounded-lg  p-4 ">
                 <div className="overflow-x-auto rounded-lg bg-gray-50 shadow-md">
                     <table className="min-w-full">
                         <thead>
