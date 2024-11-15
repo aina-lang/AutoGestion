@@ -30,7 +30,7 @@ export default function Welcome({
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedCar, setSelectedCar] = useState(null);
     const { paletteName } = useThemeContext();
-
+    const [isSticky, setSticky] = useState(false);
     const currentPalette = palette[paletteName];
     const { data, setData, post, processing, errors } = useForm({
         nom: auth?.user ? auth?.user?.nom : '',
@@ -99,6 +99,16 @@ export default function Welcome({
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+    useEffect(() => {
+        const handleScroll = () => {
+            setSticky(window.scrollY > 50);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, []);
     return (
         <GuestLayout auth={auth} footerShown={true}>
             <Head title="Vezo Tours - Unlock Your Travel Experience" />
@@ -106,10 +116,13 @@ export default function Welcome({
                 {/* Hero Section with ReactTyped */}
                 <main
                     id="home"
-                    className="relative flex min-h-screen items-center  bg-cover bg-center backdrop-blur-lg md:p-10"
+                    className="relative flex min-h-screen items-center bg-cover bg-center backdrop-blur-lg md:p-10"
                     style={{ backgroundImage: `url(${banner})` }}
                 >
-                    <div className="absolute inset-0 bg-black opacity-50" />
+                    <div
+                        className={`${isSticky ? 'backdrop-blur-sm' : 'backdrop-blur-none'} absolute inset-0 bg-black bg-opacity-50 transition-all duration-300 ease-in-out`}
+                    />
+
                     <div className="z-10 text-center">
                         <h1 className="mb-4 text-xl font-bold text-white md:text-5xl">
                             <ReactTyped

@@ -82,7 +82,7 @@ export default function Settings({ isGuest, isSticky }) {
                 anchor="right"
                 open={isDrawerOpen}
                 onClose={toggleDrawer}
-                className="bg-white/50 backdrop-blur-md"
+                className="bg-white/50 backdrop-blur-sm"
             >
                 <Box
                     sx={{

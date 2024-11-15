@@ -154,7 +154,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                 transition={{ type: 'tween', duration: 0.5 }}
                 className={`fixed top-0 z-50 flex w-full items-center justify-between ${
                     isSticky
-                        ? '/50 bg-white shadow-md backdrop-blur-md dark:bg-gray-900'
+                        ? '/50 bg-white shadow-md backdrop-blur-sm dark:bg-gray-900'
                         : 'bg-transparent'
                 } px-6 py-4 dark:text-white`}
             >
@@ -344,7 +344,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                 anchor="left"
                 open={isOpen}
                 onClose={() => setIsOpen(false)}
-                className="bg-white/20 backdrop-blur-md"
+                className="bg-white/20 backdrop-blur-sm"
             >
                 {/* Menu Rideau */}
                 <div

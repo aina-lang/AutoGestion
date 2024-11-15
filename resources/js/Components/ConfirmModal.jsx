@@ -13,7 +13,7 @@ const ConfirmModal = ({ open, onClose, onConfirm, title, content }) => {
             onClose={onClose}
             aria-labelledby="custom-confirmation-dialog-title"
             aria-describedby="custom-confirmation-dialog-description"
-            className="bg-white/50 backdrop-blur-md"
+            className="bg-white/50 backdrop-blur-sm"
         >
             <DialogTitle
                 id="custom-confirmation-dialog-title"
