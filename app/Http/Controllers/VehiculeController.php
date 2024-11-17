@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Categorie;
 use App\Models\Reservation;
-use App\Models\Vehicule; // Assurez-vous que le modèle Vehicule est importé
+use App\Models\Vehicule;
 use App\Traits\BulkDeletable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -18,6 +18,19 @@ class VehiculeController extends Controller
      * Display a listing of the resource.
      */
     use BulkDeletable;
+
+    public function create()
+    {
+        // Récupération des catégories depuis la base de données
+        $categories = Categorie::all();
+
+        // Renvoye à la vue avec les catégories
+        return Inertia::render('admin/vehicules/add', [
+            'categories' => $categories
+        ]);
+    }
+
+
 
     private function jaccardSimilarity($setA, $setB)
     {
@@ -123,24 +136,12 @@ class VehiculeController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
-    {
-        // Récupération des catégories depuis la base de données
-        $categories = Categorie::all();
 
-        // Renvoyer à la vue avec les catégories
-        return Inertia::render('admin/vehicules/add', [
-            'categories' => $categories
-        ]);
-    }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-
-        // dd($request->all());
-        // Validation des données
         $validator = Validator::make($request->all(), [
             'marque' => 'required|string|max:255',
             'modele' => 'required|string|max:255',
@@ -148,27 +149,22 @@ class VehiculeController extends Controller
             'categorie' => 'required|exists:categories,id',
             'kilometrage' => 'required|numeric',
             'description' => 'required|string|max:500',
-            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:30720', // Validation des images
+            'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:30720',
         ]);
 
         if ($validator->fails()) {
-            // Redirect back with validation errors
-            // dd($validator);
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
         try {
-            // Gestion du stockage des images
             $imagePaths = [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    // Déplacer l'image vers le dossier de stockage
-                    $path = $image->store('vehicules', 'public'); // Stockage local
-                    $imagePaths[] = $path; // Ajouter le chemin à l'array
+                    $path = $image->store('vehicules', 'public');
+                    $imagePaths[] = $path;
                 }
             }
 
-            // Création du véhicule
             Vehicule::create([
                 'marque' => $request->marque,
                 'modele' => $request->modele,
@@ -176,14 +172,12 @@ class VehiculeController extends Controller
                 'categorie_id' => $request->categorie,
                 'kilometrage' => $request->kilometrage,
                 'description' => $request->description,
-                'images' => json_encode($imagePaths), // Stocker les chemins d'image au format JSON, même si vide
+                'images' => json_encode($imagePaths),
             ]);
 
-            // Success message
             session()->flash('success', 'Véhicule ajouté avec succès.');
             return redirect()->back();
         } catch (\Exception $e) {
-            // Error message in case of exception
             session()->flash('error', 'Erreur lors de l\'ajout du véhicule : ' . $e->getMessage());
             return redirect()->back()->withInput();
         }

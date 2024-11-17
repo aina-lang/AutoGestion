@@ -11,10 +11,14 @@ import {
     CarRentalOutlined,
     CarRentalRounded,
     EventRounded,
+    Search,
     TravelExplore,
 } from '@mui/icons-material';
 import { Grid, MenuItem, TextField, Typography } from '@mui/material';
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { ReloadIcon } from '@radix-ui/react-icons';
+import dayjs from 'dayjs';
 import { motion } from 'framer-motion';
 import { CarIcon } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
@@ -40,9 +44,9 @@ export default function Welcome({
 
     const [query, setQuery] = useState({
         marque: '',
-        date_depart: '',
-        date_retour: '',
-        categorie: '',
+        date_depart: null,
+        date_retour: null,
+        categorie: categories[0].id || '',
     });
 
     const handleChange = (field, value) => {
@@ -116,7 +120,7 @@ export default function Welcome({
                 {/* Hero Section with ReactTyped */}
                 <main
                     id="home"
-                    className="relative flex min-h-screen items-center bg-cover bg-center backdrop-blur-lg md:p-10"
+                    className="relative flex min-h-screen items-center bg-cover bg-fixed bg-center backdrop-blur-lg md:p-10"
                     style={{ backgroundImage: `url(${banner})` }}
                 >
                     <div
@@ -165,28 +169,39 @@ export default function Welcome({
                             </PrimaryButton>
                         </motion.div>
                     </div>
-                    <section className="absolute -bottom-12 left-0 right-0 mx-auto hidden w-full justify-center md:flex">
-                        <div className="flex items-center justify-center rounded-md bg-white px-6 py-5 pr-0 shadow-xl dark:bg-gray-800">
+                    <section className="absolute -bottom-12 left-0 right-0 mx-auto hidden w-full justify-center px-64 md:flex">
+                        <div className="flex items-center justify-center rounded-md bg-white px-5 py-5 shadow-xl dark:bg-gray-800">
                             <form>
-                                <Grid className="grid grid-cols-4 justify-center gap-4">
+                                <div className="grid grid-cols-4 justify-center">
                                     <div className="flex">
-                                        <Grid item xs={12} md={3}>
-                                            <TextField
-                                                fullWidth
+                                        <LocalizationProvider
+                                            dateAdapter={AdapterDayjs}
+                                        >
+                                            <DatePicker
                                                 label="Date de départ"
-                                                type="date"
-                                                variant="standard"
-                                                InputLabelProps={{
-                                                    shrink: true,
-                                                }}
-                                                InputProps={{
-                                                    disableUnderline: true,
-                                                    style: {
-                                                        outline: 'none',
-                                                    },
-                                                }}
-                                                className="text-white"
                                                 value={query.date_depart}
+                                                shouldDisableDate={(date) =>
+                                                    date.isBefore(
+                                                        dayjs().startOf('day'),
+                                                    )
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        variant="standard"
+                                                        InputLabelProps={{
+                                                            shrink: true,
+                                                        }}
+                                                        InputProps={{
+                                                            disableUnderline: true,
+                                                            style: {
+                                                                outline: 'none',
+                                                            },
+                                                        }}
+
+                                                        // sx={{ mt: 2 }}
+                                                    />
+                                                )}
                                                 onChange={(e) =>
                                                     handleChange(
                                                         'date_depart',
@@ -194,26 +209,15 @@ export default function Welcome({
                                                     )
                                                 }
                                             />
-                                        </Grid>
-                                        <div className="mx-5 hidden border-l border-gray-700 md:block" />
+                                        </LocalizationProvider>
+                                        <div className="mx-5 hidden border-l border-gray-400 md:block" />
                                     </div>
                                     <div className="flex">
-                                        <Grid item xs={12} md={3}>
-                                            <TextField
-                                                fullWidth
+                                        <LocalizationProvider
+                                            dateAdapter={AdapterDayjs}
+                                        >
+                                            <DatePicker
                                                 label="Date de retour"
-                                                type="date"
-                                                variant="standard"
-                                                InputLabelProps={{
-                                                    shrink: true,
-                                                }}
-                                                InputProps={{
-                                                    disableUnderline: true,
-                                                    style: {
-                                                        outline: 'none',
-                                                    },
-                                                }}
-                                                className="text-white"
                                                 value={query.date_retour}
                                                 onChange={(e) =>
                                                     handleChange(
@@ -221,11 +225,33 @@ export default function Welcome({
                                                         e.target.value,
                                                     )
                                                 }
+                                                shouldDisableDate={(date) =>
+                                                    date.isBefore(
+                                                        query.date_depart,
+                                                    )
+                                                }
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        variant="standard"
+                                                        InputLabelProps={{
+                                                            shrink: true,
+                                                        }}
+                                                        InputProps={{
+                                                            disableUnderline: true,
+                                                            style: {
+                                                                outline: 'none',
+                                                            },
+                                                        }}
+                                                        {...params}
+
+                                                        // sx={{ mt: 2 }}
+                                                    />
+                                                )}
                                             />
-                                        </Grid>
-                                        <div className="mx-5 hidden border-l border-gray-700 md:block" />
+                                        </LocalizationProvider>
+                                        <div className="mx-5 hidden border-l border-gray-400 md:block" />
                                     </div>
-                                    <Grid item xs={12} md={4}>
+                                    <div>
                                         <TextField
                                             fullWidth
                                             label="Catégorie de voiture"
@@ -258,21 +284,17 @@ export default function Welcome({
                                                 </MenuItem>
                                             ))}
                                         </TextField>
-                                    </Grid>
-                                    <Grid
-                                        item
-                                        xs={12}
-                                        md={2}
-                                        className="flex items-center justify-center"
-                                    >
+                                    </div>
+                                    <div className="flex items-center justify-end">
                                         <PrimaryButton
                                             onClick={handleVehicleSearchSubmit}
                                             className="mt-4 h-full md:mt-0"
                                         >
+                                            <Search />
                                             Rechercher
                                         </PrimaryButton>
-                                    </Grid>
-                                </Grid>
+                                    </div>
+                                </div>
                             </form>
                         </div>
                     </section>
@@ -330,7 +352,7 @@ export default function Welcome({
                             ].map((service, index) => (
                                 <motion.div
                                     key={index}
-                                    className="[border border-gray-700] h-full rounded-lg bg-white p-6 text-center shadow-lg transition-shadow duration-300 hover:shadow-xl dark:bg-gray-800"
+                                    className="[border border-gray-400] h-full rounded-lg bg-white p-6 text-center shadow-lg transition-shadow duration-300 hover:shadow-xl dark:bg-gray-800"
                                     initial={{ opacity: 0, x: -50 }}
                                     whileInView={{ opacity: 1, x: 0 }}
                                     viewport={{ once: false, amount: 0.5 }}
@@ -430,18 +452,32 @@ export default function Welcome({
                         </div>
 
                         {/* Right Section (Image) */}
-                        <motion.div
-                            initial={{ opacity: 0, x: 50 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            transition={{ duration: 0.8, delay: 0.5 }}
-                            className="hidden w-1/2 p-5 md:flex"
-                        >
-                            <img
-                                src={banner} // Replace with your image URL
-                                alt="À propos de nous"
-                                className="h-auto w-full rounded-lg shadow-md"
-                            />
-                        </motion.div>
+                        <div className="hidden h-full w-1/2 p-5 md:flex">
+                            <motion.div
+                                initial={{ opacity: 0, x: 50 }}
+                                whileInView={{ opacity: 1, x: 120, y: 50 }}
+                                transition={{ duration: 0.8, delay: 0.5 }}
+                                className="h-80 w-80 overflow-hidden rounded-full"
+                            >
+                                <img
+                                    src={banner} // Replace with your image URL
+                                    alt="À propos de nous"
+                                    className="r h-full w-full"
+                                />
+                            </motion.div>
+                            <motion.div
+                                initial={{ opacity: 0, x: 50 }}
+                                whileInView={{ opacity: 1, x: 20 }}
+                                transition={{ duration: 0.8, delay: 0.5 }}
+                                className="h-80 w-80 overflow-hidden rounded-full"
+                            >
+                                <img
+                                    src={banner} // Replace with your image URL
+                                    alt="À propos de nous"
+                                    className="h-full w-full"
+                                />
+                            </motion.div>
+                        </div>
                     </div>
                 </section>
 
@@ -461,9 +497,9 @@ export default function Welcome({
                             </span>
                         </div>
 
-                        <Grid container spacing={3}>
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                             {latestVehicles.map((car, index) => (
-                                <Grid item xs={12} sm={6} md={3} key={index}>
+                                <Grid xs={12} sm={6} md={3} key={index}>
                                     <motion.div
                                         initial={{ opacity: 0, y: 20 }}
                                         whileInView={{ opacity: 1, y: 0 }}
@@ -599,7 +635,7 @@ export default function Welcome({
                                     </motion.div>
                                 </Grid>
                             ))}
-                        </Grid>
+                        </div>
                     </div>
                     <div className="mx-auto mt-8 flex items-center justify-center">
                         <SecondaryButton

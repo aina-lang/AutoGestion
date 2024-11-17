@@ -10,6 +10,7 @@ import banner from '../../../assets/images/2.jpg';
 export default function Register() {
     const { data, setData, post, processing, errors } = useForm({
         nom: '',
+        prenoms: '',
         email: '',
         password: '',
         password_confirmation: '',
@@ -47,23 +48,42 @@ export default function Register() {
                     <div className="w-full">
                         <form
                             onSubmit={submit}
-                            className="p-8 md:grid-cols-2 grid grid-cols-1 gap-4 rounded-md" // Grid layout
+                            className="space-y-4 rounded-md p-6 dark:bg-gray-800"
                         >
-                            <div>
+                            <Typography
+                                variant="h6"
+                                className="mb-6 text-gray-700 dark:text-gray-300"
+                            ></Typography>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <TextField
                                     label={'Nom Complet'}
                                     id="nom"
                                     name="nom"
                                     value={data.nom}
                                     className="mt-1 block w-full"
-                                    autoComplete="nom"
-                                    // isFocused={true}
+                                    autoComplete="username"
+                                    isFocused={true}
                                     onChange={(e) =>
                                         setData('nom', e.target.value)
                                     }
                                     required
                                     error={!!errors.nom} // Set error state
                                     helperText={errors.nom} // Show error message
+                                />
+                                <TextField
+                                    label={'Prénoms'}
+                                    id="prenoms"
+                                    name="prenoms"
+                                    value={data.prenoms}
+                                    className="mt-1 block w-full"
+                                    autoComplete="username"
+                                    // isFocused={true}
+                                    onChange={(e) =>
+                                        setData('prenoms', e.target.value)
+                                    }
+                                    // required
+                                    error={!!errors.prenoms} // Set error state
+                                    helperText={errors.prenoms} // Show error message
                                 />
                             </div>
 
@@ -74,8 +94,8 @@ export default function Register() {
                                     name="email"
                                     label={'Email'}
                                     value={data.email}
-                                    className="mt-1 block w-full"
-                                    autoComplete="username"
+                                    className="col-span-1 mt-1 block w-full"
+                                    autoComplete="email"
                                     onChange={(e) =>
                                         setData('email', e.target.value)
                                     }
@@ -85,7 +105,7 @@ export default function Register() {
                                 />
                             </div>
 
-                            <div>
+                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <TextField
                                     id="password"
                                     type="password"
@@ -101,9 +121,6 @@ export default function Register() {
                                     error={!!errors.password} // Set error state
                                     helperText={errors.password} // Show error message
                                 />
-                            </div>
-
-                            <div>
                                 <TextField
                                     id="password_confirmation"
                                     type="password"
@@ -201,8 +218,7 @@ export default function Register() {
                             Bienvenue sur notre plateforme
                         </Typography>
                         <Typography variant="body1">
-                            Connectez-vous pour découvrir toutes nos
-                            fonctionnalités.
+                            Créez votre compte pour commencer l'aventure 🚀
                         </Typography>
                     </Box>
                 </div>

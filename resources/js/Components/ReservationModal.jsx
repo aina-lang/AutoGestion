@@ -92,7 +92,8 @@ const ReservationModal = ({ open, handleClose, car, isAuthenticated }) => {
         <Modal
             open={open}
             onClose={handleClose}
-            className="flex items-center justify-center bg-white/50 backdrop-blur-sm "
+            className="flex items-center justify-center bg-white/50 backdrop-blur-sm duration-300"
+            closeAfterTransition
         >
             <motion.div
                 variants={modalVariants}

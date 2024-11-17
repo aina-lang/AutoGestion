@@ -14,28 +14,19 @@ class Vehicule extends Model
         'modele',
         'immatriculation',
         'categorie_id',
-        // 'prix_journalier',
-        // 'disponible',
         'kilometrage',
         'date_ajout',
         'description',
         'images',
     ];
 
-    // Définir la relation avec Categorie
-    public function categorie()
-    {
-        return $this->belongsTo(Categorie::class);
+    public function categorie(){ 
+        return $this->belongsTo(Categorie::class); 
     }
-
-
-    public function reservations()
-    {
-        return $this->hasMany(Reservation::class);
+    public function reservations(){ 
+        return $this->hasMany(Reservation::class); 
     }
-
-    public function avis()
-    {
-        return $this->hasMany(Avis::class);  // Relation 1 à plusieurs avec Avis
+    public function avis(){ 
+        return $this->hasMany(Avis::class); 
     }
 }

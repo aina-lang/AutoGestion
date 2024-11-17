@@ -147,14 +147,14 @@ const GuestLayout = ({ children, auth, footerShown }) => {
     const toggleMenuHumberger = () => setIsOpen(!isOpen);
 
     return (
-        <div className="min-h-screen bg-gray-100 dark:bg-gray-900 sm:pt-0">
+        <div className="{ min-h-screen bg-gray-100  dark:bg-gray-900 sm:pt-0">
             <motion.header
                 initial={{ y: -50 }}
                 animate={{ y: isSticky ? 0 : -10 }}
                 transition={{ type: 'tween', duration: 0.5 }}
                 className={`fixed top-0 z-50 flex w-full items-center justify-between ${
                     isSticky
-                        ? '/50 bg-white shadow-md backdrop-blur-sm dark:bg-gray-900'
+                        ? ' bg-white shadow-md backdrop-blur-sm dark:bg-gray-900'
                         : 'bg-transparent'
                 } px-6 py-4 dark:text-white`}
             >
@@ -295,7 +295,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                         <>
                             <PrimaryButton
                                 onClick={() => router.visit('/login')}
-                                className="bg-gray-800 dark:bg-gray-900 dark:text-white"
+                                className=" dark:text-white"
                             >
                                 <LoginRounded className="mr-2 h-2" /> Se
                                 connecter
@@ -363,7 +363,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                                     style={{
                                         color:
                                             activeLink === link.href
-                                                ? "white" // Actif: couleur de surbrillance
+                                                ? 'white' // Actif: couleur de surbrillance
                                                 : palette['gray'][500], // Couleur standard
                                         backgroundColor:
                                             activeLink === link.href
@@ -383,7 +383,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                                                 : ''; // Réinitialiser l'arrière-plan
                                         e.target.style.color =
                                             activeLink === link.href
-                                                ?"white" // Réinitialiser la couleur du texte si actif
+                                                ? 'white' // Réinitialiser la couleur du texte si actif
                                                 : palette['gray'][500]; // Couleur par défaut
                                     }}
                                 >
@@ -422,7 +422,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
             />
 
             {footerShown && (
-                <footer className="flex flex-col mt-0 items-center bg-gray-100 text-center text-gray-800 dark:bg-gray-700 dark:text-gray-300">
+                <footer className="mt-0 flex flex-col items-center bg-gray-100 text-center text-gray-800 dark:bg-gray-700 dark:text-gray-300">
                     <div className="container p-6">
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                             {/* Informations de Contact */}

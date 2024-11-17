@@ -31,48 +31,48 @@ export default function Login({ status, canResetPassword }) {
                                 {status}
                             </div>
                         )}
-
-                        <form onSubmit={submit} className="rounded-md p-8">
-                            <Typography variant="h5" gutterBottom>
-                                Connectez-vous à votre compte
+                        <form
+                            onSubmit={submit}
+                            className="rounded-md  p-6  dark:bg-gray-800"
+                        >
+                            <Typography
+                                variant="h6"
+                                className="mb-4 text-gray-700 dark:text-gray-300"
+                            >
+                                Connectez-vous .
                             </Typography>
 
                             <TextField
                                 label="Email"
-                                id="email"
                                 type="email"
-                                name="email"
                                 value={data.email}
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
                                 onChange={(e) =>
                                     setData('email', e.target.value)
                                 }
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
                                 error={!!errors.email}
                                 helperText={errors.email}
                             />
 
                             <TextField
                                 label="Mot de passe"
-                                id="password"
                                 type="password"
-                                name="password"
                                 value={data.password}
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
                                 onChange={(e) =>
                                     setData('password', e.target.value)
                                 }
+                                variant="outlined"
+                                fullWidth
+                                margin="normal"
                                 error={!!errors.password}
                                 helperText={errors.password}
                             />
 
-                            <div className="mt-4 block">
-                                <label className="flex items-center">
+                            <div className="mt-4 flex items-center justify-between">
+                                <label className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                                     <Checkbox
-                                        name="remember"
                                         checked={data.remember}
                                         onChange={(e) =>
                                             setData(
@@ -81,28 +81,27 @@ export default function Login({ status, canResetPassword }) {
                                             )
                                         }
                                     />
-                                    <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                                        Me rappeler
+                                    <span className="ml-2">
+                                        Se souvenir de moi
                                     </span>
                                 </label>
-                            </div>
-
-                            <div className="mt-4 flex items-center justify-end">
                                 {canResetPassword && (
                                     <Link
                                         href={route('password.request')}
-                                        className="mr-3 rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:text-gray-400 dark:hover:text-gray-100 dark:focus:ring-offset-gray-800"
+                                        className="text-sm text-indigo-600 hover:underline dark:text-indigo-400"
                                     >
-                                        Mot de passe oublié?
+                                        Mot de passe oublié ?
                                     </Link>
                                 )}
+                            </div>
 
+                            <div className="mt-6">
                                 <PrimaryButton
-                                    className="ms-4"
                                     disabled={processing}
                                     type="submit"
+                                    fullWidth
                                 >
-                                    Se connecter
+                                    Connexion
                                 </PrimaryButton>
                             </div>
                         </form>
@@ -124,7 +123,7 @@ export default function Login({ status, canResetPassword }) {
                         px={2}
                     >
                         <Typography variant="h4" gutterBottom>
-                            Bienvenue sur notre plateforme
+                            Bienvenue sur Vezo Tours ! 👋🏻
                         </Typography>
                         <Typography variant="body1">
                             Connectez-vous pour découvrir toutes nos

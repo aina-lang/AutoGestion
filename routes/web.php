@@ -43,15 +43,10 @@ Route::middleware('auth', 'verified')->group(function () {
     Route::middleware('user-access:admin|user')->group(function () {
         Route::prefix('admin')->as("admin.")->group(function () {
             Route::get('reservations/archived', [ReservationController::class, 'archived'])->name('archived');
-
             Route::resource('reservations', ReservationController::class);
-
-            // Route for approving a reservation
             Route::post('/reservations/{id}/approve', [ReservationController::class, 'approve'])->name('reservations.approve');
-
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         });
-
         Route::prefix('client')->as("client.")->group(function () {
             Route::get('reservations/archived', [ReservationController::class, 'archived'])->name('archived');
 
@@ -60,6 +55,7 @@ Route::middleware('auth', 'verified')->group(function () {
         });
     });
 
+    
     // Routes réservées aux administrateurs
     Route::middleware('user-access:admin')->group(function () {
         Route::prefix('admin')->group(function () {

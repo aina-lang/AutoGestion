@@ -21,8 +21,8 @@ return new class extends Migration
             $table->foreignId('categorie_id')->constrained()->onDelete('cascade');
             $table->unsignedInteger('kilometrage');
             $table->timestamp('date_ajout')->useCurrent();
-            $table->text('description')->nullable(); // Description du véhicule
-            $table->json('images')->nullable(); // Stocker plusieurs images au format JSON
+            $table->text('description')->nullable(); 
+            $table->json('images')->nullable(); 
             $table->timestamps();
         });
     }

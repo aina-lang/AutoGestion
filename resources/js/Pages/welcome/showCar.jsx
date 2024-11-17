@@ -1,3 +1,4 @@
+import Modal from '@/Components/Modal';
 import PrimaryButton from '@/Components/PrimaryButton';
 import ReservationModal from '@/Components/ReservationModal';
 import GuestLayout from '@/Layouts/GuestLayout';
@@ -447,35 +448,39 @@ function Showvehicule({ vehicule, auth }) {
                 </div>
             </div>
 
-            {imageModalOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-                    <div className="relative w-2/3 rounded-lg bg-white p-4 shadow-lg">
-                        <button
-                            onClick={closeImageModal}
-                            className="absolute right-6 top-6 text-2xl text-gray-800 hover:text-gray-500"
-                        >
-                            ✕
-                        </button>
-                        <img
-                            src={imagePreviews[activeIndex]}
-                            alt={`Image ${activeIndex}`}
-                            className="h-full w-full rounded-md"
-                        />
-                        <button
-                            onClick={showPrevImage}
-                            className="absolute left-4 top-1/2 -translate-y-1/2 transform rounded-full bg-white p-2 shadow-md transition hover:bg-gray-200"
-                        >
-                            ◀
-                        </button>
-                        <button
-                            onClick={showNextImage}
-                            className="absolute right-4 top-1/2 -translate-y-1/2 transform rounded-full bg-white p-2 shadow-md transition hover:bg-gray-200"
-                        >
-                            ▶
-                        </button>
-                    </div>
+            <Modal
+                show={imageModalOpen}
+                onClose={() => setImageModalOpen(false)}
+            >
+                <button
+                    onClick={closeImageModal}
+                    className="absolute right-6 top-6 text-2xl text-gray-800 hover:text-gray-500"
+                >
+                    ✕
+                </button>
+                <div className="relative w-full rounded-lg bg-white p-4 shadow-lg">
+                    <img
+                        src={imagePreviews[activeIndex]}
+                        alt={`Image ${activeIndex}`}
+                        className="h-full w-full rounded-md"
+                    />
+                    <button
+                        onClick={showPrevImage}
+                        className="absolute left-8 top-1/2 -translate-y-1/2 transform rounded-full bg-white p-2 shadow-lg hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                        <ChevronLeft />
+                    </button>
+                    <button
+                        onClick={showNextImage}
+                        className="absolute right-8 top-1/2 -translate-y-1/2 transform rounded-full bg-white p-2 shadow-md transition hover:bg-gray-200"
+                    >
+                        <ChevronRight />
+                    </button>
                 </div>
-            )}
+            </Modal>
+            {/* {imageModalOpen && (
+              
+            )} */}
         </GuestLayout>
     );
 }
