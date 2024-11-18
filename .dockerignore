@@ -30,6 +30,5 @@ storage/framework/sessions/*
 storage/framework/views/*
 storage/logs/*
 tests
-/vendor
 yarn-error.log
 
