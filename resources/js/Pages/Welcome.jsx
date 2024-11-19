@@ -46,7 +46,7 @@ export default function Welcome({
         marque: '',
         date_depart: null,
         date_retour: null,
-        categorie: categories[0].id || '',
+        categorie: categories[0]?.id || '',
     });
 
     const handleChange = (field, value) => {
