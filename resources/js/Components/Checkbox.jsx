@@ -1,4 +1,10 @@
+import { palette } from "@/constants/palette";
+import { useThemeContext } from "@/contexts/ThemeContext";
+
 export default function Checkbox({ className = '', ...props }) {
+    const { paletteName } = useThemeContext(); // Get palette name
+    const currentPalette = palette[paletteName];
+    // Access the current palette
     return (
         <input
             {...props}

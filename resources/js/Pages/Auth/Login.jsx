@@ -1,11 +1,18 @@
 import Checkbox from '@/Components/Checkbox';
 import PrimaryButton from '@/Components/PrimaryButton';
+import { palette } from '@/constants/palette';
+import { useThemeContext } from '@/contexts/ThemeContext';
 import GuestLayout from '@/Layouts/GuestLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
-import { Box, TextField, Typography } from '@mui/material';
+import { Box, IconButton, TextField, Typography } from '@mui/material';
+import { EyeIcon, EyeOff } from 'lucide-react';
+import { useState } from 'react';
 import banner from '../../../assets/images/3.jpg';
 
 export default function Login({ status, canResetPassword }) {
+    const { paletteName } = useThemeContext();
+    const [isPassword, setIsPassword] = useState(true);
+    const currentPalette = palette[paletteName];
     const { data, setData, post, processing, errors, reset } = useForm({
         email: '',
         password: '',
@@ -33,7 +40,7 @@ export default function Login({ status, canResetPassword }) {
                         )}
                         <form
                             onSubmit={submit}
-                            className="rounded-md  p-6  dark:bg-gray-800"
+                            className="rounded-md p-6 dark:bg-gray-800"
                         >
                             <Typography
                                 variant="h6"
@@ -54,21 +61,60 @@ export default function Login({ status, canResetPassword }) {
                                 margin="normal"
                                 error={!!errors.email}
                                 helperText={errors.email}
+                                required
+                                InputProps={{
+                                    // startAdornment: <AccountCircle />,
+                                    disableUnderline: true,
+                                }}
                             />
 
-                            <TextField
-                                label="Mot de passe"
-                                type="password"
-                                value={data.password}
-                                onChange={(e) =>
-                                    setData('password', e.target.value)
-                                }
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
-                                error={!!errors.password}
-                                helperText={errors.password}
-                            />
+                            <div className="relative">
+                                <TextField
+                                    label="Mot de passe"
+                                    type={isPassword ? 'password' : 'text'}
+                                    value={data.password}
+                                    onChange={(e) =>
+                                        setData('password', e.target.value)
+                                    }
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    error={!!errors.password}
+                                    helperText={errors.password}
+                                    required
+                                    // sx={{
+                                    //     '& .MuiINput-root': {
+                                    //         '&:before,:after,:hover:not(.Mui-disabled):before':
+                                    //             { border: 'none' },
+                                    //     },
+                                    // }}
+                                    disableUnderline={true}
+                                    // InputProps={{
+                                    //     // startAdornment: <AccountCircle />,
+                                    //     disableUnderline: true,
+                                    // }}
+                                    // slotProps={{ disableUnderline: true }}
+                                    // sx={{
+                                    //     input: {
+                                    //         border: 'none',
+                                    //     },
+
+                                    //     '& .MuiOutlinedInput-notchedOutline': {
+                                    //         border: 'none',
+                                    //     },
+                                    // }}
+                                />
+                                <IconButton
+                                    sx={{
+                                        position: 'absolute',
+                                        right: 10,
+                                        top: 25,
+                                    }}
+                                    onClick={() => setIsPassword(!isPassword)}
+                                >
+                                    {!isPassword ? <EyeOff /> : <EyeIcon />}
+                                </IconButton>
+                            </div>
 
                             <div className="mt-4 flex items-center justify-between">
                                 <label className="flex items-center text-sm text-gray-600 dark:text-gray-400">
