@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Inertia\Inertia;
@@ -28,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
 
         $sourcePath = base_path('database/database.sqlite');
         $destinationPath = '/tmp/database.sqlite';
-
+        Schema::defaultStringLength(191);
         if (File::exists($sourcePath) && !File::exists($destinationPath)) {
             File::copy($sourcePath, $destinationPath);
         }
