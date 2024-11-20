@@ -29,13 +29,7 @@ class AppServiceProvider extends ServiceProvider
 
        
         Schema::defaultStringLength(191);
-        
-        $sourcePath = base_path('database/database.sqlite');
-        $destinationPath = '/tmp/database.sqlite';
-        
-        if (File::exists($sourcePath) && !File::exists($destinationPath)) {
-            File::copy($sourcePath, $destinationPath);
-        }
+    
         
         if (env('APP_ENV') == 'production') {
             $url->forceScheme('https');
