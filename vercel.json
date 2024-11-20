@@ -25,7 +25,7 @@
         "DB_DATABASE": "9d%mhR9RXrN*XMT",
         "MAIL_MAILER": "smtp",
         "MAIL_HOST": "smtp.gmail.com",
-        "MAIL_PORT": 465,
+        "MAIL_PORT": "465",
         "MAIL_USERNAME": "karenbulen",
         "MAIL_PASSWORD": "evbxgxzxownvocqw",
         "MAIL_ENCRYPTION": "tls",
