@@ -27,12 +27,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(UrlGenerator $url): void
     {
 
-        // $sourcePath = base_path('database/database.sqlite');
-        // $destinationPath = '/tmp/database.sqlite';
+        $sourcePath = base_path('database/database.sqlite');
+        $destinationPath = '/tmp/database.sqlite';
         Schema::defaultStringLength(191);
-        // if (File::exists($sourcePath) && !File::exists($destinationPath)) {
-        //     File::copy($sourcePath, $destinationPath);
-        // }
+        if (File::exists($sourcePath) && !File::exists($destinationPath)) {
+            File::copy($sourcePath, $destinationPath);
+        }
         if (env('APP_ENV') == 'production') {
             $url->forceScheme('https');
         }
