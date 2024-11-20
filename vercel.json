@@ -24,7 +24,6 @@
         "APP_ROUTES_CACHE": "/tmp/routes.php",
         "APP_SERVICES_CACHE": "/tmp/services.php",
         "DB_CONNECTION": "sqlite",
-        "DB_DATABASE": "database/database.sqlite",
         "MAIL_MAILER": "smtp",
         "MAIL_HOST": "smtp.gmail.com",
         "MAIL_PORT": "465",
