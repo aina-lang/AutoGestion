@@ -383,7 +383,7 @@ const StyledDataGrid = ({
     };
 
     return (
-        <div className="w-full overflow-hidden rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800">
+        <div className="w-full overflow-hidden rounded-lg bg-white p-4 shadow-md dark:bg-gray-800 border">
             {/* Filter bar */}
             <div className="flex items-center justify-between space-x-4 rounded-lg p-3">
                 {/* Column visibility dropdown */}
@@ -463,7 +463,7 @@ const StyledDataGrid = ({
                                     {headerGroup.headers.map((header) => (
                                         <th
                                             key={header.id}
-                                            className="border-b bg-gray-200 p-4 text-left text-sm font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-200"
+                                            className="border-t border-b  p-4 text-left text-sm font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-200"
                                         >
                                             <div
                                                 {...{

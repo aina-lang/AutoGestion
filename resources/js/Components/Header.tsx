@@ -43,7 +43,7 @@ const MyHeader: React.FC<MyHeaderProps> = ({
         <div className="overflow-y-hidden py-0">
             <div className="mx-auto w-full">
                 <div className="overflow-hidden">
-                    <div className=" p-6 text-gray-900">
+                    <div className="p-6 text-gray-900">
                         <div className="flex flex-row items-center justify-between">
                             {/* Breadcrumb Component */}
                             <Breadcrumb>
@@ -68,7 +68,7 @@ const MyHeader: React.FC<MyHeaderProps> = ({
                                                         {item.label}
                                                     </BreadcrumbLink>
                                                 ) : (
-                                                    <BreadcrumbPage className="font-semibold text-gray-600">
+                                                    <BreadcrumbPage className="font-bold text-gray-600">
                                                         {item.label}
                                                     </BreadcrumbPage>
                                                 )}

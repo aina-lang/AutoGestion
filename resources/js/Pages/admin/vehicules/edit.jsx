@@ -14,7 +14,7 @@ import { GridAddIcon } from '@mui/x-data-grid';
 import React, { useEffect, useState } from 'react';
 
 function EditVehicule({ vehicule, categories }) {
-    const { data, setData, put, processing, setError, errors } = useForm({
+    const { data, setData, post, processing, setError, errors } = useForm({
         marque: vehicule.marque,
         modele: vehicule.modele,
         immatriculation: vehicule.immatriculation,
@@ -112,10 +112,19 @@ function EditVehicule({ vehicule, categories }) {
         e.preventDefault();
         console.log('Submitting data:', data);
 
-        put(`/admin/vehicules/${vehicule.id}`, {
+        // fetch(`/admin/vehicules/${vehicule.id}`, {
+        //     method: 'PUT',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify([1, 2, 3]),
+        // })
+        //     .then((resp) => console.log(resp))
+        //     .catch((err) => console.log(err));
+
+        post(`/admin/vehicules/${vehicule.id}`, {
             data,
             onSuccess: () => {
-                
+                setData('new_images', []);
+                setData('delete_images', []);
             },
             onError: (errors) => {
                 console.error(errors); // Log any errors

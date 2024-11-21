@@ -17,13 +17,12 @@ const HtmlTooltip = styled(({ className, ...props }) => (
 }));
 
 const UserTooltip = ({ user }) => {
-  
     return (
         <HtmlTooltip
             title={
                 <div className="flex flex-col">
                     <div className="mb-1 flex items-center">
-                        <User className="mr-2 text-blue-600" />
+                        <User className="mr-2 text-blue-600 h-20" />
                         <strong>
                             {user.nom} {user.prenoms}
                         </strong>
@@ -38,7 +37,7 @@ const UserTooltip = ({ user }) => {
                 href={route('clients.show', user.id)} // Remplacez `1` par `user.id` pour rediriger vers le bon client
                 className="text-blue-600 hover:underline"
             >
-                {user.nom} {user.prenoms}{' '}
+                {user.prenoms}
                 {/* Affichez le nom et les prénoms de l'utilisateur */}
             </Link>
         </HtmlTooltip>

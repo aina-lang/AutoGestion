@@ -1,13 +1,19 @@
+import ApplicationLogo from '@/Components/ApplicationLogo';
 import PrimaryButton from '@/Components/PrimaryButton';
-import GuestLayout from '@/Layouts/GuestLayout';
+import { palette } from '@/constants/palette';
+import { useThemeContext } from '@/contexts/ThemeContext';
+import AuthLayout from '@/Layouts/AuthLayout';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { AddCircle } from '@mui/icons-material';
 import { Box, TextField, Typography } from '@mui/material';
 import Chip from '@mui/material/Chip';
+import { motion } from 'framer-motion';
 import { useState } from 'react';
 import banner from '../../../assets/images/2.jpg';
 
 export default function Register() {
+    const { paletteName } = useThemeContext();
+    const currentPalette = palette[paletteName];
     const { data, setData, post, processing, errors } = useForm({
         nom: '',
         prenoms: '',
@@ -17,6 +23,50 @@ export default function Register() {
         phones: [], // Initialize an array for phone numbers
     });
 
+    // Animation Variants
+    const fadeIn = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { duration: 0.6 } },
+    };
+
+    const slideInFromLeft = {
+        hidden: { x: '-100%', opacity: 0 }, // Hors de l'écran, côté gauche
+        visible: {
+            x: '0%', // Position finale
+            opacity: 1,
+            transition: {
+                type: 'spring', // Animation avec effet de rebond
+                stiffness: 60, // Réglage du rebond
+                damping: 15, // Réglage pour lisser l'animation
+                duration: 0.8, // Durée de l'animation
+            },
+        },
+        exit: { x: '-100%', opacity: 0, transition: { duration: 0.5 } }, // Animation de sortie
+    };
+
+    const bounce = {
+        hidden: { y: -20, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1,
+            transition: { type: 'spring', stiffness: 120 },
+        },
+    };
+
+    const slideInFromRight = {
+        hidden: { x: '100%', opacity: 0 }, // Hors de l'écran, côté droit
+        visible: {
+            x: '0%', // Position finale
+            opacity: 1,
+            transition: {
+                type: 'spring', // Animation avec effet de rebond
+                stiffness: 60, // Réglage du rebond
+                damping: 15, // Réglage pour lisser l'animation
+                duration: 0.8, // Durée de l'animation
+            },
+        },
+        exit: { x: '100%', opacity: 0, transition: { duration: 0.5 } }, // Animation de sortie
+    };
     const [phoneInput, setPhoneInput] = useState(''); // State to manage the current phone input
 
     const submit = (e) => {
@@ -25,7 +75,7 @@ export default function Register() {
     };
 
     const addPhoneNumber = () => {
-        if (phoneInput) {
+        if (phoneInput && data.phones.length < 3) {
             setData('phones', [...data.phones, phoneInput]); // Add new phone number to the array
             setPhoneInput(''); // Clear the input field
         }
@@ -39,21 +89,41 @@ export default function Register() {
     };
 
     return (
-        <GuestLayout>
+        <AuthLayout>
             <Head title="Register" />
-
-            <div className="flex min-h-screen pt-10">
+            <div className="relative flex min-h-screen">
+                <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    variants={fadeIn}
+                    className="absolute left-10 top-10 z-50"
+                >
+                    <ApplicationLogo isSticky />
+                </motion.div>
                 {/* Left Section: Form */}
-                <div className="flex flex-1 items-center justify-center p-8">
+                <motion.div
+                    className="relative flex flex-1 items-center justify-center p-8"
+                    initial="hidden"
+                    animate="visible"
+                    variants={slideInFromLeft}
+                >
                     <div className="w-full">
                         <form
                             onSubmit={submit}
-                            className="space-y-4 rounded-md p-6 dark:bg-gray-800"
+                            className="space-y-4 rounded-md bg-white p-6 shadow-lg dark:bg-gray-800 md:mt-16"
                         >
-                            <Typography
-                                variant="h6"
-                                className="mb-6 text-gray-700 dark:text-gray-300"
-                            ></Typography>
+                            <motion.div
+                                initial="hidden"
+                                animate="visible"
+                                variants={fadeIn}
+                            >
+                                <Typography
+                                    variant="h6"
+                                    className="mb-4 text-gray-700 dark:text-gray-300"
+                                >
+                                    Connectez-vous.
+                                </Typography>
+                            </motion.div>
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <TextField
                                     label={'Nom Complet'}
@@ -151,17 +221,18 @@ export default function Register() {
                                         }
                                         className="mt-1 block w-full"
                                         label="Ajouter un numéro de téléphone"
+                                        disabled={data.phones.length >= 3} // Disable input if 3 numbers are added
                                     />
                                     <button
                                         className="absolute right-3 ml-2"
                                         onClick={addPhoneNumber}
                                         type="button"
-                                        // Ajoutez l'icône ici
+                                        disabled={data.phones.length >= 3} // Disable button if 3 numbers are added
                                     >
                                         <AddCircle />
                                     </button>
                                 </div>
-                                <div className="mt-2">
+                                <div className="mt-2 space-x-1">
                                     {data.phones.map((phone, index) => (
                                         <Chip
                                             key={index}
@@ -198,31 +269,48 @@ export default function Register() {
                             </div>
                         </form>
                     </div>
-                </div>
+                </motion.div>
 
-                {/* Right Section: Image */}
-                <div className="relative hidden flex-1 items-center justify-center lg:flex">
+                {/* Right Section: Image with Overlay */}
+                <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    variants={slideInFromRight}
+                    className="relative hidden h-screen flex-1 items-center justify-center overflow-x-hidden rounded-l-full shadow-xl lg:flex"
+                    style={{
+                        borderTop: `20px solid ${currentPalette[500]}`, // Bordure horizontale (haut)
+                        borderBottom: `20px solid white`, // Bordure horizontale (bas)
+                        borderLeft: `20px solid white`, // Bordure verticale (gauche)
+                        borderRight: '0px', // Pas de bordure droite
+                    }}
+                >
                     <img
                         src={banner}
                         alt="Login Illustration"
-                        className="h-[80%] w-[90%] rounded-xl object-cover" // Added rounded-xl class
+                        className="h-full w-full object-cover shadow-lg"
                         style={{ filter: 'brightness(0.5)' }}
                     />
                     <Box
                         position="absolute"
                         color="white"
                         textAlign="center"
-                        px={2}
+                        className="flex h-full w-full flex-col items-start justify-center p-10 text-left"
                     >
-                        <Typography variant="h4" gutterBottom>
-                            Bienvenue sur notre plateforme
+                        <Typography
+                            variant="h4"
+                            gutterBottom
+                            className="text-left"
+                        >
+                            Bienvenue sur Vezo Tours ! 👋🏻
                         </Typography>
-                        <Typography variant="body1">
-                            Créez votre compte pour commencer l'aventure 🚀
+                        <Typography variant="body1" className="text-left">
+                            Connectez-vous pour découvrir toutes nos
+                            fonctionnalités exclusives et planifier votre
+                            prochain voyage.
                         </Typography>
                     </Box>
-                </div>
+                </motion.div>
             </div>
-        </GuestLayout>
+        </AuthLayout>
     );
 }

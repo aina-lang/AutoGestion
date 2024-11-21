@@ -11,6 +11,7 @@ import debounce from 'lodash/debounce';
 import { SearchIcon } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 
+
 const index = ({ vehicules, categories }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [gridView, setGridView] = useState(false);
@@ -73,10 +74,7 @@ const index = ({ vehicules, categories }) => {
             header={
                 <MyHeader
                     title="Véhicules"
-                    breadcrumbItems={[
-                     
-                        { label: 'Véhicules' },
-                    ]}
+                    breadcrumbItems={[{ label: 'Véhicules' }]}
                     right={
                         <div className="flex space-x-4">
                             <button onClick={toggleGridView}>
@@ -217,7 +215,7 @@ const index = ({ vehicules, categories }) => {
                         actionUrl={route(route().current())}
                         pdfUrl={'vehicule.pdf'}
                         FilterComponent={() => (
-                            <div className="flex w-2/3 items-center justify-between space-x-4 rounded-md ">
+                            <div className="flex w-2/3 items-center justify-between space-x-4 rounded-md">
                                 <TextField
                                     fullWidth
                                     type="date"
@@ -231,13 +229,23 @@ const index = ({ vehicules, categories }) => {
                                     sx={{
                                         '& .MuiInputBase-root': {
                                             borderRadius: '2px', // Coins arrondis
-                                            border: '0px solid #ccc', // Bordure claire
+                                            border: 'none', // Enlève les bordures
                                         },
                                         '& .MuiOutlinedInput-input': {
-                                            padding: '5px',
-                                            // Espacement interne
+                                            padding: '5px', // Espacement interne
                                         },
                                     }}
+                                    slotProps={{
+                                        input: {
+                                            disableUnderline: true,
+                                        },
+                                    }}
+                                    
+                                    InputProps={{
+                                        
+                                        // startAdornment: <AccountCircle />, // <== adjusted this
+                                        disableUnderline: true, // <== added this
+                                      }}
                                 />
                                 <span className="text-gray-800">à</span>
                                 <TextField
@@ -253,7 +261,7 @@ const index = ({ vehicules, categories }) => {
                                     sx={{
                                         '& .MuiInputBase-root': {
                                             borderRadius: '2px', // Coins arrondis
-                                            border: '0px solid #ccc', // Bordure claire
+                                            border: 'none', // Enlève les bordures
                                         },
                                         '& .MuiOutlinedInput-input': {
                                             padding: '5px', // Espacement interne
@@ -272,7 +280,7 @@ const index = ({ vehicules, categories }) => {
                                     sx={{
                                         '& .MuiInputBase-root': {
                                             borderRadius: '2px', // Coins arrondis
-                                            border: '0px solid #ccc', // Bordure claire
+                                            border: 'none', // Enlève les bordures
                                         },
                                         '& .MuiOutlinedInput-input': {
                                             padding: '5px', // Espacement interne
@@ -295,45 +303,6 @@ const index = ({ vehicules, categories }) => {
                         )}
                     />
                 )}
-
-                {/* <div>
-                 
-                    <span className="text-sm text-gray-500">
-                        {vehicules.data.from} à {vehicules.data.to} de{' '}
-                        {vehicules.data.total} line(s)
-                    </span>
-                    <div className="space-x-2">
-                        
-                        <button
-                            disabled={vehicules.data.current_page === 1}
-                            onClick={() =>
-                                handlePageChange(
-                                    vehicules.data.current_page - 1,
-                                )
-                            }
-                            className="rounded-md bg-gray-200 px-4 py-2 text-gray-600 disabled:opacity-50"
-                        >
-                            <ChevronLeft />
-                        </button>
-                        <button className="rounded-md bg-gray-200 px-4 py-2 text-gray-600 disabled:opacity-50">
-                            {vehicules.data.current_page}
-                        </button>
-                        <button
-                            disabled={
-                                vehicules.data.current_page ===
-                                vehicules.data.last_page
-                            }
-                            onClick={() =>
-                                handlePageChange(
-                                    vehicules.data.current_page + 1,
-                                )
-                            }
-                            className="rounded-md bg-gray-200 px-4 py-2 text-gray-600 disabled:opacity-50"
-                        >
-                            <ChevronRight />
-                        </button>
-                    </div>
-                </div> */}
             </div>
         </AdminLayout>
     );

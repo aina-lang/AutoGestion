@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Traits\BulkDeletable;
+use App\Traits\BulkAction;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
@@ -12,7 +12,7 @@ use Illuminate\Validation\ValidationException;
 class ClientController extends Controller
 {
 
-    use BulkDeletable;
+    use BulkAction;
     /**
      * Display a listing of the resource.
      */

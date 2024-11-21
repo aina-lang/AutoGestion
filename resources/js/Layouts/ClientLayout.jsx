@@ -307,17 +307,30 @@ export default function ClientLayout({ header, children }) {
                         open={open}
                         autoHideDuration={6000}
                         onClose={handleClose}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        className="cursor-pointer shadow-lg"
+                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                     >
-                        <Alert onClose={handleClose} severity={severity}>
-                            <span
-                                dangerouslySetInnerHTML={{ __html: message }}
-                            />
-                        </Alert>
+                        <div
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                            // variants={slideBounceVariants}
+                            className="w-full max-w-sm"
+                        >
+                            <Alert
+                                onClose={handleClose}
+                                severity={severity}
+                                className="rounded-lg shadow-xl"
+                            >
+                                <div>
+                                  
+                                    <div
+                                        dangerouslySetInnerHTML={{
+                                            __html:message,
+                                        }}
+                                    />
+                                </div>
+                            </Alert>
+                        </div>
                     </Snackbar>
                     <ConfirmModal
                         open={confirmModal}

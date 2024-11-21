@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\ServiceType;
-use App\Traits\BulkDeletable;
+use App\Traits\BulkAction;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
 
 class ServiceTypeController extends Controller
 {
-    use BulkDeletable;
+    use BulkAction;
     /**
      * Display a listing of the resource.
      */

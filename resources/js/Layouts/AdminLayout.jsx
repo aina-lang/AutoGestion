@@ -6,6 +6,7 @@ import ConfirmModal from '@/Components/ConfirmModal';
 import Sidebar, { SidebarItem } from '@/Components/MySidebar';
 import Settings from '@/Components/Settings';
 import UserDropdown from '@/Components/UserDropdown';
+import { useThemeContext } from '@/contexts/ThemeContext';
 import { router, useForm, usePage } from '@inertiajs/react';
 import {
     Add,
@@ -40,7 +41,7 @@ export default function AdminLayout({ header, children }) {
     const [confirmModal, setConfirmModal] = useState(false);
     const { post } = useForm();
     const [isScrolled, setIsScrolled] = useState(false);
-
+    const { paletteName } = useThemeContext();
     // console.log(auth);
 
     useEffect(() => {
@@ -139,7 +140,9 @@ export default function AdminLayout({ header, children }) {
     }, [isScrolled]);
 
     return (
-        <div className="flex h-screen  overflow-y-hidden bg-gray-100 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] transition-colors duration-300 [background-size:16px_16px] dark:bg-gray-900">
+        <div
+            className={`flex h-screen overflow-y-hidden bg-gray-50 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] transition-colors duration-300 [background-size:16px_16px] dark:bg-gray-900`}
+        >
             <Sidebar auth={auth}>
                 <SidebarItem
                     icon={<LayoutDashboard size={20} />}
@@ -241,10 +244,10 @@ export default function AdminLayout({ header, children }) {
                     ref={scrollRef}
                 >
                     <nav
-                        className={`sticky left-0 right-0 top-0 z-50 m-3 my-0 mb-5 mt-3 rounded-lg py-1 backdrop-blur-lg transition-all duration-300 ${
+                        className={`sticky left-0 right-0 top-0 z-50 m-3 my-0 mb-5 mt-3 rounded-lg border py-1 shadow-sm backdrop-blur-lg transition-all duration-300 ${
                             isScrolled
-                                ? 'bg-white/80 px-5 shadow-lg dark:bg-gray-800'
-                                : 'bg-white px-0 shadow-sm dark:bg-gray-800/50'
+                                ? 'bg-white/80 px-5 shadow-sm dark:bg-gray-800'
+                                : 'bg-white px-0 dark:bg-gray-800/50'
                         }`}
                         // style={{
                         //     boxShadow: isScrolled
@@ -355,17 +358,29 @@ export default function AdminLayout({ header, children }) {
                         open={open}
                         autoHideDuration={6000}
                         onClose={handleClose}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        className="cursor-pointer shadow-lg"
+                        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
                     >
-                        <Alert onClose={handleClose} severity={severity}>
-                            <span
-                                dangerouslySetInnerHTML={{ __html: message }}
-                            />
-                        </Alert>
+                        <div
+                            initial="hidden"
+                            animate="visible"
+                            exit="exit"
+                            // variants={slideBounceVariants}
+                            className="w-full max-w-sm"
+                        >
+                            <Alert
+                                onClose={handleClose}
+                                severity={severity}
+                                className="rounded-lg shadow-xl"
+                            >
+                                <div>
+                                    <div
+                                        dangerouslySetInnerHTML={{
+                                            __html: message,
+                                        }}
+                                    />
+                                </div>
+                            </Alert>
+                        </div>
                     </Snackbar>
                     <ConfirmModal
                         open={confirmModal}

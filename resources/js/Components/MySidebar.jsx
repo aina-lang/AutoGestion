@@ -1,12 +1,7 @@
 import { palette } from '@/constants/palette';
 import { useThemeContext } from '@/contexts/ThemeContext';
 import { router } from '@inertiajs/react';
-import {
-    ChevronDown,
-    ChevronFirst,
-    ChevronLast,
-    MoreVertical,
-} from 'lucide-react';
+import { ChevronDown, ChevronFirst, ChevronLast } from 'lucide-react';
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import ApplicationLogo from './ApplicationLogo';
 
@@ -29,10 +24,10 @@ export default function Sidebar({ children, auth }) {
     // bg-zinc-800
     return (
         <aside
-            className={`h-screen rounded-tr-[30px] bg-white shadow-lg transition-all ease-in dark:bg-gray-800 ${expanded ? 'w-60' : ''}`}
+            className={`h-screen border-r shadow-md bg-white transition-all ease-in dark:bg-gray-800 ${expanded ? 'w-60' : ''}`}
         >
             <nav className={`flex h-full flex-col bg-[${currentPalette[500]}]`}>
-                <div className="mb-5 flex items-center justify-between space-x-2 p-4 pb-2">
+                <div className="mb-2 flex items-center justify-between space-x-2 p-4 pb-2">
                     {expanded && <ApplicationLogo isSticky />}
                     <button
                         onClick={() => setExpanded((curr) => !curr)}
@@ -48,7 +43,7 @@ export default function Sidebar({ children, auth }) {
 
                 <SidebarContext.Provider value={{ expanded }}>
                     <ul
-                        className={`mt-5 flex-1 px-3 ${expanded ? 'overflow-y-auto' : ''}`}
+                        className={`pt-5 flex-1 px-3 ${expanded ? 'overflow-y-auto' : ''}`}
                     >
                         {children}
                     </ul>
@@ -123,7 +118,7 @@ export function SidebarItem({ icon, text, alert, children, link }) {
     return (
         <>
             <li
-                className={`group relative z-50 my-1 flex cursor-pointer flex-col items-start rounded-md px-3 py-2 text-sm font-medium transition-colors  ${isActive ? 'shadow-lg' : ''}`}
+                className={`group relative z-50 my-1 flex cursor-pointer flex-col items-start rounded-md px-3 py-2 text-sm font-medium transition-colors ${isActive ? 'shadow-lg' : ''}`}
                 onClick={handleNavigation}
                 style={{
                     background: isActive
@@ -134,7 +129,7 @@ export function SidebarItem({ icon, text, alert, children, link }) {
                 }}
             >
                 <div className="flex w-full items-center">
-                    <span>{icon}</span>
+                    <span className='text-xl'>{icon}</span>
                     <span
                         className={`overflow-hidden transition-all ${expanded ? 'ml-3 w-52' : 'hidden w-0'}`}
                     >

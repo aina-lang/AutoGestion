@@ -8,7 +8,8 @@ use App\Models\User;
 use App\Models\Vehicule;
 use App\Notifications\ReservationCreated;
 use App\Notifications\ReservationStatusUpdated;
-use App\Traits\BulkDeletable;
+
+use App\Traits\BulkAction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
@@ -20,7 +21,7 @@ class ReservationController extends Controller
 {
 
 
-    use BulkDeletable;
+    use BulkAction;
     /**
      * Afficher la liste des ressources.
      */
@@ -65,7 +66,7 @@ class ReservationController extends Controller
                 ->where('date_retour', '<', now())
                 ->paginate(5);
 
-            if(Auth::user()->type=="admin"){
+            if (Auth::user()->type == "admin") {
                 return Inertia::render('admin/reservations/archived', [
                     'archivedReservations' => $archivedReservations,
                 ]);
@@ -84,7 +85,8 @@ class ReservationController extends Controller
      */
     public function create()
     {
-        $users = User::where('type', 'user')->get();
+        $users = User::where('type', 0)->get();
+        // dd($users);
         $vehicules = Vehicule::all();
         $categories = Categorie::all();
 
@@ -344,7 +346,12 @@ class ReservationController extends Controller
 
     public function bulkDelete(Request $request)
     {
+        // dd($request->all());
+        return $this->bulkDeleteMany($request, Reservation::class);
+    }
 
+    public function bulkApprove(Request $request)
+    {
         // dd($request->all());
         return $this->bulkDeleteMany($request, Reservation::class);
     }

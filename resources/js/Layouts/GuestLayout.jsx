@@ -9,6 +9,7 @@ import { palette } from '@/constants/palette';
 import { useThemeContext } from '@/contexts/ThemeContext';
 import { router, useForm, usePage } from '@inertiajs/react';
 import {
+    DashboardSharp,
     Email,
     Facebook,
     Instagram,
@@ -147,14 +148,14 @@ const GuestLayout = ({ children, auth, footerShown }) => {
     const toggleMenuHumberger = () => setIsOpen(!isOpen);
 
     return (
-        <div className="{ min-h-screen bg-gray-100  dark:bg-gray-900 sm:pt-0">
+        <div className="{ min-h-screen bg-gray-100 dark:bg-gray-900 sm:pt-0">
             <motion.header
                 initial={{ y: -50 }}
                 animate={{ y: isSticky ? 0 : -10 }}
                 transition={{ type: 'tween', duration: 0.5 }}
                 className={`fixed top-0 z-50 flex w-full items-center justify-between ${
                     isSticky
-                        ? ' bg-white shadow-md backdrop-blur-sm dark:bg-gray-900'
+                        ? 'bg-white shadow-md backdrop-blur-sm dark:bg-gray-900'
                         : 'bg-transparent'
                 } px-6 py-4 dark:text-white`}
             >
@@ -295,7 +296,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                         <>
                             <PrimaryButton
                                 onClick={() => router.visit('/login')}
-                                className=" dark:text-white"
+                                className="dark:text-white"
                             >
                                 <LoginRounded className="mr-2 h-2" /> Se
                                 connecter
@@ -315,6 +316,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                             menuItems={[
                                 {
                                     label: 'Tableau de bord',
+                                    // icon: <DashboardSharp />,
                                     action: () =>
                                         router.visit(
                                             auth.user.type == 'admin'
@@ -405,9 +407,27 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                 onClose={handleClose}
                 anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-                <Alert onClose={handleClose} severity={severity}>
-                    {message}
-                </Alert>
+                <div
+                    initial="hidden"
+                    animate="visible"
+                    exit="exit"
+                    // variants={slideBounceVariants}
+                    className="w-full max-w-sm"
+                >
+                    <Alert
+                        onClose={handleClose}
+                        severity={severity}
+                        className="rounded-lg shadow-xl"
+                    >
+                        <div>
+                            <div
+                                dangerouslySetInnerHTML={{
+                                    __html: message,
+                                }}
+                            />
+                        </div>
+                    </Alert>
+                </div>
             </Snackbar>
 
             <ConfirmModal

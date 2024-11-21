@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Prestation;
 use App\Models\ServiceType;
-use App\Traits\BulkDeletable;
+use App\Traits\BulkAction;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Validator;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 class PrestationController extends Controller
 {
 
-    use BulkDeletable;
+    use BulkAction;
     /**
      * Display a listing of the resource.
      */

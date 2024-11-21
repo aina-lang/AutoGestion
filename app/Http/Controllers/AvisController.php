@@ -6,7 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Avis;
 use App\Models\Vehicule;
-use App\Traits\BulkDeletable;
+use App\Traits\BulkAction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
@@ -15,7 +15,7 @@ use Exception;
 class AvisController extends Controller
 {
 
-    use BulkDeletable;
+    use BulkAction;
 
     // Ajouter un nouvel avis
     public function store(Request $request, $vehiculeId)

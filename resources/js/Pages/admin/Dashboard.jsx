@@ -3,51 +3,81 @@ import StyledDataGrid from '@/Components/StyledDataGridForDashboard';
 import UserTooltip from '@/Components/UserTooltip';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head } from '@inertiajs/react';
-import {
-    AdminPanelSettingsOutlined,
-    CarRentalSharp,
-} from '@mui/icons-material';
+import { AdminPanelSettingsOutlined, CarRentalSharp } from '@mui/icons-material';
 import { Link } from '@mui/material';
-import { BarChart } from '@mui/x-charts';
+import { PieChart, BarChart } from '@mui/x-charts';
 import { CarIcon } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 const chartSetting = {
     yAxis: [
         {
-            label: 'rainfall (mm)',
+            label: 'Réservations',
         },
     ],
-    width: 400,
     height: 300,
-    // sx: {
-    //     [`.${axisClasses.left} .${axisClasses.label}`]: {
-    //         transform: 'translate(-20px, 0)',
-    //     },
-    // },
 };
 
-const valueFormatter = (value) => `${value} unités`;
+const Card = ({ title, value, icon, color }) => {
+    const [count, setCount] = useState(0);
+
+    useEffect(() => {
+        const incrementCount = setInterval(() => {
+            setCount((prevCount) => {
+                if (prevCount < value) {
+                    return prevCount + 1;
+                }
+                clearInterval(incrementCount);
+                return value;
+            });
+        }, 10);
+        return () => clearInterval(incrementCount);
+    }, [value]);
+
+    return (
+        <motion.div
+            className={`relative space-x-4 rounded-lg bg-white p-4 py-8 pt-2 shadow-sm dark:bg-gray-800 border`}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 100, damping: 10 }}
+        >
+            <div
+                className={`-top-5 h-16 w-16 ${color} absolute flex items-center justify-center rounded-xl`}
+            >
+                {icon}
+            </div>
+            <div className="flex justify-between text-3xl">
+                <div className="flex-grow text-right">
+                    <h6 className="text-lg font-semibold">{title}</h6>
+                    <p className="text-3xl font-bold text-gray-600">{count}</p>
+                </div>
+            </div>
+        </motion.div>
+    );
+};
 
 export default function Dashboard({
+    totalArchive,
     totalCars,
     totalReservations,
     totalUsers,
-    rentedCarsPercentage,
-    availableCarsPercentage,
+    totalConfirmedReservations,
+    totalPendingReservations,
+    totalCancelledReservations,
+    totalRentedCars,
+    totalAvailableCars,
     monthlyData,
-    mostRentedCars,
-    upcomingReservations, // Ajout de la propriété pour les réservations à venir
+    upcomingReservations,
+    nextReservation,
 }) {
-    console.log(route(route().current()));
     return (
         <AdminLayout
             header={<MyHeader title="Tableau de Bord" breadcrumbItems={[]} />}
         >
             <Head title="Tableau de Bord" />
-
             <div className="flex-grow p-4 text-gray-500">
-                {/* Section des Cartes */}
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
+                <div className="grid grid-cols-4 gap-4">
                     <Card
                         title="Total de Voitures"
                         value={totalCars}
@@ -69,123 +99,183 @@ export default function Dashboard({
                         color="bg-gradient-to-tr from-orange-500 to-orange-300 shadow-orange-200 shadow-lg dark:shadow-black/30"
                     />
                     <Card
-                        title="Voitures Louées (%)"
-                        icon={<CarRentalSharp className="text-white" />}
-                        color="bg-gradient-to-tr from-pink-500 to-pink-300 shadow-pink-200 shadow-lg dark:shadow-black/30"
+                        title="Total Archive"
+                        value={totalArchive}
+                        icon={
+                            <AdminPanelSettingsOutlined className="text-white" />
+                        }
+                        color="bg-gradient-to-tr from-orange-500 to-orange-300 shadow-orange-200 shadow-lg dark:shadow-black/30"
                     />
                 </div>
 
-                <div className="mt-16 flex w-full space-x-4">
-                    {/* Section des Réservations à Venir */}
-                    <div className="w-3/5 rounded-lg bg-white p-4 shadow">
+                {/* Section des Cartes */}
+                <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
+                    <motion.div
+                        className="rounded-lg bg-white p-4 shadow-md border"
+                        initial={{ opacity: 0, x: -200 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ type: 'spring', stiffness: 100, damping: 25 }}
+                    >
                         <h2 className="mb-4 text-xl font-semibold">
-                            Réservations à Venir
+                            Répartition des Réservations
                         </h2>
-                        <StyledDataGrid
-                            columns={[
-                                {
-                                    accessorKey: 'user.nom',
-                                    header: 'Client',
-                                    cell: (props) => (
-                                        <UserTooltip
-                                            user={props.row.original.user}
-                                        />
-                                    ),
-                                },
-                                {
-                                    accessorKey: 'vehicule.marque',
-                                    header: 'Voiture',
-                                    cell: (props) => (
-                                        <Link
-                                            href={route(
-                                                'admin.reservations.show',
-                                                props.row.original.id,
-                                            )}
-                                            className="text-blue-600 hover:underline"
-                                        >
-                                            {props.getValue()}
-                                        </Link>
-                                    ),
-                                },
-                                {
-                                    accessorKey: 'date_depart',
-                                    header: 'Date de Départ',
-                                },
-                                {
-                                    accessorKey: 'date_retour',
-                                    header: 'Date de Retour',
-                                },
-                                {
-                                    accessorKey: 'status',
-                                    header: 'Statut',
-                                    cell: (props) => (
-                                        <span
-                                            className={`me-2 rounded px-2.5 py-0.5 text-xs font-medium ${
-                                                props.getValue() === 'confirmée'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-yellow-100 text-yellow-800'
-                                            }`}
-                                        >
-                                            {props.getValue()}
-                                        </span>
-                                    ),
-                                },
-                            ]}
-                            data={upcomingReservations} // Passer les données des réservations à venir ici
-                        />
-                    </div>
-
-                    {/* Section pour le graphique */}
-                    <div className="min-h-full flex-grow rounded-lg bg-white p-4 shadow">
-                        <h2 className="mb-4 text-xl font-semibold">
-                            Distribution des Voitures
-                        </h2>
-                        <BarChart
-                            dataset={monthlyData.map((value, index) => ({
-                                id: index, // Assignation d'un id basé sur l'index
-                                value, // Utilisation de la valeur de monthlyData
-                                label: new Intl.DateTimeFormat('fr-FR', {
-                                    month: 'long',
-                                }).format(new Date(0, index)), // Formatage du mois
-                            }))}
-                            xAxis={[{ scaleType: 'band', dataKey: 'label' }]} // Utilisez 'label' comme dataKey pour l'axe X
+                        <PieChart
                             series={[
                                 {
-                                    dataKey: 'value', // Assurez-vous que dataKey correspond à la valeur dans votre dataset
-                                    label: 'Valeur mensuelle', // Titre de la série
-                                    valueFormatter, // Utilisation du formatteur de valeur
+                                    data: [
+                                        {
+                                            id: 'confirmées',
+                                            value: totalConfirmedReservations,
+                                            label: 'Confirmées',
+                                        },
+                                        {
+                                            id: 'en attente',
+                                            value: totalPendingReservations,
+                                            label: 'En attente',
+                                        },
+                                        {
+                                            id: 'autres',
+                                            value:
+                                                totalReservations -
+                                                (totalConfirmedReservations +
+                                                    totalPendingReservations),
+                                            label: 'Autres',
+                                        },
+                                    ],
                                 },
                             ]}
-                            {...chartSetting}
+                            height={300}
                         />
-                    </div>
+                    </motion.div>
+
+                    <motion.div
+                        className="rounded-lg bg-white p-4 shadow-md border"
+                        initial={{ opacity: 0, x: 200 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ type: 'spring', stiffness: 100, damping: 25 }}
+                    >
+                        <h2 className="mb-4 text-xl font-semibold">
+                            Répartition des Voitures
+                        </h2>
+                        <PieChart
+                            series={[
+                                {
+                                    data: [
+                                        {
+                                            id: 'louées',
+                                            value: totalRentedCars,
+                                            label: 'Louées',
+                                        },
+                                        {
+                                            id: 'disponibles',
+                                            value: totalAvailableCars,
+                                            label: 'Disponibles',
+                                        },
+                                    ],
+                                },
+                            ]}
+                            height={300}
+                        />
+                    </motion.div>
                 </div>
+
+                {/* Section des Réservations à Venir */}
+                <motion.div
+                    className="mt-8 rounded-lg bg-white border p-4 shadow"
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 100, damping: 25 }}
+                >
+                    <h2 className="mb-4 text-xl font-semibold">
+                        Réservations à Venir
+                    </h2>
+                    <StyledDataGrid
+                        columns={[
+                            {
+                                accessorKey: 'user.nom',
+                                header: 'Client',
+                                cell: (props) => (
+                                    <UserTooltip
+                                        user={props.row.original.user}
+                                    />
+                                ),
+                            },
+                            {
+                                accessorKey: 'vehicule.marque',
+                                header: 'Voiture',
+                                cell: (props) => (
+                                    <Link
+                                        href={route(
+                                            'admin.reservations.show',
+                                            props.row.original.id,
+                                        )}
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        {props.getValue()}
+                                    </Link>
+                                ),
+                            },
+                            {
+                                accessorKey: 'date_depart',
+                                header: 'Date de Départ',
+                            },
+                            {
+                                accessorKey: 'date_retour',
+                                header: 'Date de Retour',
+                            },
+                            { accessorKey: 'status', header: 'Statut' },
+                        ]}
+                        data={upcomingReservations}
+                    />
+                </motion.div>
+
+                {/* Prochaine Réservation */}
+                {nextReservation && (
+                    <motion.div
+                        className="mt-8 rounded-lg bg-white p-4 shadow"
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ type: 'spring', stiffness: 100, damping: 25 }}
+                    >
+                        <h2 className="mb-4 text-xl font-semibold">
+                            Prochaine Réservation
+                        </h2>
+                        <p>Client : {nextReservation.user.nom}</p>
+                        <p>Voiture : {nextReservation.vehicule.marque}</p>
+                        <p>Date de départ : {nextReservation.date_depart}</p>
+                        <p>Date de retour : {nextReservation.date_retour}</p>
+                    </motion.div>
+                )}
+
+                {/* Section pour le graphique */}
+                <motion.div
+                    className="mt-8 rounded-lg bg-white p-4 shadow"
+                    initial={{ opacity: 0, y: 50 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 100, damping: 25 }}
+                >
+                    <h2 className="mb-4 text-xl font-semibold">
+                        Répartition Mensuelle
+                    </h2>
+                    <BarChart
+                        dataset={monthlyData.map((value, index) => ({
+                            id: index,
+                            value,
+                            label: new Intl.DateTimeFormat('fr-FR', {
+                                month: 'long',
+                            }).format(new Date(0, index)),
+                        }))}
+                        xAxis={[{ scaleType: 'band', dataKey: 'label' }]}
+                        series={[
+                            {
+                                dataKey: 'value',
+                                label: 'Réservations',
+                            },
+                        ]}
+                        {...chartSetting}
+                    />
+                </motion.div>
             </div>
         </AdminLayout>
     );
 }
-
-const Card = ({ title, value, icon, color }) => (
-    <div
-        className={`relative space-x-4 rounded-lg bg-white p-4 py-8 pt-2 shadow-lg dark:bg-gray-800`}
-    >
-        <div
-            className={`-top-5 h-16 w-16 ${color} absolute flex items-center justify-center rounded-xl`}
-        >
-            {icon}
-        </div>
-        <div className="flex justify-between text-3xl">
-            <div className="flex-grow text-right">
-                <h6 className="text-lg font-semibold">{title}</h6>
-                <p className="text-3xl font-bold text-gray-600">{value}</p>
-            </div>
-        </div>
-    </div>
-);
-
-const ChartCard = ({ title, chart }) => (
-    <div className="w-2/3 rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800">
-        <h6 className="mb-4 text-lg font-semibold">{title}</h6>
-        {chart}
-    </div>
-);

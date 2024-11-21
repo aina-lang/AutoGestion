@@ -1,10 +1,13 @@
+import ApplicationLogo from '@/Components/ApplicationLogo';
 import Checkbox from '@/Components/Checkbox';
 import PrimaryButton from '@/Components/PrimaryButton';
+import SecondaryButton from '@/Components/SecondaryButton';
 import { palette } from '@/constants/palette';
 import { useThemeContext } from '@/contexts/ThemeContext';
-import GuestLayout from '@/Layouts/GuestLayout';
-import { Head, Link, useForm } from '@inertiajs/react';
+import AuthLayout from '@/Layouts/AuthLayout';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Box, IconButton, TextField, Typography } from '@mui/material';
+import { motion } from 'framer-motion';
 import { EyeIcon, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import banner from '../../../assets/images/3.jpg';
@@ -26,49 +29,127 @@ export default function Login({ status, canResetPassword }) {
         });
     };
 
+    // Animation Variants
+    const fadeIn = {
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { duration: 0.6 } },
+    };
+
+    const slideInFromLeft = {
+        hidden: { x: '-100%', opacity: 0 }, // Hors de l'écran, côté gauche
+        visible: {
+            x: '0%', // Position finale
+            opacity: 1,
+            transition: {
+                type: 'spring', // Animation avec effet de rebond
+                stiffness: 60, // Réglage du rebond
+                damping: 15, // Réglage pour lisser l'animation
+                duration: 0.8, // Durée de l'animation
+            },
+        },
+        exit: { x: '-100%', opacity: 0, transition: { duration: 0.5 } }, // Animation de sortie
+    };
+
+    const bounce = {
+        hidden: { y: -20, opacity: 0 },
+        visible: {
+            y: 0,
+            opacity: 1,
+            transition: { type: 'spring', stiffness: 120 },
+        },
+    };
+
+    const slideInFromRight = {
+        hidden: { x: '100%', opacity: 0 }, // Hors de l'écran, côté droit
+        visible: {
+            x: '0%', // Position finale
+            opacity: 1,
+            transition: {
+                type: 'spring', // Animation avec effet de rebond
+                stiffness: 60, // Réglage du rebond
+                damping: 15, // Réglage pour lisser l'animation
+                duration: 0.8, // Durée de l'animation
+            },
+        },
+        exit: { x: '100%', opacity: 0, transition: { duration: 0.5 } }, // Animation de sortie
+    };
+
     return (
-        <GuestLayout>
+        <AuthLayout>
             <Head title="Log in" />
-            <div className="flex min-h-screen pt-10">
+            <div className="relative flex min-h-screen">
+                {/* Logo animé */}
+                <motion.div
+                    initial="hidden"
+                    animate="visible"
+                    variants={fadeIn}
+                    className="absolute left-10 top-10 z-50"
+                >
+                    <ApplicationLogo isSticky />
+                </motion.div>
+
                 {/* Left Section: Form */}
-                <div className="flex flex-1 items-center justify-center p-8">
+                <motion.div
+                    className="relative flex flex-1 items-center justify-center p-8"
+                    initial="hidden"
+                    animate="visible"
+                    variants={slideInFromLeft}
+                >
                     <div className="w-full max-w-md">
                         {status && (
-                            <div className="mb-4 text-sm font-medium text-green-600">
+                            <motion.div
+                                initial="hidden"
+                                animate="visible"
+                                variants={bounce}
+                                className="mb-4 text-sm font-medium text-green-600"
+                            >
                                 {status}
-                            </div>
+                            </motion.div>
                         )}
                         <form
                             onSubmit={submit}
-                            className="rounded-md p-6 dark:bg-gray-800"
+                            className="rounded-md bg-white p-6 shadow-lg dark:bg-gray-800 md:mt-16"
                         >
-                            <Typography
-                                variant="h6"
-                                className="mb-4 text-gray-700 dark:text-gray-300"
+                            <motion.div
+                                initial="hidden"
+                                animate="visible"
+                                variants={fadeIn}
                             >
-                                Connectez-vous .
-                            </Typography>
+                                <Typography
+                                    variant="h6"
+                                    className="mb-4 text-gray-700 dark:text-gray-300"
+                                >
+                                    Connectez-vous.
+                                </Typography>
+                            </motion.div>
 
-                            <TextField
-                                label="Email"
-                                type="email"
-                                value={data.email}
-                                onChange={(e) =>
-                                    setData('email', e.target.value)
-                                }
-                                variant="outlined"
-                                fullWidth
-                                margin="normal"
-                                error={!!errors.email}
-                                helperText={errors.email}
-                                required
-                                InputProps={{
-                                    // startAdornment: <AccountCircle />,
-                                    disableUnderline: true,
-                                }}
-                            />
+                            <motion.div
+                                initial="hidden"
+                                animate="visible"
+                                variants={fadeIn}
+                            >
+                                <TextField
+                                    label="Email"
+                                    type="email"
+                                    value={data.email}
+                                    onChange={(e) =>
+                                        setData('email', e.target.value)
+                                    }
+                                    variant="outlined"
+                                    fullWidth
+                                    margin="normal"
+                                    error={!!errors.email}
+                                    helperText={errors.email}
+                                    required
+                                />
+                            </motion.div>
 
-                            <div className="relative">
+                            <motion.div
+                                className="relative"
+                                initial="hidden"
+                                animate="visible"
+                                variants={fadeIn}
+                            >
                                 <TextField
                                     label="Mot de passe"
                                     type={isPassword ? 'password' : 'text'}
@@ -82,27 +163,6 @@ export default function Login({ status, canResetPassword }) {
                                     error={!!errors.password}
                                     helperText={errors.password}
                                     required
-                                    // sx={{
-                                    //     '& .MuiINput-root': {
-                                    //         '&:before,:after,:hover:not(.Mui-disabled):before':
-                                    //             { border: 'none' },
-                                    //     },
-                                    // }}
-                                    disableUnderline={true}
-                                    // InputProps={{
-                                    //     // startAdornment: <AccountCircle />,
-                                    //     disableUnderline: true,
-                                    // }}
-                                    // slotProps={{ disableUnderline: true }}
-                                    // sx={{
-                                    //     input: {
-                                    //         border: 'none',
-                                    //     },
-
-                                    //     '& .MuiOutlinedInput-notchedOutline': {
-                                    //         border: 'none',
-                                    //     },
-                                    // }}
                                 />
                                 <IconButton
                                     sx={{
@@ -114,9 +174,14 @@ export default function Login({ status, canResetPassword }) {
                                 >
                                     {!isPassword ? <EyeOff /> : <EyeIcon />}
                                 </IconButton>
-                            </div>
+                            </motion.div>
 
-                            <div className="mt-4 flex items-center justify-between">
+                            <motion.div
+                                className="mt-4 flex items-center justify-between"
+                                initial="hidden"
+                                animate="visible"
+                                variants={fadeIn}
+                            >
                                 <label className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                                     <Checkbox
                                         checked={data.remember}
@@ -139,9 +204,14 @@ export default function Login({ status, canResetPassword }) {
                                         Mot de passe oublié ?
                                     </Link>
                                 )}
-                            </div>
+                            </motion.div>
 
-                            <div className="mt-6">
+                            <motion.div
+                                className="mt-6 w-full"
+                                initial="hidden"
+                                animate="visible"
+                                variants={bounce}
+                            >
                                 <PrimaryButton
                                     disabled={processing}
                                     type="submit"
@@ -149,35 +219,66 @@ export default function Login({ status, canResetPassword }) {
                                 >
                                     Connexion
                                 </PrimaryButton>
-                            </div>
+                                <span className="block w-full p-2 text-center text-gray-500">
+                                    Ou
+                                </span>
+                                <SecondaryButton
+                                    className="ms-4"
+                                    disabled={processing}
+                                    onClick={() =>
+                                        router.visit(route('register'))
+                                    }
+                                    fullWidth
+                                    isSticky
+                                >
+                                    S'inscrire
+                                </SecondaryButton>
+                            </motion.div>
                         </form>
                     </div>
-                </div>
+                </motion.div>
 
                 {/* Right Section: Image with Overlay */}
-                <div className="relative hidden flex-1 items-center justify-center lg:flex">
+                <motion.div
+                    className="relative hidden h-screen flex-1 items-center justify-center overflow-x-hidden rounded-l-full shadow-xl lg:flex"
+                    style={{
+                        borderTop: `20px solid ${currentPalette[500]}`, // Bordure horizontale (haut)
+                        borderBottom: `20px solid white`, // Bordure horizontale (bas)
+                        borderLeft: `20px solid white`, // Bordure verticale (gauche)
+                        borderRight: '0px', // Pas de bordure droite
+                    }}
+                    initial="hidden"
+                    animate="visible"
+                    variants={slideInFromRight}
+                    exit="exit"
+                >
                     <img
                         src={banner}
                         alt="Login Illustration"
-                        className="h-[80%] w-[90%] rounded-xl object-cover" // Added rounded-xl class
+                        className="h-full w-full object-cover shadow-lg"
                         style={{ filter: 'brightness(0.5)' }}
                     />
                     <Box
                         position="absolute"
                         color="white"
                         textAlign="center"
-                        px={2}
+                        className="flex h-full w-full flex-col items-start justify-center p-10 text-left"
                     >
-                        <Typography variant="h4" gutterBottom>
+                        <Typography
+                            variant="h4"
+                            gutterBottom
+                            className="text-left"
+                        >
                             Bienvenue sur Vezo Tours ! 👋🏻
                         </Typography>
-                        <Typography variant="body1">
+                        <Typography variant="body1" className="text-left">
                             Connectez-vous pour découvrir toutes nos
-                            fonctionnalités.
+                            fonctionnalités exclusives et planifier votre
+                            prochain voyage.
                         </Typography>
                     </Box>
-                </div>
+                </motion.div>
             </div>
-        </GuestLayout>
+        </AuthLayout>
     );
 }

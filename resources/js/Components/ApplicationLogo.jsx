@@ -9,7 +9,7 @@ export default function ApplicationLogo({ className, isSticky }) {
     const currentPalette = palette[paletteName];
 
     return (
-        <div
+        <button
             style={{ fontSize: '2rem', fontWeight: 'bold' }}
             className={`cursor-pointer ${className}`}
             onClick={() => router.visit('/')}
@@ -19,6 +19,6 @@ export default function ApplicationLogo({ className, isSticky }) {
             <span style={{ color: isSticky ? palette['gray'][500] : 'white' }}>
                 Tours
             </span>
-        </div>
+        </button>
     );
 }

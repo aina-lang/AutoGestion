@@ -5,11 +5,16 @@ namespace App\Http\Controllers;
 use App\Models\Categorie;
 use App\Models\Reservation;
 use App\Models\Vehicule;
-use App\Traits\BulkDeletable;
+use App\Traits\BulkAction;
+
+use Illuminate\Contracts\Support\MessageProvider;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+
+use Illuminate\Support\ViewErrorBag;
 use Inertia\Inertia;
 
 class VehiculeController extends Controller
@@ -17,7 +22,7 @@ class VehiculeController extends Controller
     /**
      * Display a listing of the resource.
      */
-    use BulkDeletable;
+    use BulkAction;
 
     public function create()
     {
@@ -263,7 +268,26 @@ class VehiculeController extends Controller
             'new_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:30720',
         ]);
 
+
         if ($validator->fails()) {
+            // $value = null;
+            // if ($validator instanceof MessageProvider) {
+            //     $value = $validator->getMessageBag();
+            // }
+
+
+
+
+            // $errors = session()->get('errors', new ViewErrorBag);
+
+
+            // if (! $errors instanceof ViewErrorBag) {
+            //     $errors = new ViewErrorBag;
+            // }
+            // dd($value,$errors);
+            // . $errors->put('default', $value)
+            session()->flash('error', 'Vérifier les champs<br/>hanotazy ');
+
             return redirect()->back()->withErrors($validator)->withInput();
         }
 

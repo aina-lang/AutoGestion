@@ -335,7 +335,7 @@ const StyledDataGrid = ({
     };
 
     return (
-        <div className="relative w-full rounded-lg bg-white p-2  dark:bg-gray-800">
+        <div className="relative w-full rounded-lg bg-white p-2 dark:bg-gray-800">
             {/* Filter bar */}
             <div className="flex items-center justify-between space-x-4 py-4">
                 <div
@@ -424,7 +424,7 @@ const StyledDataGrid = ({
                                 {headerGroup.headers.map((header) => (
                                     <th
                                         key={header.id}
-                                        className="bg-gray-200 p-3 text-left text-sm font-semibold text-gray-600" // Ajoutez une couleur de fond et une bordure
+                                        className="border-b border-t p-4 text-left text-sm font-semibold text-gray-600 dark:bg-gray-700 dark:text-gray-200"
                                     >
                                         {/* Sortable header */}
                                         <div

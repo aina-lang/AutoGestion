@@ -66,10 +66,8 @@ const AddReservation = ({ users, vehicules }) => {
             formData.append(key, formattedDetails[key]);
         });
 
-      router.post('/admin/reservations', formData, {
-            onSuccess: () => {
-              
-            },
+        router.post('/admin/reservations', formData, {
+            onSuccess: () => {},
             onError: (errors) => {
                 console.error('Submission errors:', errors);
             },
@@ -188,52 +186,62 @@ const AddReservation = ({ users, vehicules }) => {
                                 helperText={errors.motif}
                             />
                         </Grid>
-                        <Grid item xs={12}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DatePicker
-                                    label="Date de départ souhaitée"
-                                    value={data.date_depart}
-                                    onChange={(newValue) =>
-                                        setData('date_depart', newValue)
-                                    }
-                                    shouldDisableDate={(date) =>
-                                        date.isBefore(dayjs().startOf('day'))
-                                    }
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            fullWidth
-                                            sx={{ mt: 2 }}
-                                            error={!!errors.date_depart}
-                                            helperText={errors.date_depart}
-                                        />
-                                    )}
-                                />
-                            </LocalizationProvider>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <LocalizationProvider dateAdapter={AdapterDayjs}>
-                                <DatePicker
-                                    label="Date de Retour"
-                                    value={data.date_retour}
-                                    onChange={(newValue) =>
-                                        setData('date_retour', newValue)
-                                    }
-                                    shouldDisableDate={(date) =>
-                                        date.isBefore(dayjs().startOf('day'))
-                                    }
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            fullWidth
-                                            sx={{ mt: 2 }}
-                                            error={!!errors.date_retour}
-                                            helperText={errors.date_retour}
-                                        />
-                                    )}
-                                />
-                            </LocalizationProvider>
-                        </Grid>
+                        <div className="grid grid-cols-2 m-4 gap-4">
+                            <Grid item xs={12}>
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                >
+                                    <DatePicker
+                                        label="Date de départ souhaitée"
+                                        value={data.date_depart}
+                                        onChange={(newValue) =>
+                                            setData('date_depart', newValue)
+                                        }
+                                        shouldDisableDate={(date) =>
+                                            date.isBefore(
+                                                dayjs().startOf('day'),
+                                            )
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                fullWidth
+                                                sx={{ mt: 2 }}
+                                                error={!!errors.date_depart}
+                                                helperText={errors.date_depart}
+                                            />
+                                        )}
+                                    />
+                                </LocalizationProvider>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <LocalizationProvider
+                                    dateAdapter={AdapterDayjs}
+                                >
+                                    <DatePicker
+                                        label="Date de Retour"
+                                        value={data.date_retour}
+                                        onChange={(newValue) =>
+                                            setData('date_retour', newValue)
+                                        }
+                                        shouldDisableDate={(date) =>
+                                            date.isBefore(
+                                                dayjs().startOf('day'),
+                                            )
+                                        }
+                                        renderInput={(params) => (
+                                            <TextField
+                                                {...params}
+                                                fullWidth
+                                                sx={{ mt: 2 }}
+                                                error={!!errors.date_retour}
+                                                helperText={errors.date_retour}
+                                            />
+                                        )}
+                                    />
+                                </LocalizationProvider>
+                            </Grid>
+                        </div>
                         <Grid item xs={12}>
                             <PrimaryButton type="submit" disabled={processing}>
                                 Ajouter la réservation

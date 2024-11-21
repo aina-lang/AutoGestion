@@ -52,7 +52,7 @@ export default function Settings({ isGuest, isSticky }) {
     };
 
     return (
-        <>
+        <div className='z-50'>
             <IconButton
                 onClick={toggleDrawer}
                 sx={
@@ -155,6 +155,6 @@ export default function Settings({ isGuest, isSticky }) {
                     </Grid>
                 </Box>
             </Drawer>
-        </>
+        </div>
     );
 }

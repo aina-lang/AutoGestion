@@ -3,14 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Categorie;
-use App\Traits\BulkDeletable;
+use App\Traits\BulkAction;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
 class CategorieController extends Controller
 {
-    use BulkDeletable;
+    use BulkAction;
     /**
      * Display a listing of the resource.
      */

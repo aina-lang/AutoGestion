@@ -88,23 +88,26 @@ body {
         );
 }
 
-/* Styles pour les barres de défilement dans Webkit (Chrome, Safari) */
+/* Styling for the entire scrollbar */
 ::-webkit-scrollbar {
-    width: 10px; /* Largeur de la barre de défilement */
-    height: 10px; /* Hauteur de la barre de défilement horizontal */
+    width: 16px; /* Make the scrollbar wide */
 }
 
+/* Styling for the scrollbar track (background) */
 ::-webkit-scrollbar-track {
-    background: #f1f1f1; /* Couleur de l'arrière-plan de la piste */
-    border-radius: 10px; /* Coins arrondis de la piste */
+    background: #f1f1f1; /* Light gray background for the track */
+    border-radius: 10px;
 }
 
+/* Styling for the scrollbar thumb (the draggable part) */
 ::-webkit-scrollbar-thumb {
-    background: #888; /* Couleur de la poignée de défilement */
-    border-radius: 10px; /* Coins arrondis de la poignée */
+    background-color: #888; /* Gray thumb color */
+    border-radius: 10px;
+    border: 4px solid #f1f1f1; /* Makes the thumb look inset */
 }
 
+/* Styling for the scrollbar thumb when hovered */
 ::-webkit-scrollbar-thumb:hover {
-    background: #555; /* Couleur de la poignée au survol */
+    background-color: #555; /* Darker gray when hovered */
 }
 

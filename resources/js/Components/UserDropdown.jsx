@@ -1,4 +1,5 @@
 import { Avatar, Divider, IconButton, Menu, MenuItem } from '@mui/material';
+import { LogOut } from 'lucide-react';
 import React, { useState } from 'react';
 
 function UserDropdown({ auth, handleLogout, menuItems }) {
@@ -45,6 +46,7 @@ function UserDropdown({ auth, handleLogout, menuItems }) {
                             handleClose();
                         }}
                     >
+                        {/* <span className="mr-2">{item.icon && item.icon}</span> */}
                         {item.label}
                     </MenuItem>
                 ))}
@@ -56,7 +58,7 @@ function UserDropdown({ auth, handleLogout, menuItems }) {
                         handleClose();
                     }}
                 >
-                    Se déconnecter
+                    <LogOut className="mr-2" /> Se déconnecter
                 </MenuItem>
             </Menu>
         </div>
