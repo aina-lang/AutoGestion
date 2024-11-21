@@ -26,6 +26,6 @@ class DatabaseSeeder extends Seeder
          Categorie::factory(20)->create();
 
          // Créer 20 véhicules
-         Vehicule::factory(20)->create();
+         Vehicule::factory(50)->create();
     }
 }

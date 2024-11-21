@@ -46,7 +46,7 @@ function AuthLayout({ children }) {
     };
 
     return (
-        <div className="h-screen bg-gray-50">
+        <div className="h-screen auto">
             <Snackbar
                 open={open}
                 autoHideDuration={6000}

@@ -9,7 +9,7 @@ import { Box, TextField, Typography } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import banner from '../../../assets/images/2.jpg';
+import banner from '../../../assets/images/test.jpg';
 
 export default function Register() {
     const { paletteName } = useThemeContext();
@@ -110,7 +110,7 @@ export default function Register() {
                     <div className="w-full">
                         <form
                             onSubmit={submit}
-                            className="space-y-4 rounded-md bg-white p-6 shadow-lg dark:bg-gray-800 md:mt-16"
+                            className="space-y-4 rounded-md bg-white p-6  dark:bg-gray-800 md:mt-16"
                         >
                             <motion.div
                                 initial="hidden"
@@ -271,24 +271,25 @@ export default function Register() {
                     </div>
                 </motion.div>
 
-                {/* Right Section: Image with Overlay */}
-                <motion.div
+               {/* Right Section: Image with Overlay */}
+               <motion.div
+                    className="relative hidden h-screen flex-1 items-center justify-center  rounded-l-full lg:flex"
+                    // style={{
+                    //     borderTop: `20px solid ${currentPalette[500]}`, // Bordure horizontale (haut)
+                    //     borderBottom: `20px solid white`, // Bordure horizontale (bas)
+                    //     borderLeft: `20px solid white`, // Bordure verticale (gauche)
+                    //     borderRight: '0px', // Pas de bordure droite
+                    // }}
                     initial="hidden"
                     animate="visible"
                     variants={slideInFromRight}
-                    className="relative hidden h-screen flex-1 items-center justify-center overflow-x-hidden rounded-l-full shadow-xl lg:flex"
-                    style={{
-                        borderTop: `20px solid ${currentPalette[500]}`, // Bordure horizontale (haut)
-                        borderBottom: `20px solid white`, // Bordure horizontale (bas)
-                        borderLeft: `20px solid white`, // Bordure verticale (gauche)
-                        borderRight: '0px', // Pas de bordure droite
-                    }}
+                    exit="exit"
                 >
                     <img
                         src={banner}
                         alt="Login Illustration"
-                        className="h-full w-full object-cover shadow-lg"
-                        style={{ filter: 'brightness(0.5)' }}
+                        className="h-auto w-full object-cover "
+                        // style={{ filter: 'brightness(0.5)' }}
                     />
                     <Box
                         position="absolute"
@@ -310,6 +311,7 @@ export default function Register() {
                         </Typography>
                     </Box>
                 </motion.div>
+                
             </div>
         </AuthLayout>
     );

@@ -10,7 +10,7 @@ import { Box, IconButton, TextField, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { EyeIcon, EyeOff } from 'lucide-react';
 import { useState } from 'react';
-import banner from '../../../assets/images/3.jpg';
+import banner from '../../../assets/images/test.jpg';
 
 export default function Login({ status, canResetPassword }) {
     const { paletteName } = useThemeContext();
@@ -108,7 +108,7 @@ export default function Login({ status, canResetPassword }) {
                         )}
                         <form
                             onSubmit={submit}
-                            className="rounded-md bg-white p-6 shadow-lg dark:bg-gray-800 md:mt-16"
+                            className="rounded-md bg-white p-6  dark:bg-gray-800 md:mt-16"
                         >
                             <motion.div
                                 initial="hidden"
@@ -240,13 +240,13 @@ export default function Login({ status, canResetPassword }) {
 
                 {/* Right Section: Image with Overlay */}
                 <motion.div
-                    className="relative hidden h-screen flex-1 items-center justify-center overflow-x-hidden rounded-l-full shadow-xl lg:flex"
-                    style={{
-                        borderTop: `20px solid ${currentPalette[500]}`, // Bordure horizontale (haut)
-                        borderBottom: `20px solid white`, // Bordure horizontale (bas)
-                        borderLeft: `20px solid white`, // Bordure verticale (gauche)
-                        borderRight: '0px', // Pas de bordure droite
-                    }}
+                    className="relative hidden h-screen flex-1 items-center justify-center  rounded-l-full lg:flex"
+                    // style={{
+                    //     borderTop: `20px solid ${currentPalette[500]}`, // Bordure horizontale (haut)
+                    //     borderBottom: `20px solid white`, // Bordure horizontale (bas)
+                    //     borderLeft: `20px solid white`, // Bordure verticale (gauche)
+                    //     borderRight: '0px', // Pas de bordure droite
+                    // }}
                     initial="hidden"
                     animate="visible"
                     variants={slideInFromRight}
@@ -255,8 +255,8 @@ export default function Login({ status, canResetPassword }) {
                     <img
                         src={banner}
                         alt="Login Illustration"
-                        className="h-full w-full object-cover shadow-lg"
-                        style={{ filter: 'brightness(0.5)' }}
+                        className="h-auto w-full object-cover "
+                        // style={{ filter: 'brightness(0.5)' }}
                     />
                     <Box
                         position="absolute"
