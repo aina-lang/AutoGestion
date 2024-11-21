@@ -6,12 +6,12 @@ import { palette } from '@/constants/palette';
 import { useThemeContext } from '@/contexts/ThemeContext';
 import AuthLayout from '@/Layouts/AuthLayout';
 import { Head, Link, router, useForm } from '@inertiajs/react';
-import { Box, IconButton, TextField, Typography } from '@mui/material';
+import { IconButton, TextField, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
 import { EyeIcon, EyeOff } from 'lucide-react';
 import { useState } from 'react';
-import banner from '../../../assets/images/test.jpg';
-
+import banner from '../../../assets/images/test.png';
+import banner2 from '../../../assets/images/test2.png';
 export default function Login({ status, canResetPassword }) {
     const { paletteName } = useThemeContext();
     const [isPassword, setIsPassword] = useState(true);
@@ -89,7 +89,7 @@ export default function Login({ status, canResetPassword }) {
                 </motion.div>
 
                 {/* Left Section: Form */}
-                <motion.div
+                <div
                     className="relative flex flex-1 items-center justify-center p-8"
                     initial="hidden"
                     animate="visible"
@@ -108,7 +108,7 @@ export default function Login({ status, canResetPassword }) {
                         )}
                         <form
                             onSubmit={submit}
-                            className="rounded-md bg-white p-6  dark:bg-gray-800 md:mt-16"
+                            className="rounded-md bg-white p-6 dark:bg-gray-800 md:mt-16"
                         >
                             <motion.div
                                 initial="hidden"
@@ -236,48 +236,62 @@ export default function Login({ status, canResetPassword }) {
                             </motion.div>
                         </form>
                     </div>
-                </motion.div>
+                </div>
 
-                {/* Right Section: Image with Overlay */}
-                <motion.div
-                    className="relative hidden h-screen flex-1 items-center justify-center  rounded-l-full lg:flex"
-                    // style={{
-                    //     borderTop: `20px solid ${currentPalette[500]}`, // Bordure horizontale (haut)
-                    //     borderBottom: `20px solid white`, // Bordure horizontale (bas)
-                    //     borderLeft: `20px solid white`, // Bordure verticale (gauche)
-                    //     borderRight: '0px', // Pas de bordure droite
-                    // }}
-                    initial="hidden"
-                    animate="visible"
-                    variants={slideInFromRight}
-                    exit="exit"
-                >
-                    <img
-                        src={banner}
-                        alt="Login Illustration"
-                        className="h-auto w-full object-cover "
-                        // style={{ filter: 'brightness(0.5)' }}
+                <div className="relative hidden h-screen flex-1 items-center justify-center overflow-hidden lg:flex">
+                    <div
+                        className="absolute -top-36 h-full w-full bg-opacity-5 bg-cover object-cover"
+                        style={{
+                            backgroundImage: `url(${banner})`,
+                            // transform: 'scale(0.85)', // Agrandit légèrement l'image de fond
+                            transformOrigin: 'center',
+                            // filter: 'brightness(0.7)',
+                            filter: 'brightness(6) grayscale(100%)',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat',
+                            backgroundSize: 'cover', // Assombrit légèrement pour plus de profondeur
+                        }}
                     />
-                    <Box
-                        position="absolute"
-                        color="white"
-                        textAlign="center"
-                        className="flex h-full w-full flex-col items-start justify-center p-10 text-left"
+                    <motion.img
+                        initial="hidden"
+                        animate="visible"
+                        variants={slideInFromRight}
+                        exit="exit"
+                        src={banner2}
+                        alt="Login Illustration"
+                        className="absolute h-auto w-full object-cover -bottom-1"
+                    />
+                    <motion.div
+                        initial={{ y: -100 }}
+                        animate={{
+                            y: 20,
+                            transition: {
+                                type: 'spring', // Animation avec effet de rebond
+                                stiffness: 60, // Réglage du rebond
+                                damping: 15, // Réglage pour lisser l'animation
+                                duration: 0.8, // Durée de l'animation
+                            },
+                        }}
+                        className="absolute top-10 z-10 flex flex-col items-start justify-center rounded-md p-10 text-left text-gray-500"
                     >
                         <Typography
                             variant="h4"
                             gutterBottom
                             className="text-left"
+                            style={{ color: currentPalette[500] }}
                         >
                             Bienvenue sur Vezo Tours ! 👋🏻
                         </Typography>
-                        <Typography variant="body1" className="text-left">
+                        <Typography
+                            variant="body1"
+                            className="text-left text-gray-500"
+                        >
                             Connectez-vous pour découvrir toutes nos
                             fonctionnalités exclusives et planifier votre
                             prochain voyage.
                         </Typography>
-                    </Box>
-                </motion.div>
+                    </motion.div>
+                </div>
             </div>
         </AuthLayout>
     );
