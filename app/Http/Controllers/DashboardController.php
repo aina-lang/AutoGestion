@@ -109,7 +109,7 @@ class DashboardController extends Controller
         $totalCancelledReservations = Reservation::where('status', 'annulée')->count();
 
         // Répartition des réservations par mois
-        $reservationsPerMonth = Reservation::selectRaw('strftime("%m", created_at) as month, COUNT(*) as count')
+        $reservationsPerMonth = Reservation::selectRaw('MONTH(created_at) as month, COUNT(*) as count')
             ->groupBy('month')
             ->orderBy('month')
             ->get();

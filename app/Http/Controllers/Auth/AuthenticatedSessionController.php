@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use Inertia\Inertia;
@@ -28,27 +30,48 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request)
     {
-
         try {
-            $request->authenticate();
+            $credentials = $request->only('email', 'password');
 
-            $request->session()->regenerate();
-            // var_dump(Auth::user()->type);
-            // exit;
-            if (Auth::user()->type == "admin") {
-                Session::flash('success', 'Authentification avec succès !');
-                return redirect()->intended(route('admin.dashboard', absolute: false));
+            // Vérifier si l'utilisateur existe
+            $user = User::where('email', $credentials['email'])->first();
+            if (!$user) {
+                Session::flash('error', 'Aucun utilisateur trouvé avec cet email.');
+                return back()->withErrors([
+                    'email' => 'Aucun utilisateur trouvé avec cet email.',
+                ])->withInput();
             }
 
+            // Vérifier le mot de passe
+            if (!Hash::check($credentials['password'], $user->password)) {
+                Session::flash('error', 'Le mot de passe est incorrect.');
+                return back()->withErrors([
+                    'password' => 'Le mot de passe est incorrect.',
+                ])->withInput();
+            }
+
+            // Authentifier l'utilisateur
+            Auth::login($user);
+            $request->session()->regenerate();
+
+            // Ajouter un message de succès
             Session::flash('success', 'Authentification avec succès !');
-            return redirect()->intended(route('home', absolute: false));
+
+            // Rediriger selon le type d'utilisateur
+            if ($user->type === 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            return redirect()->route('home');
         } catch (\Exception $e) {
-            Session::flash('error', 'Une erreur s\'est produite lors de l\'authentification de votre compte. <br>' . htmlspecialchars($e->getMessage()));
-            return redirect()->back()->withInput();
+            // En cas d'erreur inattendue
+            Session::flash('error', 'Une erreur inattendue est survenue. Veuillez réessayer plus tard.');
+            return back()->withInput();
         }
     }
+
 
     /**
      * Destroy an authenticated session.
