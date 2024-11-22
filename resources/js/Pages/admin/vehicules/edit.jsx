@@ -28,7 +28,7 @@ function EditVehicule({ vehicule, categories }) {
     const [confirmModal, setConfirmModal] = useState(false);
     const [imagePreviews, setImagePreviews] = useState(
         vehicule.images
-            ? JSON.parse(vehicule.images).map((image) => `/storage/${image}`)
+            ? JSON.parse(vehicule.images).map((image) => `${image}`)
             : [],
     );
     const [selectedImageIndex, setSelectedImageIndex] = useState(null);
@@ -37,7 +37,7 @@ function EditVehicule({ vehicule, categories }) {
         const decodedImages = vehicule.images
             ? JSON.parse(vehicule.images)
             : [];
-        const previews = decodedImages.map((image) => `/storage/${image}`);
+        const previews = decodedImages.map((image) => `/${image}`);
         setImagePreviews(previews);
     }, [vehicule.images]);
 

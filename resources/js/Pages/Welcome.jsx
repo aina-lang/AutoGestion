@@ -516,9 +516,7 @@ export default function Welcome({
                                         {/* Image with overlay */}
                                         <div className="relative mb-2 overflow-hidden rounded-t-lg">
                                             <img
-                                                src={
-                                                    '/storage/' + car.images[0]
-                                                }
+                                                src={car.images[0]}
                                                 alt={car.modele}
                                                 className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
                                             />
