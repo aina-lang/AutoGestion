@@ -64,7 +64,7 @@ function Showvehicule({ vehicule, auth }) {
     useEffect(() => {
         if (vehicule.images) {
             const decodedImages = JSON.parse(vehicule.images);
-            const previews = decodedImages.map((image) => `/${image}`);
+            const previews = decodedImages.map((image) => `/storage/${image}`);
             setImagePreviews(previews);
         }
     }, [vehicule.images]);
@@ -147,7 +147,7 @@ function Showvehicule({ vehicule, auth }) {
                                         <img
                                             src={
                                                 imagePreviews[activeIndex] ||
-                                                `/${JSON.parse(vehicule.images)[0]}`
+                                                `/storage/${JSON.parse(vehicule.images)[0]}`
                                             }
                                             alt="Image du véhicule"
                                             className="h-full w-full rounded-md object-cover shadow-md hover:shadow-lg"

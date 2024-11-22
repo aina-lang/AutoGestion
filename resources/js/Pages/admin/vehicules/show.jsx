@@ -18,7 +18,7 @@ function ShowVehicule({ vehicule, errors }) {
     useEffect(() => {
         if (vehicule.images) {
             const decodedImages = JSON.parse(vehicule.images);
-            const previews = decodedImages.map((image) => `${image}`);
+            const previews = decodedImages.map((image) => `/storage/${image}`);
             setImagePreviews(previews);
         }
     }, [vehicule.images]);
@@ -91,7 +91,7 @@ function ShowVehicule({ vehicule, errors }) {
                     <div className="flex">
                         {' '}
                         <img
-                            src={`/${JSON.parse(vehicule.images)[0]}`}
+                            src={`/storage/${JSON.parse(vehicule.images)[0]}`}
                             alt={`Image `}
                             className="w-2/3 rounded-md object-cover"
                             // onClick={() => openImageModal(index)}

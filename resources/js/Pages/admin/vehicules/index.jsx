@@ -11,6 +11,7 @@ import debounce from 'lodash/debounce';
 import { SearchIcon } from 'lucide-react';
 import React, { useCallback, useEffect, useState } from 'react';
 
+
 const index = ({ vehicules, categories }) => {
     const [searchQuery, setSearchQuery] = useState('');
     const [gridView, setGridView] = useState(false);
@@ -140,7 +141,8 @@ const index = ({ vehicules, categories }) => {
                                     </div>
                                     <img
                                         src={
-                                            '/' + JSON.parse(vehicule.images)[0]
+                                            '/storage/' +
+                                            JSON.parse(vehicule.images)[0]
                                         }
                                         alt={vehicule.modele}
                                         className="h-48 w-full rounded-lg object-cover"
@@ -238,10 +240,12 @@ const index = ({ vehicules, categories }) => {
                                             disableUnderline: true,
                                         },
                                     }}
+                                    
                                     InputProps={{
+                                        
                                         // startAdornment: <AccountCircle />, // <== adjusted this
                                         disableUnderline: true, // <== added this
-                                    }}
+                                      }}
                                 />
                                 <span className="text-gray-800">à</span>
                                 <TextField

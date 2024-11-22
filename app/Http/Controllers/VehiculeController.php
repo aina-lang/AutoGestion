@@ -118,8 +118,6 @@ class VehiculeController extends Controller
                 ]);
             }
 
-
-            // dd($vehicles);exit;
             return inertia('welcome/allCars', [
                 'latestVehicles' => $vehicles,
                 'categories' => $categories, // Include categories for the dropdown filter
@@ -167,25 +165,11 @@ class VehiculeController extends Controller
             $imagePaths = [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    // Vérifiez si l'image est bien valide
-                    if ($image->isValid()) {
-                        // Définissez un chemin direct dans le répertoire public
-                        $path = $image->move(public_path('images/vehicules'), $image->getClientOriginalName());
-
-                        // Ajoutez le chemin relatif du fichier
-                        if ($path) {
-                            $imagePaths[] = 'images/vehicules/' . $image->getClientOriginalName();
-                        } else {
-                            // Ajoutez une erreur si le fichier n'a pas pu être enregistré
-                            throw new \Exception("Erreur lors de l'enregistrement de l'image.");
-                        }
-                    } else {
-                        throw new \Exception("Le fichier d'image n'est pas valide.");
-                    }
+                    $path = $image->store('vehicules', 'public');
+                    $imagePaths[] = $path;
                 }
             }
 
-            // Créez le véhicule avec les images
             Vehicule::create([
                 'marque' => $request->marque,
                 'modele' => $request->modele,
@@ -203,7 +187,6 @@ class VehiculeController extends Controller
             return redirect()->back()->withInput();
         }
     }
-
 
 
 
@@ -273,6 +256,7 @@ class VehiculeController extends Controller
     {
         $vehicule = Vehicule::findOrFail($id);
 
+        // dd($request->all());
         // Validation des données
         $validator = Validator::make($request->all(), [
             'marque' => 'required|string|max:255',
@@ -281,22 +265,38 @@ class VehiculeController extends Controller
             'categorie' => 'required|exists:categories,id',
             'kilometrage' => 'required|numeric',
             'description' => 'required|string|max:500',
-            'new_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:30720',  // Validation des nouvelles images
+            'new_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:30720',
         ]);
 
+
         if ($validator->fails()) {
-            session()->flash('error', 'Vérifier les champs');
+            // $value = null;
+            // if ($validator instanceof MessageProvider) {
+            //     $value = $validator->getMessageBag();
+            // }
+
+
+
+
+            // $errors = session()->get('errors', new ViewErrorBag);
+
+
+            // if (! $errors instanceof ViewErrorBag) {
+            //     $errors = new ViewErrorBag;
+            // }
+            // dd($value,$errors);
+            // . $errors->put('default', $value)
+            session()->flash('error', 'Vérifier les champs<br/>hanotazy ');
+
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
         try {
-            // Récupérer les images existantes (stockées sous forme de tableau JSON)
-            $imagePaths = json_decode($vehicule->images, true) ?: [];
-
             // Suppression des images sélectionnées
+            $imagePaths = json_decode($vehicule->images, true) ?: [];
             if ($request->has('delete_images')) {
                 foreach ($request->delete_images as $image) {
-                    // Supprimer l'image du stockage
+                    // Supprimer le fichier du stockage
                     Storage::disk('public')->delete($image);
                     // Retirer l'image du tableau
                     $imagePaths = array_diff($imagePaths, [$image]);
@@ -306,20 +306,8 @@ class VehiculeController extends Controller
             // Gestion du stockage des nouvelles images
             if ($request->hasFile('new_images')) {
                 foreach ($request->file('new_images') as $image) {
-                    // Vérification si l'image est valide
-                    if ($image->isValid()) {
-                        // Définir un chemin dans le répertoire public
-                        $path = $image->move(public_path('images/vehicules'), $image->getClientOriginalName());
-
-                        // Ajouter le chemin relatif de l'image au tableau des chemins
-                        if ($path) {
-                            $imagePaths[] = 'images/vehicules/' . $image->getClientOriginalName();
-                        } else {
-                            throw new \Exception("Erreur lors de l'enregistrement de l'image.");
-                        }
-                    } else {
-                        throw new \Exception("Le fichier d'image n'est pas valide.");
-                    }
+                    $path = $image->store('vehicules', 'public');
+                    $imagePaths[] = $path;
                 }
             }
 
@@ -331,7 +319,7 @@ class VehiculeController extends Controller
                 'categorie_id' => $request->categorie,
                 'kilometrage' => $request->kilometrage,
                 'description' => $request->description,
-                'images' => json_encode(array_values($imagePaths)),  // Mettre à jour le champ des images
+                'images' => json_encode(array_values($imagePaths)), // Stocker les chemins d'image au format JSON
             ]);
 
             session()->flash('success', 'Véhicule mis à jour avec succès.');
@@ -341,7 +329,6 @@ class VehiculeController extends Controller
             return redirect()->back()->withInput();
         }
     }
-
 
 
 
