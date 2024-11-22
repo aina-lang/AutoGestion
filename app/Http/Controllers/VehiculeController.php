@@ -118,6 +118,8 @@ class VehiculeController extends Controller
                 ]);
             }
 
+
+            // dd($vehicles);exit;
             return inertia('welcome/allCars', [
                 'latestVehicles' => $vehicles,
                 'categories' => $categories, // Include categories for the dropdown filter
@@ -165,11 +167,22 @@ class VehiculeController extends Controller
             $imagePaths = [];
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $image) {
-                    $path = $image->store('vehicules', 'public');
-                    $imagePaths[] = $path;
+                    // Vérifiez si l'image est bien valide
+                    if ($image->isValid()) {
+                        $path = $image->store('vehicules', 'public');
+                        if ($path) {
+                            $imagePaths[] = $path;
+                        } else {
+                            // Ajoutez une erreur si le fichier n'a pas pu être enregistré
+                            throw new \Exception("Erreur lors de l'enregistrement de l'image.");
+                        }
+                    } else {
+                        throw new \Exception("Le fichier d'image n'est pas valide.");
+                    }
                 }
             }
 
+            // Créez le véhicule avec les images
             Vehicule::create([
                 'marque' => $request->marque,
                 'modele' => $request->modele,
@@ -187,6 +200,7 @@ class VehiculeController extends Controller
             return redirect()->back()->withInput();
         }
     }
+
 
 
 

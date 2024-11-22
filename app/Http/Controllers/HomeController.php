@@ -153,6 +153,7 @@ class HomeController extends Controller
         // dd($latestVehicles);
         $categories = Categorie::all();
 
+        // dd($latestVehicles);
         return Inertia::render('welcome/allCars', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
