@@ -18,6 +18,7 @@
         "APP_ENV": "production",
         "APP_DEBUG": "true",
         "APP_URL": "https://vezotours.vercel.app",
+        "APP_KEY": "base64:NSvAV+tfMtrtV9cti8/kcz4bkhI8QYV106wAEqClwFQ=",
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
         "APP_PACKAGES_CACHE": "/tmp/packages.php",
