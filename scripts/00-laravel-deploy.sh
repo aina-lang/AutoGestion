@@ -1,17 +1,25 @@
 #!/usr/bin/env bash
-echo "Running composer"
+
+echo "Running composer global dependencies..."
 composer global require hirak/prestissimo
+
+echo "Installing project dependencies..."
+composer install --no-dev --optimize-autoloader
+
+echo "Installing additional packages..."
 composer require tightenco/ziggy
-composer install --no-dev --working-dir=/var/www/html
-composer require 
-echo "generating application key..."
+
+echo "Generating application key..."
 php artisan key:generate --show
 
-echo "Caching config..."
+echo "Caching configuration..."
 php artisan config:cache
 
 echo "Caching routes..."
 php artisan route:cache
-php artisan storage:link
-echo "Running migrations..."
+
+echo "Creating symbolic link for storage..."
+php artisan storage:link || echo "Storage link already exists or failed to create"
+
+echo "Running database migrations..."
 php artisan migrate --force
