@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -20,14 +21,20 @@ return Application::configure(basePath: dirname(__DIR__))
             'user-access' => \App\Http\Middleware\UserAccess::class,
         ]);
 
-        $middleware->redirectUsersTo(function(){
-            if (Auth::user()->type=="admin") {
-               return "/admin/dashboard";
-            }else{
+        $middleware->redirectUsersTo(function () {
+            if (Auth::user()->type == "admin") {
+                return "/admin/dashboard";
+            } else {
                 return "/admin/dashboard";
                 // return "dashboard";
             }
         });
+
+        $middleware->trustProxies(at: '*');
+        // $middleware->trustProxies(
+        //     headers: Request::HEADER_X_FORWARDED_FOR
+
+        // );
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
