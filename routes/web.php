@@ -22,7 +22,7 @@ use Inertia\Inertia;
 use App\Models\Reservation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Artisan;
 
 Route::get('/', [HomeController::class, "index"])->name("home");
 Route::get('/allcars', [HomeController::class, "all"])->name("cars.all");
@@ -30,6 +30,10 @@ Route::get('/search-cars', [VehiculeController::class, 'search'])->name('cars.fi
 Route::get('vehicules/{vehicule}/show', [VehiculeController::class, "showall"])->name('cars.show');
 Route::post('contact', [ContactFormController::class, 'submit'])->name('contact.submit');
 Route::get('/prestations', [HomeController::class, 'showServices'])->name('prestations');
+Route::get('/link', function () {
+    Artisan::call('storage:link');
+});
+
 
 Route::middleware('auth', 'verified')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
