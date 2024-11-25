@@ -165,7 +165,7 @@ const index = ({ prestations, categories }) => {
                                     </p>
                                     <div className="mb-4 flex items-center">
                                         <span className="mr-2 rounded bg-green-200 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:bg-green-800 dark:text-green-300">
-                                            {prestation.kilometrage} Km/h
+                                            {prestation.vitesse} Km/h
                                         </span>
                                     </div>
                                 </div>

@@ -91,7 +91,7 @@ function ShowVehicule({ vehicule, errors }) {
                         </div>
                         <div className="col-span-1">
                             <p><strong>Immatriculation:</strong> {vehicule.immatriculation}</p>
-                            <p><strong>Kilométrage:</strong> {vehicule.kilometrage} km</p>
+                            <p><strong>Kilométrage:</strong> {vehicule.vitesse} km</p>
                         </div>
                         <div className="col-span-1">
                             <p><strong>Prix Journalier:</strong> {vehicule.prix_journalier} €/jour</p>

@@ -14,7 +14,7 @@ class Vehicule extends Model
         'modele',
         'immatriculation',
         'categorie_id',
-        'kilometrage',
+        'vitesse',
         'date_ajout',
         'description',
         'images',

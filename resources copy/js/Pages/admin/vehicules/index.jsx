@@ -164,7 +164,7 @@ const index = ({ vehicules, categories }) => {
                                     </p>
                                     <div className="mb-4 flex items-center">
                                         <span className="mr-2 rounded bg-green-200 px-2.5 py-0.5 text-xs font-medium text-green-700 dark:bg-green-800 dark:text-green-300">
-                                            {vehicule.kilometrage} Km/h
+                                            {vehicule.vitesse} Km/h
                                         </span>
                                     </div>
                                 </div>
@@ -202,7 +202,7 @@ const index = ({ vehicules, categories }) => {
                                 header: 'Catégorie',
                             },
                             {
-                                accessorKey: 'kilometrage',
+                                accessorKey: 'vitesse',
                                 header: 'Kilométrage',
                                 cell: (props) => (
                                     <span className="rounded-full bg-green-100 p-2 py-1 text-xs font-medium text-green-800 dark:bg-green-900 dark:text-green-300">

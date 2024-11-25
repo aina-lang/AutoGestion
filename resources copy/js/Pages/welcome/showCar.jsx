@@ -257,7 +257,7 @@ function Showvehicule({ vehicule, auth }) {
                                             <p>
                                                 <strong>Kilométrage:</strong>
                                             </p>
-                                            <p>{vehicule.kilometrage} km/h</p>
+                                            <p>{vehicule.vitesse} km/h</p>
                                         </div>
                                         <div className="col-span-2 flex justify-between">
                                             <p>

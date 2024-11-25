@@ -231,7 +231,7 @@ class HomeController extends Controller
             'phpVersion' => PHP_VERSION,
             'latestVehicles' => $latestVehicles,
             'categories' => $categories,
-            'search' => $search, // Passer les filtres de recherche à la vue
+            'search' => $search, 
         ]);
     }
 

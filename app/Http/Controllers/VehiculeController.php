@@ -37,7 +37,7 @@ class VehiculeController extends Controller
 
 
 
-   
+
     public function index(Request $request)
     {
         // Retrieve all categories for the dropdown filter
@@ -145,7 +145,7 @@ class VehiculeController extends Controller
             'modele' => 'required|string|max:255',
             'immatriculation' => 'required|string|max:50|unique:vehicules',
             'categorie' => 'required|exists:categories,id',
-            'kilometrage' => 'required|numeric',
+            'vitesse' => 'required|numeric',
             'description' => 'required|string|max:500',
             'images.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:30720',
         ]);
@@ -168,7 +168,7 @@ class VehiculeController extends Controller
                 'modele' => $request->modele,
                 'immatriculation' => $request->immatriculation,
                 'categorie_id' => $request->categorie,
-                'kilometrage' => $request->kilometrage,
+                'vitesse' => $request->vitesse,
                 'description' => $request->description,
                 'images' => json_encode($imagePaths),
             ]);
@@ -256,7 +256,7 @@ class VehiculeController extends Controller
             'modele' => 'required|string|max:255',
             'immatriculation' => 'required|string|max:50|unique:vehicules,immatriculation,' . $id,
             'categorie' => 'required|exists:categories,id',
-            'kilometrage' => 'required|numeric',
+            'vitesse' => 'required|numeric',
             'description' => 'required|string|max:500',
             'new_images.*' => 'image|mimes:jpeg,png,jpg,gif|max:30720',
         ]);
@@ -310,7 +310,7 @@ class VehiculeController extends Controller
                 'modele' => $request->modele,
                 'immatriculation' => $request->immatriculation,
                 'categorie_id' => $request->categorie,
-                'kilometrage' => $request->kilometrage,
+                'vitesse' => $request->vitesse,
                 'description' => $request->description,
                 'images' => json_encode(array_values($imagePaths)), // Stocker les chemins d'image au format JSON
             ]);

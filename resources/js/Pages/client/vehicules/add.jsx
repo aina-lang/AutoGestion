@@ -20,7 +20,7 @@ function AddVehicule({ categories, errors }) {
         immatriculation: '',
         categorie: '',
         prix_journalier: '',
-        kilometrage: '',
+        vitesse: '',
         description: '',
         images: [], // On initialise un tableau pour les images
     });
@@ -161,12 +161,12 @@ function AddVehicule({ categories, errors }) {
                             <TextField
                                 label="Kilométrage"
                                 type="number"
-                                value={data.kilometrage}
+                                value={data.vitesse}
                                 onChange={(e) =>
-                                    setData('kilometrage', e.target.value)
+                                    setData('vitesse', e.target.value)
                                 }
-                                error={!!errors.kilometrage}
-                                helperText={errors.kilometrage}
+                                error={!!errors.vitesse}
+                                helperText={errors.vitesse}
                                 fullWidth
                                 variant="outlined"
                             />

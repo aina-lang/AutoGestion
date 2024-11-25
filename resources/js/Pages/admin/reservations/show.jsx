@@ -37,7 +37,7 @@ const ReservationDetails = () => {
                         <Grid item xs={12} md={6}>
                             <Typography variant="body1">
                                 <strong>Kilométrage:</strong>{' '}
-                                {reservation.vehicule.kilometrage} km
+                                {reservation.vehicule.vitesse} km
                             </Typography>
                         </Grid>
                     </Grid>

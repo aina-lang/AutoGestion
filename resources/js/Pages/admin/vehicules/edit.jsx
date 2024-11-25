@@ -19,7 +19,7 @@ function EditVehicule({ vehicule, categories }) {
         modele: vehicule.modele,
         immatriculation: vehicule.immatriculation,
         categorie: vehicule.categorie.id,
-        kilometrage: vehicule.kilometrage,
+        vitesse: vehicule.vitesse,
         description: vehicule.description,
         new_images: [],
         delete_images: [],
@@ -237,12 +237,12 @@ function EditVehicule({ vehicule, categories }) {
                             <TextField
                                 label="Kilométrage"
                                 type="number"
-                                value={data.kilometrage}
+                                value={data.vitesse}
                                 onChange={(e) =>
-                                    setData('kilometrage', e.target.value)
+                                    setData('vitesse', e.target.value)
                                 }
-                                error={!!errors.kilometrage}
-                                helperText={errors.kilometrage}
+                                error={!!errors.vitesse}
+                                helperText={errors.vitesse}
                                 fullWidth
                                 variant="outlined"
                                 inputProps={{

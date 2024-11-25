@@ -23,15 +23,17 @@ import React, {
     useState,
 } from 'react';
 
-export default function AllCars({ auth, latestVehicles, categories }) {
+export default function AllCars({ auth, latestVehicles, categories, search }) {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedCar, setSelectedCar] = useState(null);
 
+    console.log(search);
+
     const [query, setQuery] = useState({
-        search: '',
-        date_depart: '',
-        date_retour: '',
-        categorie: '',
+        search: search.search || '', // Préreplir avec la valeur de 'search' ou une chaîne vide si elle est absente
+        date_depart: search?.date_depart || '', // Si 'date_depart' est défini dans 'search', on l'utilise
+        date_retour: search?.date_retour || '', // Idem pour 'date_retour'
+        categorie: search?.categorie || '',
     });
 
     const [loading, setLoading] = useState(false);
@@ -167,10 +169,10 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                 <section className="left-0 right-0 top-0 z-30 mx-auto min-h-screen w-64 pb-5">
                     <Paper
                         elevation={5}
-                        className="mt-24 mx-5  w-full bg-white px-6 py-5 text-gray-800"
+                        className="mx-5 mt-24 w-full bg-white px-6 py-5 text-gray-800"
                     >
                         <h2 className="mb-4 text-lg font-semibold">
-                           Filtrer les Véhicules
+                            Filtrer les Véhicules
                         </h2>
                         <div className="mt-2 flex flex-col space-y-5">
                             <Grid item xs={12}>
@@ -293,7 +295,7 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                                         key={index}
                                     >
                                         <motion.div
-                                            className="flex group  h-full items-center rounded-lg border border-gray-300 bg-white  shadow-lg transition-shadow duration-300 hover:shadow-xl"
+                                            className="group flex h-full items-center rounded-lg border border-gray-300 bg-white shadow-lg transition-shadow duration-300 hover:shadow-xl"
                                             initial={{ opacity: 0, y: 20 }}
                                             whileInView={{ opacity: 1, y: 0 }}
                                             viewport={{
@@ -315,7 +317,7 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                                                         )[0]
                                                     }
                                                     alt={car.modele}
-                                                    className="h-48 w-48  object-cover transition-transform duration-300 group-hover:scale-110"
+                                                    className="h-48 w-48 object-cover transition-transform duration-300 group-hover:scale-110"
                                                 />
                                             </div>
 
@@ -386,8 +388,10 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                                                     variant="body2"
                                                     className="mb-4 text-gray-700"
                                                 >
-                                                   {car.description.length > 100 ? `${car.description.slice(0, 100)}...` : car.description}
-
+                                                    {car.description.length >
+                                                    100
+                                                        ? `${car.description.slice(0, 100)}...`
+                                                        : car.description}
                                                 </Typography>
 
                                                 {/* Button Section */}
@@ -403,7 +407,8 @@ export default function AllCars({ auth, latestVehicles, categories }) {
                                                             }}
                                                             className="text-white"
                                                         >
-                                                           <CarRentalRounded />{' '}   Réserver
+                                                            <CarRentalRounded />{' '}
+                                                            Réserver
                                                         </PrimaryButton>
                                                     )}
                                                     <SecondaryButton

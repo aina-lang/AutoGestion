@@ -19,7 +19,7 @@ function EditVehicule({ vehicule, categories, errors }) {
         immatriculation: vehicule.immatriculation || '',
         categorie: vehicule.categorie || '',
         // prix_journalier: vehicule.prix_journalier || '',
-        kilometrage: vehicule.kilometrage || '',
+        vitesse: vehicule.vitesse || '',
         description: vehicule.description || '',
         images: [], // On initialise un tableau pour les nouvelles images
     });
@@ -167,12 +167,12 @@ function EditVehicule({ vehicule, categories, errors }) {
                             <TextField
                                 label="Kilométrage"
                                 type="number"
-                                value={data.kilometrage}
+                                value={data.vitesse}
                                 onChange={(e) =>
-                                    setData('kilometrage', e.target.value)
+                                    setData('vitesse', e.target.value)
                                 }
-                                error={!!errors.kilometrage}
-                                helperText={errors.kilometrage}
+                                error={!!errors.vitesse}
+                                helperText={errors.vitesse}
                                 fullWidth
                                 variant="outlined"
                             />

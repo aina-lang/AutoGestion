@@ -528,7 +528,7 @@ export default function Welcome({
                                                 </button>
                                             </div> */}
                                             <span className="absolute left-2 top-2 rounded-full bg-yellow-500 px-3 py-1 text-xs font-medium text-white">
-                                                {car.kilometrage} km/h
+                                                {car.vitesse} km/h
                                             </span>
                                         </div>
 

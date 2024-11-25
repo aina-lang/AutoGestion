@@ -134,7 +134,7 @@ function Index({ vehicules }) {
         immatriculation: { checked: true },
         categorie: { checked: true },
         prix_journalier: { checked: true },
-        kilometrage: { checked: true },
+        vitesse: { checked: true },
         description: { checked: true },
         disponibilite: { checked: true },
     };
@@ -206,9 +206,9 @@ function Index({ vehicules }) {
                                 </p>
                             ),
                         };
-                    case 'kilometrage':
+                    case 'vitesse':
                         return {
-                            field: 'kilometrage',
+                            field: 'vitesse',
                             headerName: 'Kilométrage',
                             width: 150,
                             renderCell: (params) => (

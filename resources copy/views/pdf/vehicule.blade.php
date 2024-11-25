@@ -50,7 +50,7 @@
             <p><strong>Marque:</strong> {{ $vehicule->marque }}</p>
             <p><strong>Modèle:</strong> {{ $vehicule->modele }}</p>
             <p><strong>Immatriculation:</strong> {{ $vehicule->immatriculation }}</p>
-            <p><strong>Kilométrage:</strong> {{ $vehicule->kilometrage }} km</p>
+            <p><strong>Kilométrage:</strong> {{ $vehicule->vitesse }} km</p>
             <p><strong>Prix Journalier:</strong> {{ $vehicule->prix_journalier }} €</p>
             <p><strong>Description:</strong> {{ $vehicule->description }}</p>
         </div>

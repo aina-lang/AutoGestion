@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('modele');
             $table->string('immatriculation')->unique();
             $table->foreignId('categorie_id')->constrained()->onDelete('cascade');
-            $table->unsignedInteger('kilometrage');
+            $table->unsignedInteger('vitesse');
             $table->timestamp('date_ajout')->useCurrent();
             $table->text('description')->nullable(); 
             $table->json('images')->nullable(); 
