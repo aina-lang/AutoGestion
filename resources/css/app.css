@@ -111,3 +111,19 @@ body {
     background-color: #555; /* Darker gray when hovered */
 }
 
+.loader {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    z-index: 999999;
+    background-color: white;
+}
+
+.dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 100%;
+}

@@ -304,7 +304,11 @@ export default function AdminLayout({ header, children }) {
                                         menuItems={[
                                             {
                                                 label: 'Profil',
-                                                action: () => {},
+                                                action: () => {
+                                                    router.visit(
+                                                        route('profile.edit'),
+                                                    );
+                                                },
                                             },
 
                                             { label: 'Aide', action: () => {} },

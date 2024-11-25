@@ -92,13 +92,73 @@ class HomeController extends Controller
         ]);
     }
 
-    private function jaccardSimilarity(array $a, array $b)
-    {
-        $intersection = count(array_intersect($a, $b));
-        $union = count(array_merge($a, $b));
 
-        return $union === 0 ? 0 : $intersection / $union;
-    }
+
+
+    // public function all(Request $request)
+    // {
+    //     $userId = Auth::id(); // Récupérer l'ID de l'utilisateur authentifié
+
+    //     // Récupérer les paramètres de filtrage
+    //     $search = $request->input('search', []);
+
+    //     $date_depart = $search['date_depart'] ?? '';
+    //     $date_retour = $search['date_retour'] ?? '';
+    //     $categorie = $search['categorie'] ?? '';
+
+    //     // Construire la requête pour les véhicules avec les relations 'categorie' et 'avis.user' en eager loading
+    //     $query = Vehicule::with(['categorie', 'avis.user']);
+
+    //     // Filtrage par marque ou modele
+    //     if (isset($search["search"]) && $search["search"]) {
+    //         // dd($search["search"]);
+    //         $query->where(function ($q) use ($search) {
+    //             $searchTerm = $search["search"]; // Extract the search term
+    //             $q->where('marque', 'like', '%' . $searchTerm . '%')
+    //                 ->orWhere('modele', 'like', '%' . $searchTerm . '%')
+    //                 ->orWhere('immatriculation', 'like', '%' . $searchTerm . '%');
+    //         });
+    //     }
+
+
+    //     // Filtrage par dates si fournies
+    //     if ($date_depart && $date_retour) {
+    //         $query->whereDoesntHave('reservations', function ($q) use ($date_depart, $date_retour) {
+    //             $q->where(function ($query) use ($date_depart, $date_retour) {
+    //                 $query->whereBetween('date_depart', [$date_depart, $date_retour])
+    //                     ->orWhereBetween('date_retour', [$date_depart, $date_retour])
+    //                     ->orWhere(function ($query) use ($date_depart, $date_retour) {
+    //                         $query->where('date_depart', '<=', $date_depart)
+    //                             ->where('date_retour', '>=', $date_retour);
+    //                     });
+    //             });
+    //         });
+    //     }
+
+    //     // Filtrage par catégorie si fourni
+    //     if ($categorie) {
+    //         $query->where('categorie_id', $categorie);
+    //     }
+
+
+
+    //     $latestVehicles = $query->paginate(5);
+
+    //     // dd($latestVehicles);
+    //     $categories = Categorie::all();
+
+    //     // dd($latestVehicles);
+    //     return Inertia::render('welcome/allCars', [
+    //         'canLogin' => Route::has('login'),
+    //         'canRegister' => Route::has('register'),
+    //         'laravelVersion' => Application::VERSION,
+    //         'phpVersion' => PHP_VERSION,
+    //         'latestVehicles' => $latestVehicles,
+    //         'categories' => $categories,
+    //         'search' => $search, // Passer les filtres de recherche à la vue
+    //     ]);
+    // }
+
 
 
     public function all(Request $request)
@@ -111,21 +171,32 @@ class HomeController extends Controller
         $date_depart = $search['date_depart'] ?? '';
         $date_retour = $search['date_retour'] ?? '';
         $categorie = $search['categorie'] ?? '';
+        $searchTerm = $search['search'] ?? '';  // Le terme de recherche
 
         // Construire la requête pour les véhicules avec les relations 'categorie' et 'avis.user' en eager loading
         $query = Vehicule::with(['categorie', 'avis.user']);
 
-        // Filtrage par marque ou modele
-        if (isset($search["search"]) && $search["search"]) {
-            // dd($search["search"]);
-            $query->where(function ($q) use ($search) {
-                $searchTerm = $search["search"]; // Extract the search term
-                $q->where('marque', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('modele', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('immatriculation', 'like', '%' . $searchTerm . '%');
-            });
-        }
+        // Filtrage par Jaccard (marque, modele, immatriculation)
+        if ($searchTerm) {
+            // Ici on applique le Jaccard sur chaque champ
+            $vehicles = Vehicule::all();  // Récupère tous les véhicules (vous pouvez optimiser cette requête selon la taille de la base)
 
+            // Appliquer le calcul de Jaccard
+            $filteredVehicles = $vehicles->filter(function ($vehicule) use ($searchTerm) {
+                $jaccardMarque = $this->jaccardSimilarity($vehicule->marque, $searchTerm);
+                $jaccardModele = $this->jaccardSimilarity($vehicule->modele, $searchTerm);
+                $jaccardImmatriculation = $this->jaccardSimilarity($vehicule->immatriculation, $searchTerm);
+                // dd($searchTerm, $jaccardMarque, $jaccardModele, $jaccardImmatriculation);
+                // Si un des scores de Jaccard est supérieur à un seuil (par exemple, 0.5)
+                return max($jaccardMarque, $jaccardModele, $jaccardImmatriculation) >= 0.7;
+            });
+
+            // Récupérer les ID des véhicules filtrés par Jaccard
+            $filteredVehicleIds = $filteredVehicles->pluck('id');
+
+            // Appliquer un filtre par ID dans la requête principale
+            $query->whereIn('id', $filteredVehicleIds);
+        }
 
         // Filtrage par dates si fournies
         if ($date_depart && $date_retour) {
@@ -146,14 +217,13 @@ class HomeController extends Controller
             $query->where('categorie_id', $categorie);
         }
 
-
-
+        // Pagination des résultats
         $latestVehicles = $query->paginate(5);
 
-        // dd($latestVehicles);
+        // Récupérer toutes les catégories
         $categories = Categorie::all();
 
-        // dd($latestVehicles);
+        // Retourner la vue avec les véhicules filtrés et paginés
         return Inertia::render('welcome/allCars', [
             'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
@@ -164,8 +234,6 @@ class HomeController extends Controller
             'search' => $search, // Passer les filtres de recherche à la vue
         ]);
     }
-
-
 
     public function showServices()
     {

@@ -28,6 +28,8 @@ return [
     |
     */
 
+
+
     'disks' => [
 
         'tmp_uploads' => [
@@ -60,6 +62,14 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
             'use_path_style_endpoint' => env('AWS_USE_PATH_STYLE_ENDPOINT', false),
             'throw' => false,
+        ],
+        
+        'cloudinary' => [
+            'driver'    => 'cloudinary',
+            'cloud_name' => env('CLOUDINARY_CLOUD_NAME', 'dbdrablkd'),
+            'api_key'    => env('CLOUDINARY_API_KEY', '994451142718379'),
+            'api_secret' => env('CLOUDINARY_API_SECRET', 'hbhz8-GsuZTWGwhv4YWYoKc8hAA'),
+            'url'        => env('CLOUDINARY_URL', 'cloudinary://994451142718379:hbhz8-GsuZTWGwhv4YWYoKc8hAA@dbdrablkd'),
         ],
 
     ],

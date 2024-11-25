@@ -4,7 +4,7 @@ import StyledDataGrid from '@/Components/StyledDataGrid';
 import { Input } from '@/components/ui/input';
 
 import AdminLayout from '@/Layouts/AdminLayout';
-import { Head, router } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import { MoreHorizSharp, TableView } from '@mui/icons-material';
 import { Grid } from '@mui/material';
 import { GridAddIcon } from '@mui/x-data-grid';
@@ -148,7 +148,21 @@ function Index({ clients }) {
                     <StyledDataGrid
                         data={clients}
                         columns={[
-                            { accessorKey: 'nom', header: 'Nom ' },
+                            {
+                                accessorKey: 'nom',
+                                header: 'Nom ',
+                                cell: (props) => (
+                                    <Link
+                                        href={route(
+                                            'clients.show',
+                                            props.row.original.id,
+                                        )}
+                                        className="text-blue-600 hover:underline"
+                                    >
+                                        {props.getValue()}
+                                    </Link>
+                                ),
+                            },
                             { accessorKey: 'prenoms', header: 'Prenom(s)' },
                             { accessorKey: 'email', header: 'Email' },
                             {
@@ -166,7 +180,7 @@ function Index({ clients }) {
                                             {phones.map((phone, index) => (
                                                 <span
                                                     key={index}
-                                                    className="rounded-full bg-blue-200 px-3 py-1 text-sm font-medium text-blue-500 w-full text-center"
+                                                    className="w-full rounded-full bg-blue-200 px-3 py-1 text-center text-sm font-medium text-blue-500"
                                                 >
                                                     {phone}
                                                 </span>

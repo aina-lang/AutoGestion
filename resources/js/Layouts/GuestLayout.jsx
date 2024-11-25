@@ -9,7 +9,6 @@ import { palette } from '@/constants/palette';
 import { useThemeContext } from '@/contexts/ThemeContext';
 import { router, useForm, usePage } from '@inertiajs/react';
 import {
-    DashboardSharp,
     Email,
     Facebook,
     Instagram,
@@ -328,10 +327,7 @@ const GuestLayout = ({ children, auth, footerShown }) => {
                                     label: 'Profil',
                                     action: () => router.visit('/profil'),
                                 },
-                                {
-                                    label: 'Paramètres',
-                                    action: () => router.visit('/parametres'),
-                                },
+
                                 {
                                     label: 'Aide',
                                     action: () => router.visit('/aide'),

@@ -176,7 +176,9 @@ const index = ({ reservations }) => {
                                 accessorKey: 'user.nom',
                                 header: 'Client',
                                 cell: (props) => (
-                                    <UserTooltip user={props.row.original.user} />
+                                    <UserTooltip
+                                        user={props.row.original.user}
+                                    />
                                 ),
                             },
                             {
@@ -185,8 +187,8 @@ const index = ({ reservations }) => {
                                 cell: (props) => (
                                     <Link
                                         href={route(
-                                            'admin.reservations.show',
-                                            props.row.original.id,
+                                            'vehicules.show',
+                                            props.row.original.vehicule_id,
                                         )}
                                         className="text-blue-600 hover:underline"
                                     >

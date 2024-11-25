@@ -6,9 +6,9 @@ import { Transition } from '@headlessui/react';
 import { useForm } from '@inertiajs/react';
 import { useRef } from 'react';
 
-export default function UpdatePasswordForm({ className = '' }) {
-    const passwordInput = useRef();
-    const currentPasswordInput = useRef();
+export default function MettreAJourMotDePasseFormulaire({ className = '' }) {
+    const motDePasseInput = useRef();
+    const motDePasseActuelInput = useRef();
 
     const {
         data,
@@ -24,7 +24,7 @@ export default function UpdatePasswordForm({ className = '' }) {
         password_confirmation: '',
     });
 
-    const updatePassword = (e) => {
+    const mettreAJourMotDePasse = (e) => {
         e.preventDefault();
 
         put(route('password.update'), {
@@ -33,12 +33,12 @@ export default function UpdatePasswordForm({ className = '' }) {
             onError: (errors) => {
                 if (errors.password) {
                     reset('password', 'password_confirmation');
-                    passwordInput.current.focus();
+                    motDePasseInput.current.focus();
                 }
 
                 if (errors.current_password) {
                     reset('current_password');
-                    currentPasswordInput.current.focus();
+                    motDePasseActuelInput.current.focus();
                 }
             },
         });
@@ -48,25 +48,28 @@ export default function UpdatePasswordForm({ className = '' }) {
         <section className={className}>
             <header>
                 <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                    Update Password
+                    Mettre à jour le mot de passe
                 </h2>
 
                 <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-                    Ensure your account is using a long, random password to stay
-                    secure.
+                    Assurez-vous que votre compte utilise un mot de passe long
+                    et aléatoire pour rester sécurisé.
                 </p>
             </header>
 
-            <form onSubmit={updatePassword} className="mt-6 space-y-6">
+            <form
+                onSubmit={mettreAJourMotDePasse}
+                className="mt-6 space-y-6"
+            >
                 <div>
                     <InputLabel
                         htmlFor="current_password"
-                        value="Current Password"
+                        value="Mot de passe actuel"
                     />
 
                     <TextInput
                         id="current_password"
-                        ref={currentPasswordInput}
+                        ref={motDePasseActuelInput}
                         value={data.current_password}
                         onChange={(e) =>
                             setData('current_password', e.target.value)
@@ -83,11 +86,11 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div>
-                    <InputLabel htmlFor="password" value="New Password" />
+                    <InputLabel htmlFor="password" value="Nouveau mot de passe" />
 
                     <TextInput
                         id="password"
-                        ref={passwordInput}
+                        ref={motDePasseInput}
                         value={data.password}
                         onChange={(e) => setData('password', e.target.value)}
                         type="password"
@@ -101,7 +104,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                 <div>
                     <InputLabel
                         htmlFor="password_confirmation"
-                        value="Confirm Password"
+                        value="Confirmer le mot de passe"
                     />
 
                     <TextInput
@@ -122,7 +125,9 @@ export default function UpdatePasswordForm({ className = '' }) {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <PrimaryButton disabled={processing}>Save</PrimaryButton>
+                    <PrimaryButton disabled={processing} type="submit">
+                        Enregistrer
+                    </PrimaryButton>
 
                     <Transition
                         show={recentlySuccessful}
@@ -132,7 +137,7 @@ export default function UpdatePasswordForm({ className = '' }) {
                         leaveTo="opacity-0"
                     >
                         <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Saved.
+                            Enregistré.
                         </p>
                     </Transition>
                 </div>

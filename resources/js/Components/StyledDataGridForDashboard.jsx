@@ -547,17 +547,17 @@ const StyledDataGrid = ({
                     <button
                         disabled={data.current_page === 1}
                         onClick={() => handlePageChange(data.current_page - 1)}
-                        className="flex items-center justify-center rounded-full bg-gray-200 px-2 py-2 text-gray-600 transition-colors duration-200 hover:bg-gray-300 disabled:opacity-50"
+                        className="rounded-full px-3 py-2 text-gray-600 hover:bg-gray-300 disabled:opacity-50"
                     >
-                        <ChevronLeft className="h-2 w-2" />
+                        <ChevronLeft className="h-4 w-4" />
                     </button>
 
                     {/* Current Page Indicator */}
                     <button
                         style={{
-                            background: `linear-gradient(to right, ${currentPalette[600]}, ${currentPalette[500]})`,
+                            background: `${currentPalette[500]}`,
                         }}
-                        className="rounded-full px-4 py-2 text-white shadow-lg transition-shadow duration-200"
+                        className="h-10 w-10 rounded-full text-white shadow-lg transition-shadow duration-200"
                     >
                         {data.current_page}
                     </button>
@@ -566,9 +566,9 @@ const StyledDataGrid = ({
                     <button
                         disabled={data.current_page === data.last_page}
                         onClick={() => handlePageChange(data.current_page + 1)}
-                        className="flex items-center justify-center rounded-full bg-gray-200 px-2 py-2 text-gray-600 transition-colors duration-200 hover:bg-gray-300 disabled:opacity-50"
+                        className="rounded-full px-3 py-2 text-gray-600 hover:bg-gray-300 disabled:opacity-50"
                     >
-                        <ChevronRight className="h-5 w-5" />
+                        <ChevronRight className="h-4 w-4" />
                     </button>
                 </div>
 

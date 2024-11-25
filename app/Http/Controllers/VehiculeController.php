@@ -37,14 +37,7 @@ class VehiculeController extends Controller
 
 
 
-    private function jaccardSimilarity($setA, $setB)
-    {
-        $intersection = count(array_intersect($setA, $setB));
-        $union = count(array_unique(array_merge($setA, $setB)));
-
-        return $union > 0 ? $intersection / $union : 0;
-    }
-
+   
     public function index(Request $request)
     {
         // Retrieve all categories for the dropdown filter
@@ -125,7 +118,7 @@ class VehiculeController extends Controller
         }
 
         // If no search parameters are provided, return all vehicles with pagination
-        $vehicules = Vehicule::with('categorie')->paginate(5);
+        $vehicules = Vehicule::with(['categorie', "avis.user"])->paginate(5);
 
         return inertia('admin/vehicules/index', [
             'vehicules' => $vehicules,

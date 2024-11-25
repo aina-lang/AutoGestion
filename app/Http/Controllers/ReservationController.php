@@ -6,6 +6,7 @@ use App\Models\Categorie;
 use App\Models\Reservation;
 use App\Models\User;
 use App\Models\Vehicule;
+use App\Notifications\ReservationCancelled;
 use App\Notifications\ReservationCreated;
 use App\Notifications\ReservationStatusUpdated;
 
@@ -212,7 +213,7 @@ class ReservationController extends Controller
             'date_depart' => 'required|date|after_or_equal:today',
             'date_retour' => 'required|date|after:date_depart',
             'motif' => 'required|string|max:255',
-            'type_voyage' => 'required|in:circuit,boucle,transfert', // Validation du type de voyage
+            'type_voyage' => 'required|in:circuit,boucle,transfert',
             // 'pieces_jointes' => 'array',
             // 'pieces_jointes.*' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
             // 'status' => 'required|in:en_attente,confirmée,annulée',
@@ -267,10 +268,35 @@ class ReservationController extends Controller
      */
     public function destroy(string $id)
     {
+        // Récupérer la réservation ou retourner une erreur 404 si elle n'existe pas
         $reservation = Reservation::findOrFail($id);
+
+        // Supprimer la réservation
         $reservation->delete();
 
+        // Vérifier le type d'utilisateur connecté
+        if (Auth::check()) {
+            $currentUser = Auth::user();
+
+            if ($currentUser->type == "user") {
+                // Notifier l'administrateur si l'utilisateur est un client
+                $admin = User::where('type', 'admin')->first(); // Récupère un administrateur
+                if ($admin) {
+                    Notification::send($admin, new ReservationCreated($reservation));
+                }
+            } elseif ($currentUser->type == "admin") {
+                // Notifier l'utilisateur que sa réservation a été annulée si c'est un administrateur qui l'a supprimée
+                $user = User::find($reservation->user_id); // Récupérer le client
+                if ($user) {
+                    Notification::send($user, new ReservationCancelled($reservation));
+                }
+            }
+        }
+
+        // Flash message de succès
         session()->flash('success', 'Réservation supprimée avec succès.');
+
+        // Redirection vers la page précédente
         return redirect()->back();
     }
 
@@ -316,7 +342,6 @@ class ReservationController extends Controller
             $reservation->save();
 
             $reservation->user->notify(new ReservationStatusUpdated($reservation, $reservation->status));
-
 
             session()->flash('success', 'Réservation ' . $reservation->status . ' avec succès.');
         } catch (Exception $e) {

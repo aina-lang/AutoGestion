@@ -292,12 +292,12 @@ export default function Register() {
                         exit="exit"
                         src={banner2}
                         alt="Login Illustration"
-                        className="absolute h-auto w-full object-cover -bottom-1"
+                      className="absolute h-auto w-full object-cover -bottom-4"
                     />
                     <motion.div
                         initial={{ y: -100 }}
                         animate={{
-                            y: 20,
+                            y: .0,
                             transition: {
                                 type: 'spring', // Animation avec effet de rebond
                                 stiffness: 60, // Réglage du rebond

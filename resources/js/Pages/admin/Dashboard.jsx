@@ -110,7 +110,7 @@ export default function Dashboard({
 
                 {/* Section des Cartes */}
                 <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2">
-                    <motion.div
+                    <div
                         className="rounded-lg bg-white p-4 shadow-md border"
                         initial={{ opacity: 0, x: -200 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -146,9 +146,9 @@ export default function Dashboard({
                             ]}
                             height={300}
                         />
-                    </motion.div>
+                    </div>
 
-                    <motion.div
+                    <div
                         className="rounded-lg bg-white p-4 shadow-md border"
                         initial={{ opacity: 0, x: 200 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -176,7 +176,7 @@ export default function Dashboard({
                             ]}
                             height={300}
                         />
-                    </motion.div>
+                    </div>
                 </div>
 
                 {/* Section des Réservations à Venir */}

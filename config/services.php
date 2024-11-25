@@ -34,5 +34,12 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'cloudinary' => [
+        'driver'    => 'cloudinary',
+        'cloud_name' => env('CLOUDINARY_CLOUD_NAME', 'dbdrablkd'), // Fallback to 'dbdrablkd'
+        'api_key'    => env('CLOUDINARY_API_KEY', '994451142718379'), // Fallback to your key
+        'api_secret' => env('CLOUDINARY_API_SECRET', 'hbhz8-GsuZTWGwhv4YWYoKc8hAA'), // Fallback to your secret
+        'url'        => env('CLOUDINARY_URL', 'cloudinary://994451142718379:hbhz8-GsuZTWGwhv4YWYoKc8hAA@dbdrablkd'),
+    ],
 
 ];

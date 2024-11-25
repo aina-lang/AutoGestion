@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
@@ -46,6 +48,7 @@ class AppServiceProvider extends ServiceProvider
         if (env('APP_ENV') == 'production') {
             $url->forceScheme('https');
         }
+
         // dd(Auth::user());
         Vite::prefetch(concurrency: 3);
 

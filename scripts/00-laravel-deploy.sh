@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
+cd /var/www/html || exit
+
+echo "Installing project dependencies..."
+composer install --no-dev --optimize-autoloader
 
 echo "Running composer global dependencies..."
 composer global require hirak/prestissimo
 
-echo "Installing project dependencies..."
-composer install --no-dev --optimize-autoloader
+
 
 echo "Installing additional packages..."
 composer require tightenco/ziggy
